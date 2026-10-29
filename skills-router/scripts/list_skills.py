@@ -7,10 +7,13 @@ skills-router 技能树探测脚本
 """
 
 import re
+import sys
 from pathlib import Path
 
 # 描述过长会把技能树撑爆，截断到一句话的规模
 MAX_DESC = 110
+# 目录内技能超过该数量时默认折叠（可通过参数单独查看子路径）
+FOLD_THRESHOLD = 10
 
 
 def shorten(text: str, limit: int = MAX_DESC) -> str:
@@ -99,8 +102,26 @@ def scan_registry(base_dir: Path):
     return items
 
 
-def render_tree(node_dict: dict, prefix: str = "", base_dir: Path = None) -> list[str]:
-    """渲染为缩进树形文本"""
+def count_skills(node_dict: dict) -> int:
+    """递归统计某个节点树下包含的所有 Skill 数量"""
+    total = 0
+    for node in node_dict.values():
+        if node["is_skill"]:
+            total += 1
+        else:
+            total += count_skills(node["children"])
+    return total
+
+
+def render_tree(
+    node_dict: dict,
+    prefix: str = "",
+    base_dir: Path = None,
+    registry_dir: Path = None,
+    script_display: str = "list_skills.py",
+    is_root_level: bool = True,
+) -> list[str]:
+    """渲染为缩进树形文本，并在子目录技能过多时自动折叠"""
     lines = []
     keys = list(node_dict.keys())
     total = len(keys)
@@ -124,8 +145,25 @@ def render_tree(node_dict: dict, prefix: str = "", base_dir: Path = None) -> lis
                 # 空目录
                 lines.append(f"{prefix}{connector}📂 {key}/ （空）")
             else:
-                lines.append(f"{prefix}{connector}📂 {key}/")
-                lines.extend(render_tree(children, child_prefix, base_dir))
+                direct_child_count = len(children)
+                # 只有当前层级的“直接子节点”数量超过阈值时才折叠
+                if direct_child_count > FOLD_THRESHOLD:
+                    rel_to_reg = node["path"].relative_to(registry_dir) if registry_dir else key
+                    lines.append(
+                        f"{prefix}{connector}📂 {key}/ （{direct_child_count} 项已折叠 → 请单独展开查阅 {rel_to_reg}）"
+                    )
+                else:
+                    lines.append(f"{prefix}{connector}📂 {key}/")
+                    lines.extend(
+                        render_tree(
+                            children,
+                            prefix=child_prefix,
+                            base_dir=base_dir,
+                            registry_dir=registry_dir,
+                            script_display=script_display,
+                            is_root_level=False,
+                        )
+                    )
 
     return lines
 
@@ -136,18 +174,52 @@ def main():
     router_dir = script_path.parent.parent
     registry_dir = (router_dir / "registry").resolve()
 
-    print(f"📦 skills-router（技能路由中心根目录: {registry_dir}）")
+    # 尝试生成相对直观的脚本调用命令名
+    try:
+        script_display = str(script_path.relative_to(Path.cwd()))
+    except Exception:
+        script_display = script_path.name
 
-    if not registry_dir.exists():
-        print(f"  └── 📂 {registry_dir.name}/ （目录尚不存在，请创建此目录并放入技能包）")
+    # 处理用户指定的子路径参数
+    target_dir = registry_dir
+    sub_title = ""
+    if len(sys.argv) > 1 and sys.argv[1].strip():
+        arg_path = sys.argv[1].strip()
+        candidate = (registry_dir / arg_path).resolve()
+        if not candidate.exists():
+            # 也允许用户传入绝对路径或相对于当前工作区的路径
+            candidate = Path(arg_path).resolve()
+
+        if candidate.exists() and candidate.is_dir():
+            target_dir = candidate
+            try:
+                rel = target_dir.relative_to(registry_dir)
+                sub_title = f" [子目录视图: {rel}]"
+            except ValueError:
+                sub_title = f" [视图: {target_dir}]"
+        else:
+            print(f"❌ 指定路径不存在或非目录: {arg_path}")
+            sys.exit(1)
+
+    print(f"📦 skills-router（技能路由中心根目录: {registry_dir}{sub_title}）")
+
+    if not target_dir.exists():
+        print(f"  └── 📂 {target_dir.name}/ （目录尚不存在）")
         return
 
-    tree = scan_registry(registry_dir)
+    tree = scan_registry(target_dir)
     if not tree:
-        print(f"  └── 📂 {registry_dir.name}/ （当前未安装任何技能）")
+        print(f"  └── 📂 {target_dir.name}/ （当前未安装任何技能）")
         return
 
-    output_lines = render_tree(tree, prefix="  ", base_dir=registry_dir)
+    output_lines = render_tree(
+        tree,
+        prefix="  ",
+        base_dir=target_dir,
+        registry_dir=registry_dir,
+        script_display=script_display,
+        is_root_level=True,
+    )
     for line in output_lines:
         print(line)
 
