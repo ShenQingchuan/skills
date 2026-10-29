@@ -82,7 +82,7 @@ python3 skills-router/scripts/list_skills.py
 │   │   └── list_skills.py         ← 技能树探测：Agent 靠它「看目录」
 │   └── registry/                  ← 技能库本体
 │       ├── dev/frontend/          ← 前端技能（13 项）
-│       ├── workflow/              ← 工作流套件（预留）
+│       ├── workflow/              ← 工作方式技能（2 项）
 │       └── research/              ← 调研分析（预留）
 │
 ├── tools/                         ← 维护用工具，不参与 Agent 运行时
@@ -114,6 +114,22 @@ python3 skills-router/scripts/list_skills.py
 > 两个上游会不会打架？逐对比对过了：**不冲突，只有分工不同**。唯一的口径差异（Options API 的取舍）对你的现代 Composition API 路线没有影响。
 > 完整的对照表在 [`skills-router/registry/dev/frontend/README.md`](./skills-router/registry/dev/frontend/README.md)。
 
+### 工作方式 · `workflow`
+
+2 项技能，来自 [mattpocock/skills](https://github.com/mattpocock/skills)。
+
+| 技能 | 作用 |
+| --- | --- |
+| `grilling` | 把模糊的想法逼成共识。把决策组织成一棵「设计树」，按轮次问完当前**前沿**，每个问题都附上推荐答案 |
+| `writing-for-agents` | 写给 Agent 消费的文档怎么写：上下文指针、两种负载、信息层级、渐进式披露、完成判据 |
+
+这两个是**元技能**——不解决具体业务问题，而是改善你和 Agent 协作的过程本身。
+`grilling` 用在动手之前，`writing-for-agents` 用在写文档的时候。
+
+本仓库的 `README.md`、`AGENTS.md` 和 `skills-router/SKILL.md` 就是按 `writing-for-agents` 的规范写的。它的 `SKILL-MECHANICS.md` 里还有一节专门讲 **router skills**——和本仓库的 `skills-router` 是同一个思路的两个变种：一个化解人的认知负载，一个化解模型的上下文负载。
+
+> 详情见 [`skills-router/registry/workflow/README.md`](./skills-router/registry/workflow/README.md)。
+
 ## 日常使用
 
 ### 同步上游更新
@@ -130,11 +146,13 @@ python3 tools/sync_skills.py --check  # 只看有没有更新（有则退出码 
 ### 新增一个技能
 
 1. 在 `tools/sources.json` 的 `sources` 里登记仓库（如果还没有）。
-2. 在 `install` 里加一行：
+2. 在 `install` 里加一行，`skill` 写「上游 `skills/` 下的相对路径」（可以带子目录），`to` 写「本仓库 `registry/` 下的相对目录」：
 
    ```json
-   { "skill": "<上游目录名>", "from": "<仓库 id>", "to": "dev/frontend/<目标目录名>" }
+   { "skill": "productivity/grilling", "from": "mattpocock", "to": "workflow/grilling" }
    ```
+
+   两者都是你自己定的，不必跟上游同名。
 
 3. 跑一次 `python3 tools/sync_skills.py`。
 
@@ -226,6 +244,7 @@ chore(registry): 同步上游技能
 
 - [antfu/skills](https://github.com/antfu/skills) —— Anthony Fu
 - [vuejs-ai/skills](https://github.com/vuejs-ai/skills) —— vuejs-ai
+- [mattpocock/skills](https://github.com/mattpocock/skills) —— Matt Pocock
 
 ## 许可
 
