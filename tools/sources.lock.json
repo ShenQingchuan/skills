@@ -1,0 +1,82 @@
+{
+  "generatedBy": "tools/sync_skills.py",
+  "installed": {
+    "dev/frontend/create-adaptable-composable": {
+      "digest": "3e74d6eb692393dcfcaa678dfe536341005766548baa152fee1009b560e3db9a",
+      "from": "vuejs-ai",
+      "skill": "create-adaptable-composable"
+    },
+    "dev/frontend/pinia": {
+      "digest": "adf8ba25c083c782bf5f05808406cc336a175ab8dd5ddeeb121a6cedf1f87960",
+      "from": "antfu",
+      "skill": "pinia"
+    },
+    "dev/frontend/pnpm": {
+      "digest": "e2afb8b7aa136a7b75a6f68610d686cd4a4440a0c00d72e6fa905fdbec9cc225",
+      "from": "antfu",
+      "skill": "pnpm"
+    },
+    "dev/frontend/unocss": {
+      "digest": "5efb33547c7f5e95b56bfba62f8986609a32950f9788720eb4139ca1161a1bad",
+      "from": "antfu",
+      "skill": "unocss"
+    },
+    "dev/frontend/vite": {
+      "digest": "f68ccd67998839de7886886942650fd90f0f6e5fbc7a6e19a28d6ad3ca9f4062",
+      "from": "antfu",
+      "skill": "vite"
+    },
+    "dev/frontend/vitepress": {
+      "digest": "a20c8c6815b9e44aa08666a9de10f0beb9b39b9905c8645d2c3f0d35f3094245",
+      "from": "antfu",
+      "skill": "vitepress"
+    },
+    "dev/frontend/vitest": {
+      "digest": "4e3c847b54102499354b5aa1faf25ad4fd63b0f0d75c43f7de915dd4516ab01b",
+      "from": "antfu",
+      "skill": "vitest"
+    },
+    "dev/frontend/vue": {
+      "digest": "82591136310a826a0735cc17b6ae743e31fbb5e653e02258e5db83415730d14e",
+      "from": "antfu",
+      "skill": "vue"
+    },
+    "dev/frontend/vue-best-practices": {
+      "digest": "82acc36e17b53e915203621f25961ba13301bc5ce4e4629f9e9aa8b47e36e7eb",
+      "from": "vuejs-ai",
+      "skill": "vue-best-practices"
+    },
+    "dev/frontend/vue-debug-guides": {
+      "digest": "0f79f4becfeb9ba760e789d287d5bb72e5a89057fd46b68e413f780663b4e185",
+      "from": "vuejs-ai",
+      "skill": "vue-debug-guides"
+    },
+    "dev/frontend/vue-pinia-best-practices": {
+      "digest": "4e71ca73c9c752c38c3836b0a835c1b8ea35881aebb91d34197edb2b3807a185",
+      "from": "vuejs-ai",
+      "skill": "vue-pinia-best-practices"
+    },
+    "dev/frontend/vue-router-best-practices": {
+      "digest": "28f4bf9e0be2877757ebd795fb597a622d226c6421b47d843fe5016de0537999",
+      "from": "vuejs-ai",
+      "skill": "vue-router-best-practices"
+    },
+    "dev/frontend/vue-testing-best-practices": {
+      "digest": "332a2f291b11b4524f790febbf1e8c80a82697f1137f8e37402b059c0c1cd846",
+      "from": "vuejs-ai",
+      "skill": "vue-testing-best-practices"
+    }
+  },
+  "sources": {
+    "antfu": {
+      "commit": "8886fe2d385d3644cbb47e46ae9cb1cf09307d3b",
+      "ref": "main",
+      "repo": "https://github.com/antfu/skills"
+    },
+    "vuejs-ai": {
+      "commit": "198f0cd8f7f9c0a3d9b566ccc16de6677519ee78",
+      "ref": "main",
+      "repo": "https://github.com/vuejs-ai/skills"
+    }
+  }
+}
