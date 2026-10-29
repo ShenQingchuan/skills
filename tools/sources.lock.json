@@ -78,7 +78,7 @@
       "suite": "office/lark"
     },
     "office/lark/lark-apps": {
-      "digest": "a691b446790fc8b4e7fb0983715f120c5bee6915b1c5eee6e77d6ca16cd96fa0",
+      "digest": "2286a0984c2e5ad0efffc9c64422dc83660902abd1b5b8639118f2ce36eb70c7",
       "from": "larksuite",
       "skill": "lark-apps",
       "suite": "office/lark"
@@ -240,7 +240,7 @@
       "suite": "office/lark"
     },
     "workflow/grilling": {
-      "digest": "84ca0320c5fa81a1261d6d1d4c120ada9dea80f856a2c2565404f7125a809b86",
+      "digest": "27f71f106a7062691b2982d4f847304a62930ebed8b50734f4d4fd498d60afa8",
       "from": "mattpocock",
       "skill": "productivity/grilling"
     },
@@ -258,13 +258,13 @@
       "resolvedRef": "refs/heads/main"
     },
     "larksuite": {
-      "commit": "782a5a4db906ed4914223838cc98b129c60b0dab",
+      "commit": "c910e89e97e98a458a051c50dbd36de43a603d30",
       "ref": "main",
       "repo": "https://github.com/larksuite/cli",
       "resolvedRef": "refs/heads/main"
     },
     "mattpocock": {
-      "commit": "59db609eb1e18aaf59b63284d0e52255aff0c63c",
+      "commit": "a496f5513d4a4cf889bc48e189e579f4b0bdf6aa",
       "ref": "main",
       "repo": "https://github.com/mattpocock/skills",
       "resolvedRef": "refs/heads/main"

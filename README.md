@@ -57,9 +57,11 @@
 
 ```bash
 git clone git@github.com:ShenQingchuan/skills.git ~/.agents/skills
+cd ~/.agents/skills
+python3 tools/sync_skills.py  # 类似 npm install：依据 sources.lock.json 一键恢复并安装全部技能
 ```
 
-把整个仓库放到你的 Agent 扫描技能的位置（例如 `~/.agents/skills`）。放好后：
+放好并同步后：
 
 - 你的 Agent 默认**只感知到 `skills-router` 一个技能**；
 - `registry/` 下的技能对它来说是隐身的，直到它真的需要。
@@ -79,19 +81,20 @@ python3 skills-router/scripts/list_skills.py
 │   ├── SKILL.md                   ← 路由规则（刻意写得极短）
 │   ├── scripts/
 │   │   └── list_skills.py         ← 技能树探测：Agent 靠它「看目录」
-│   └── registry/                  ← 技能库本体
+│   └── registry/                  ← 技能库本体（类似 node_modules，第三方技能不入库）
+│       ├── .gitignore             ← 自动精准忽略第三方下载产物，绝不误伤本地自建技能
 │       ├── dev/
-│       │   ├── agent-browser/
-│       │   └── frontend/
-│       ├── office/lark/
-│       ├── workflow/
+│       │   ├── agent-friendly/    ← 本地自建原创技能（受 Git 跟踪与保护）
+│       │   └── ...                ← 第三方安装产物（本地存在但 Git 忽略）
+│       ├── office/lark/           ← 飞书套件安装产物（Git 忽略）
+│       ├── workflow/              ← 工作流技能（Git 忽略）
 │       └── …
 │
 ├── tools/                         ← 维护用工具，不参与 Agent 运行时
-│   ├── sources.json               ← 上游清单（人写）
-│   ├── sources.lock.json          ← 同步状态（机器写）
+│   ├── sources.json               ← 上游清单（人写声明，类似 package.json）
+│   ├── sources.lock.json          ← 同步状态（机器写锁，类似 package-lock.json）
 │   ├── generate_catalog.py        ← CATALOG.md 自动生成脚本
-│   └── sync_skills.py             ← 同步脚本
+│   └── sync_skills.py             ← 同步与安装脚本（类似 npm install）
 │
 └── .github/workflows/
     └── sync-skills.yml            ← 每日自动同步
@@ -196,7 +199,7 @@ chore(registry): 同步上游技能
 
 1. **单一入口** —— 路由器是唯一常驻上下文的技能。它的 `SKILL.md` 必须保持极短，任何一句多余的叮嘱都在收全体技能的税。
 2. **渐进式披露** —— 描述 → `SKILL.md` → `references/`，三级递进。每一级只在上一级明确指向时才展开。
-3. **产物与源头分离** —— `registry/` 下的第三方技能是产物，源头永远是上游仓库。所以这里只维护「声明」（`sources.json`）和「事实」（`sources.lock.json`），其余全部由脚本推导。
+3. **产物与源头分离（依赖不入库 No-Vendoring）** —— `registry/` 下的第三方技能是安装产物（就像前端项目的 `node_modules`），源头永远是上游仓库。Git 仓库只维护声明（`sources.json`）、事实与指纹（`sources.lock.json`）以及本地自创技能，其余第三方代码全部由脚本拉取并被 Git 忽略，保持仓库极致轻量纯粹。
 4. **幂等优先** —— 同步跑一百遍和跑一遍结果相同。CI 才可以放心每天跑，你也才敢随时手动跑。
 5. **冲突先在安装前解决** —— 装之前先比对同一话题的几个上游，明确各自分工；装进来之后靠「最多 1+1」的规则避免同时加载。
 

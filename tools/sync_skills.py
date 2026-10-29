@@ -109,6 +109,32 @@ def clone_sparse(repo: str, ref: str, subdirs: list[str], dest: Path) -> None:
     run(["git", "-C", str(dest), "sparse-checkout", "set", *subdirs])
 
 
+def update_registry_gitignore(manifest_install: list[dict], lock_installed: dict) -> None:
+    """自动生成 skills-router/registry/.gitignore，精准忽略所有第三方下载产物，绝不误伤本地原创技能。"""
+    registry_gitignore = REGISTRY_DIR / ".gitignore"
+    suites = {
+        item["to"].strip("/")
+        for item in manifest_install
+        if item.get("skill") == "*"
+    }
+
+    lines = [
+        "# 由 tools/sync_skills.py 自动生成，精准忽略所有第三方下载技能产物",
+        "# 本地原创技能（如 dev/agent-friendly 等）不在清单中，正常受 Git 跟踪与保护",
+    ]
+
+    for s in sorted(suites):
+        lines.append(f"/{s}/")
+
+    for path, info in sorted(lock_installed.items()):
+        suite = info.get("suite")
+        if suite and suite in suites:
+            continue
+        lines.append(f"/{path}/")
+
+    registry_gitignore.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def load_lock() -> dict:
     if LOCK_FILE.is_file():
         try:
@@ -320,6 +346,11 @@ def main() -> int:
         update_catalog()
     except Exception as exc:
         log(f"⚠ 自动刷新 CATALOG.md 失败：{exc}")
+
+    try:
+        update_registry_gitignore(install, new_installed)
+    except Exception as exc:
+        log(f"⚠ 自动更新 registry/.gitignore 失败：{exc}")
 
     return 0
 

@@ -75,3 +75,13 @@
 | [grilling](https://github.com/mattpocock/skills/blob/HEAD/skills/productivity/grilling/SKILL.md) | Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any 'grill' trigger phrases. | [mattpocock/skills](https://github.com/mattpocock/skills) |
 | [writing-for-agents](https://github.com/mattpocock/skills/blob/HEAD/skills/productivity/writing-for-agents/SKILL.md) | Writing documents for agents. Use when creating or editing skills, or modifying AGENTS.md or CLAUDE.md. | [mattpocock/skills](https://github.com/mattpocock/skills) |
 
+## Other (其他)
+
+| 技能 (Skill) | 简介 (Description) | 来源 (Source) |
+| --- | --- | --- |
+| **create-rule** | 为项目创建或沉淀规则约束文件（Rule）。当用户要求记录编码规范、固化团队开发约束、沉淀 Code Review 经验或在 .agents/rules/ 下新建规则时使用。 | Local（自建） |
+| **create-skill** | 为当前项目创建私有专属技能（Project Skill）。当用户要求沉淀项目专有流程、固化自动化操作套路、或在 .agents/skills/ 下新增技能时使用。 | Local（自建） |
+| **create-spec** | 将讨论好的业务需求、产品方案或技术设计落盘为规范的 Spec 目录。当用户要求整理需求、记录设计方案、编写 PRD 或将讨论成果沉淀为规范时使用。 | Local（自建） |
+| **manage-AGENTS-md** | 创建、更新、审查与精简项目根目录的 AGENTS.md 文件。当用户要求初始化入口导航、更新测试或启动命令、调整项目红线、或对膨胀腐烂的 AGENTS.md 进行修剪瘦身时使用。 | Local（自建） |
+| **setup-project-for-agents** | 为项目初始化对 Agent 友好的上下文环境与目录结构，引导渐进式信息披露。 | Local（自建） |
+
