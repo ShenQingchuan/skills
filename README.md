@@ -7,10 +7,10 @@
 一个用「渐进式披露」打理的个人 Agent Skills 库。
 常驻上下文的只有路由器本身，其余技能用到才装载。
 
-[为什么](#为什么需要它) · [工作原理](#工作原理) · [快速开始](#快速开始) · [技能目录](#技能目录) · [日常使用](#日常使用) · [Agent 指引](#agent-使用指引) · [设计原则](#设计原则)
+[为什么](#为什么需要它) · [工作原理](#工作原理) · [快速开始](#快速开始) · [目录结构](#目录结构) · [日常使用](#日常使用) · [Agent 指引](#agent-使用指引) · [设计原则](#设计原则)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
-[![Agent Skills](https://img.shields.io/badge/Agent_Skills-1_routed-informational.svg)](#快速开始)
+[![Agent Skills](https://img.shields.io/badge/Agent_Skills-1_routed-informational.svg)](https://agentskills.io/specification)
 [![Sync skills](https://github.com/ShenQingchuan/skills/actions/workflows/sync-skills.yml/badge.svg)](https://github.com/ShenQingchuan/skills/actions/workflows/sync-skills.yml)
 
 </div>
@@ -34,23 +34,21 @@
 
 三层，层层收窄，每一层只为下一层付一次代价。
 
-| 层 | Agent 看到什么 | 成本 |
-| --- | --- | --- |
-| ① 常驻 | 只有一个技能：`skills-router`。它自己只说一句话——「有技能树，先查再读」 | 恒定，约 40 tokens |
-| ② 查阅 | 跑 `list_skills.py`，得到一棵带分类和一句话描述的技能树 | 随技能数量线性增长，但每项极短 |
-| ③ 装载 | 只读命中的那个技能目录下的 `SKILL.md`；它指向 `references/` 时再往下钻 | 只为你真正要用的技能付钱 |
+- **① 常驻** —— Agent 默认只认识一个技能：`skills-router`。它自己只说一句话：「有技能树，先查再读」。成本恒定，约 40 tokens。
+- **② 查阅** —— 它跑 `list_skills.py`，拿到一棵带分类和一句话描述的技能树。
+- **③ 装载** —— 它只读命中的那个技能目录下的 `SKILL.md`；文件里指向 `references/` 时再往下钻。
 
 一次典型的查阅输出：
 
 ```text
-📦 skills-router 已注册技能树 (根目录: /Users/admin/.agents/skills/skills-router/registry)
+📦 skills-router（技能路由中心根目录: /Users/admin/.agents/skills/skills-router/registry）
   ├── 📂 dev/
   │   └── 📂 frontend/
-  │       ├── 🎯 vue - Vue 3 Composition API, script setup macros, reactivity system… (入口: dev/frontend/vue/SKILL.md)
-  │       ├── 🎯 vue-debug-guides - Vue 3 debugging and error handling for runtime errors… (入口: …)
+  │       ├── 🎯 vue - Vue 3 Composition API, script setup macros… (入口: dev/frontend/vue/SKILL.md)
   │       └── …
-  ├── 📂 research/ （空）
-  └── 📂 workflow/ （空）
+  └── 📂 workflow/
+      ├── 🎯 grilling - Grill the user relentlessly about a plan, decision… (入口: workflow/grilling/SKILL.md)
+      └── …
 ```
 
 **关键点**：`registry/` 里的技能不会自动进入上下文。它们只有被路由器点名、并被显式读取时才会出现。
@@ -81,9 +79,10 @@ python3 skills-router/scripts/list_skills.py
 │   ├── scripts/
 │   │   └── list_skills.py         ← 技能树探测：Agent 靠它「看目录」
 │   └── registry/                  ← 技能库本体
-│       ├── dev/frontend/          ← 前端技能（13 项）
-│       ├── workflow/              ← 工作方式技能（2 项）
-│       └── research/              ← 调研分析（预留）
+│       ├── dev/frontend/vue/
+│       ├── dev/frontend/vue-best-practices/
+│       ├── workflow/grilling/
+│       └── …
 │
 ├── tools/                         ← 维护用工具，不参与 Agent 运行时
 │   ├── sources.json               ← 上游清单（人写）
@@ -94,41 +93,11 @@ python3 skills-router/scripts/list_skills.py
     └── sync-skills.yml            ← 每日自动同步
 ```
 
-`tools/` 里没有 `SKILL.md`，`registry/` 里的技能也不是仓库根目录的一级技能、那一层同样没有 `SKILL.md`，所以两者都不会被 Agent 发现。这正是这个结构成立的原因。
+**`registry/` 下怎么分类随你，多少层都行。** 唯一的硬约束来自 [Agent Skills 规范](https://agentskills.io/specification)：**一个 skill 的最小单元是一个目录**，目录里至少有一个 `SKILL.md`。
 
-## 技能目录
+`scripts/`、`references/`、`assets/` 这些是目录内部的约定，属于技能自己的私事。`list_skills.py` 据此工作——见到 `SKILL.md` 就认定这是一个完整技能，不再往里看，所以技能内部的文件名不会泄露到技能树上。
 
-### 前端 · `dev/frontend`
-
-13 项技能，来自两个定位互补的上游：
-
-| 上游 | 回答的问题 | 形态 |
-| --- | --- | --- |
-| [antfu/skills](https://github.com/antfu/skills) | **怎么写**（API 参考） | 从官方文档生成的索引 + `references/` 详解 |
-| [vuejs-ai/skills](https://github.com/vuejs-ai/skills) | **怎么写好、怎么不踩坑**（实践规约） | 架构工作流 + 「现象 → 修复」速查表 |
-
-**API 参考层（antfu）**：`vue` · `pinia` · `vite` · `vitepress` · `vitest` · `unocss` · `pnpm`
-
-**实践规约层（vuejs-ai）**：`vue-best-practices` · `vue-debug-guides` · `vue-pinia-best-practices` · `vue-router-best-practices` · `vue-testing-best-practices` · `create-adaptable-composable`
-
-> 两个上游会不会打架？逐对比对过了：**不冲突，只有分工不同**。唯一的口径差异（Options API 的取舍）对你的现代 Composition API 路线没有影响。
-> 完整的对照表在 [`skills-router/registry/dev/frontend/README.md`](./skills-router/registry/dev/frontend/README.md)。
-
-### 工作方式 · `workflow`
-
-2 项技能，来自 [mattpocock/skills](https://github.com/mattpocock/skills)。
-
-| 技能 | 作用 |
-| --- | --- |
-| `grilling` | 把模糊的想法逼成共识。把决策组织成一棵「设计树」，按轮次问完当前**前沿**，每个问题都附上推荐答案 |
-| `writing-for-agents` | 写给 Agent 消费的文档怎么写：上下文指针、两种负载、信息层级、渐进式披露、完成判据 |
-
-这两个是**元技能**——不解决具体业务问题，而是改善你和 Agent 协作的过程本身。
-`grilling` 用在动手之前，`writing-for-agents` 用在写文档的时候。
-
-本仓库的 `README.md`、`AGENTS.md` 和 `skills-router/SKILL.md` 就是按 `writing-for-agents` 的规范写的。它的 `SKILL-MECHANICS.md` 里还有一节专门讲 **router skills**——和本仓库的 `skills-router` 是同一个思路的两个变种：一个化解人的认知负载，一个化解模型的上下文负载。
-
-> 详情见 [`skills-router/registry/workflow/README.md`](./skills-router/registry/workflow/README.md)。
+Agent 的技能发现只认**仓库根目录下的第一层**。`tools/` 里没有 `SKILL.md`，`registry/` 也不是技能（它只是技能的上级分类），所以两者都不会被自动发现——这正是整个结构成立的原因。
 
 ## 日常使用
 
@@ -220,13 +189,6 @@ chore(registry): 同步上游技能
 3. **产物与源头分离** —— `registry/` 下的第三方技能是产物，源头永远是上游仓库。所以这里只维护「声明」（`sources.json`）和「事实」（`sources.lock.json`），其余全部由脚本推导。
 4. **幂等优先** —— 同步跑一百遍和跑一遍结果相同。CI 才可以放心每天跑，你也才敢随时手动跑。
 5. **冲突先在安装前解决** —— 装之前先比对同一话题的几个上游，明确各自分工；装进来之后靠「最多 1+1」的规则避免同时加载。
-
-### 为什么不用 Git submodule / 插件市场
-
-- **submodule** 会把整个上游仓库（含大量你不需要的目录）带进来，且文件是子模块引用而非真实文件，Agent 的读取工具往往读不到；符号链接在 Windows 上还会直接失效。
-- **插件市场**解决的是「分发」，不是「上下文」。真正的瓶颈是感知面，不是安装方式。
-
-这个仓库选择的是：**稀疏检出 + 原样复制 + 内容指纹**。技能在磁盘上是实实在在的普通文件，任何工具都能读；同步只下载需要的目录，不拉整个仓库。
 
 ## 参与贡献
 
