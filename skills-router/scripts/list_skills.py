@@ -132,7 +132,7 @@ def main():
     router_dir = script_path.parent.parent
     registry_dir = (router_dir / "registry").resolve()
 
-    print(f"📦 skills-router（技能路由中心根目录: {registry_dir})")
+    print(f"📦 skills-router（技能路由中心根目录: {registry_dir}）")
 
     if not registry_dir.exists():
         print(f"  └── 📂 {registry_dir.name}/ （目录尚不存在，请创建此目录并放入技能包）")
