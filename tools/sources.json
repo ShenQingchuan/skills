@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "sources": {
+    "antfu": {
+      "repo": "https://github.com/antfu/skills",
+      "ref": "main",
+      "skillsDir": "skills"
+    },
+    "vuejs-ai": {
+      "repo": "https://github.com/vuejs-ai/skills",
+      "ref": "main",
+      "skillsDir": "skills"
+    }
+  },
+  "install": [
+    { "skill": "vue", "from": "antfu", "to": "dev/frontend/vue" },
+    { "skill": "pinia", "from": "antfu", "to": "dev/frontend/pinia" },
+    { "skill": "vite", "from": "antfu", "to": "dev/frontend/vite" },
+    { "skill": "vitepress", "from": "antfu", "to": "dev/frontend/vitepress" },
+    { "skill": "vitest", "from": "antfu", "to": "dev/frontend/vitest" },
+    { "skill": "unocss", "from": "antfu", "to": "dev/frontend/unocss" },
+    { "skill": "pnpm", "from": "antfu", "to": "dev/frontend/pnpm" },
+
+    { "skill": "vue-best-practices", "from": "vuejs-ai", "to": "dev/frontend/vue-best-practices" },
+    { "skill": "vue-debug-guides", "from": "vuejs-ai", "to": "dev/frontend/vue-debug-guides" },
+    { "skill": "vue-pinia-best-practices", "from": "vuejs-ai", "to": "dev/frontend/vue-pinia-best-practices" },
+    { "skill": "vue-router-best-practices", "from": "vuejs-ai", "to": "dev/frontend/vue-router-best-practices" },
+    { "skill": "vue-testing-best-practices", "from": "vuejs-ai", "to": "dev/frontend/vue-testing-best-practices" },
+    { "skill": "create-adaptable-composable", "from": "vuejs-ai", "to": "dev/frontend/create-adaptable-composable" }
+  ]
+}
