@@ -30,6 +30,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -57,13 +58,26 @@ def run(cmd: list[str]) -> str:
     return proc.stdout
 
 
-def resolve_commit(repo: str, ref: str) -> str:
-    """不下拉仓库，直接问远端：这个 ref 现在指向哪个 commit。"""
-    output = run(["git", "ls-remote", repo, ref])
+def resolve_ref(repo: str, ref: str) -> tuple[str, str]:
+    """
+    不下拉仓库，直接问远端：这个 ref 现在指向哪个 commit。
+
+    返回 (完整 ref 名, commit)。必须按精确名匹配——`git ls-remote <pattern>`
+    是按 ref 名**尾部**匹配的，写 `main` 会同时命中 `refs/heads/changeset-release/main`
+    这类机器人分支，很容易锁到错误的 commit 上，导致上游真更新了却永远检测不到。
+    """
+    output = run(["git", "ls-remote", "--refs", repo])
+    refs = {}
     for line in output.splitlines():
         parts = line.split()
         if len(parts) == 2:
-            return parts[0]
+            refs[parts[1]] = parts[0]
+
+    for candidate in (f"refs/heads/{ref}", f"refs/tags/{ref}"):
+        if candidate in refs:
+            return candidate, refs[candidate]
+    if re.fullmatch(r"[0-9a-f]{7,40}", ref):
+        return ref, ref  # 清单里直接写死了 commit
     raise RuntimeError(f"{repo} 上找不到 ref：{ref}")
 
 
@@ -133,7 +147,7 @@ def main() -> int:
             repo, ref, skills_dir = spec["repo"], spec["ref"], spec["skillsDir"]
 
             try:
-                commit = resolve_commit(repo, ref)
+                resolved_ref, commit = resolve_ref(repo, ref)
             except RuntimeError as exc:
                 log(f"⚠ {source_id}: 无法查询上游（{exc}）。保留上次记录。")
                 if source_id in lock_sources:
@@ -144,7 +158,12 @@ def main() -> int:
                 needs_update = True
                 continue
 
-            new_sources[source_id] = {"repo": repo, "ref": ref, "commit": commit}
+            new_sources[source_id] = {
+                "repo": repo,
+                "ref": ref,
+                "resolvedRef": resolved_ref,
+                "commit": commit,
+            }
             previous_commit = lock_sources.get(source_id, {}).get("commit")
             commit_changed = previous_commit != commit
 
