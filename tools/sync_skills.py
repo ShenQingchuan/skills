@@ -13,8 +13,8 @@
 registry/ 里的第三方技能是**产物**，不是源头。源头永远是上游仓库。
 所以这里只维护两份状态：
 
-    tools/sources.json       人写的：从哪个仓库、拿哪些技能、放到哪里（声明）
-    tools/sources.lock.json  机器写的：上游 commit + 每个技能目录的内容指纹（事实）
+    sources.json       人写的：从哪个仓库、拿哪些技能、放到哪里（声明）
+    sources.lock.json  机器写的：上游 commit + 每个技能目录的内容指纹（事实）
 
 脚本负责把「声明」变成「事实」，并且要做到：幂等（跑一百遍结果一样）、
 可重复（内容只取决于上游 commit，不取决于运行时间或机器）、可无人值守（CI 里也能跑）。
@@ -40,8 +40,41 @@ from pathlib import Path
 TOOLS_DIR = Path(__file__).resolve().parent
 REPO_ROOT = TOOLS_DIR.parent
 REGISTRY_DIR = REPO_ROOT / "skills-router" / "registry"
-MANIFEST_FILE = TOOLS_DIR / "sources.json"
-LOCK_FILE = TOOLS_DIR / "sources.lock.json"
+MANIFEST_FILE = REPO_ROOT / "sources.json"
+LOCK_FILE = REPO_ROOT / "sources.lock.json"
+ROOT_GITIGNORE_FILE = REPO_ROOT / ".gitignore"
+MANAGED_START = "# >>> skills-sync:managed-start <<<"
+MANAGED_END = "# >>> skills-sync:managed-end <<<"
+
+
+def update_root_gitignore(lock_installed: dict) -> None:
+    """自动将所有第三方技能的忽略路径同步到根目录 .gitignore 的托管区块中。
+    严格采用黑名单机制：只要是下载的第三方技能，逐条精确排除；本地原创技能不在清单中，正常受 Git 跟踪。
+    """
+    managed_lines = [
+        MANAGED_START,
+        "# 由 tools/sync_skills.py 自动管理：精准黑名单排除所有已安装的第三方技能产物",
+        "# 本地原创技能（如 dev/agent-friendly 等）与说明文档不在名单中，正常受 Git 跟踪与保护",
+    ]
+
+    for path in sorted(lock_installed.keys()):
+        managed_lines.append(f"skills-router/registry/{path}/")
+
+    managed_lines.append(MANAGED_END)
+    block_text = "\n".join(managed_lines)
+
+    if not ROOT_GITIGNORE_FILE.is_file():
+        ROOT_GITIGNORE_FILE.write_text(block_text + "\n", encoding="utf-8")
+        return
+
+    content = ROOT_GITIGNORE_FILE.read_text(encoding="utf-8")
+    if MANAGED_START in content and MANAGED_END in content:
+        pattern = re.compile(rf"{re.escape(MANAGED_START)}.*?{re.escape(MANAGED_END)}", re.DOTALL)
+        new_content = pattern.sub(block_text, content)
+    else:
+        new_content = content.rstrip() + "\n\n" + block_text + "\n"
+
+    ROOT_GITIGNORE_FILE.write_text(new_content, encoding="utf-8")
 
 # 复制技能包时跳过的东西：版本控制、缓存、系统垃圾
 IGNORE = shutil.ignore_patterns(".git", "__pycache__", ".DS_Store", "node_modules")
@@ -109,30 +142,7 @@ def clone_sparse(repo: str, ref: str, subdirs: list[str], dest: Path) -> None:
     run(["git", "-C", str(dest), "sparse-checkout", "set", *subdirs])
 
 
-def update_registry_gitignore(manifest_install: list[dict], lock_installed: dict) -> None:
-    """自动生成 skills-router/registry/.gitignore，精准忽略所有第三方下载产物，绝不误伤本地原创技能。"""
-    registry_gitignore = REGISTRY_DIR / ".gitignore"
-    suites = {
-        item["to"].strip("/")
-        for item in manifest_install
-        if item.get("skill") == "*"
-    }
 
-    lines = [
-        "# 由 tools/sync_skills.py 自动生成，精准忽略所有第三方下载技能产物",
-        "# 本地原创技能（如 dev/agent-friendly 等）不在清单中，正常受 Git 跟踪与保护",
-    ]
-
-    for s in sorted(suites):
-        lines.append(f"/{s}/")
-
-    for path, info in sorted(lock_installed.items()):
-        suite = info.get("suite")
-        if suite and suite in suites:
-            continue
-        lines.append(f"/{path}/")
-
-    registry_gitignore.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def load_lock() -> dict:
@@ -348,9 +358,9 @@ def main() -> int:
         log(f"⚠ 自动刷新 CATALOG.md 失败：{exc}")
 
     try:
-        update_registry_gitignore(install, new_installed)
+        update_root_gitignore(new_installed)
     except Exception as exc:
-        log(f"⚠ 自动更新 registry/.gitignore 失败：{exc}")
+        log(f"⚠ 自动更新根目录 .gitignore 失败：{exc}")
 
     return 0
 

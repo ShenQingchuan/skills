@@ -77,6 +77,8 @@ python3 skills-router/scripts/list_skills.py
 ```text
 .
 ├── CATALOG.md                     ← 技能清单索引（含上游源链接 Credit）
+├── sources.json                   ← 上游清单（人写声明，类似 package.json）
+├── sources.lock.json              ← 同步状态（机器写锁，类似 package-lock.json）
 ├── skills-router/                 ← 唯一被 Agent 默认感知的技能
 │   ├── SKILL.md                   ← 路由规则（刻意写得极短）
 │   ├── scripts/
@@ -91,8 +93,6 @@ python3 skills-router/scripts/list_skills.py
 │       └── …
 │
 ├── tools/                         ← 维护用工具，不参与 Agent 运行时
-│   ├── sources.json               ← 上游清单（人写声明，类似 package.json）
-│   ├── sources.lock.json          ← 同步状态（机器写锁，类似 package-lock.json）
 │   ├── generate_catalog.py        ← CATALOG.md 自动生成脚本
 │   └── sync_skills.py             ← 同步与安装脚本（类似 npm install）
 │
@@ -125,7 +125,7 @@ python3 tools/sync_skills.py --check  # 只看有没有更新（有则退出码 
 
 #### 方式一：单点选品（Pick 模式，适合散装仓库）
 上游仓库是个大杂烩，你只想要其中一两个技能时：
-1. 在 `tools/sources.json` 的 `sources` 里登记仓库（如果还没有）。
+1. 在 `sources.json` 的 `sources` 里登记仓库（如果还没有）。
 2. 在 `install` 里指定具体的相对路径：
    ```json
    { "skill": "productivity/grilling", "from": "mattpocock", "to": "workflow/grilling" }
@@ -158,20 +158,20 @@ python3 tools/sync_skills.py --check  # 只看有没有更新（有则退出码 
 
 - 不要一次性读完 `registry/` 下所有 `SKILL.md`。
 - 不要把 `registry/` 下的技能批量加载进上下文——这会直接毁掉这个仓库存在的意义。
-- `registry/` 中由 `tools/sources.json` 管理的目录是**产物**，不要手改；下次同步会原样覆盖。
+- `registry/` 中由 `sources.json` 管理的目录是**产物**，不要手改；下次同步会原样覆盖。
 
 ### 修改时：要动这个仓库
 
 | 你想做的事 | 改哪里 |
 | --- | --- |
-| 新增 / 移除第三方技能 | `tools/sources.json` |
+| 新增 / 移除第三方技能 | `sources.json` |
 | 升级上游技能 | 跑 `python3 tools/sync_skills.py` |
 | 调整路由规则 | `skills-router/SKILL.md` |
 | 调整技能树展示 | `skills-router/scripts/list_skills.py` |
 | 调整同步行为 | `tools/sync_skills.py` |
 | 调整自动同步节奏 | `.github/workflows/sync-skills.yml` |
 
-`tools/sources.lock.json` 由脚本自动生成，不要手改。它记录上游 commit 与每个技能目录的内容指纹，同步脚本靠它判断「有没有变」。
+`sources.lock.json` 由脚本自动生成，不要手改。它记录上游 commit 与每个技能目录的内容指纹，同步脚本靠它判断「有没有变」。
 
 ### 提交信息
 
@@ -207,7 +207,7 @@ chore(registry): 同步上游技能
 
 这是个人技能库，但欢迎提 Issue 和 PR：
 
-- 想加某个上游的技能：改 `tools/sources.json` 并跑一次同步脚本，一起提交。
+- 想加某个上游的技能：改 `sources.json` 并跑一次同步脚本，一起提交。
 - 发现两个上游的规则冲突：在对应的 `registry/<分类>/README.md` 里补上对照结论。
 - 路由器或同步脚本的改进：请附上「为什么现有做法不够好」。
 

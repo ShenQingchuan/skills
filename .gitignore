@@ -27,3 +27,52 @@ venv/
 # 日志与临时文件
 *.log
 *.tmp
+
+# >>> skills-sync:managed-start <<<
+# 由 tools/sync_skills.py 自动管理：精准黑名单排除所有已安装的第三方技能产物
+# 本地原创技能（如 dev/agent-friendly 等）与说明文档不在名单中，正常受 Git 跟踪与保护
+skills-router/registry/dev/agent-browser/
+skills-router/registry/dev/frontend/create-adaptable-composable/
+skills-router/registry/dev/frontend/pinia/
+skills-router/registry/dev/frontend/pnpm/
+skills-router/registry/dev/frontend/unocss/
+skills-router/registry/dev/frontend/vite/
+skills-router/registry/dev/frontend/vitepress/
+skills-router/registry/dev/frontend/vitest/
+skills-router/registry/dev/frontend/vue/
+skills-router/registry/dev/frontend/vue-best-practices/
+skills-router/registry/dev/frontend/vue-debug-guides/
+skills-router/registry/dev/frontend/vue-pinia-best-practices/
+skills-router/registry/dev/frontend/vue-router-best-practices/
+skills-router/registry/dev/frontend/vue-testing-best-practices/
+skills-router/registry/office/lark/lark-approval/
+skills-router/registry/office/lark/lark-apps/
+skills-router/registry/office/lark/lark-attendance/
+skills-router/registry/office/lark/lark-base/
+skills-router/registry/office/lark/lark-calendar/
+skills-router/registry/office/lark/lark-contact/
+skills-router/registry/office/lark/lark-doc/
+skills-router/registry/office/lark/lark-drive/
+skills-router/registry/office/lark/lark-event/
+skills-router/registry/office/lark/lark-im/
+skills-router/registry/office/lark/lark-mail/
+skills-router/registry/office/lark/lark-markdown/
+skills-router/registry/office/lark/lark-meeting/
+skills-router/registry/office/lark/lark-minutes/
+skills-router/registry/office/lark/lark-note/
+skills-router/registry/office/lark/lark-okr/
+skills-router/registry/office/lark/lark-openapi-explorer/
+skills-router/registry/office/lark/lark-shared/
+skills-router/registry/office/lark/lark-sheets/
+skills-router/registry/office/lark/lark-skill-maker/
+skills-router/registry/office/lark/lark-slides/
+skills-router/registry/office/lark/lark-task/
+skills-router/registry/office/lark/lark-vc/
+skills-router/registry/office/lark/lark-vc-agent/
+skills-router/registry/office/lark/lark-whiteboard/
+skills-router/registry/office/lark/lark-wiki/
+skills-router/registry/office/lark/lark-workflow-meeting-summary/
+skills-router/registry/office/lark/lark-workflow-standup-report/
+skills-router/registry/workflow/grilling/
+skills-router/registry/workflow/writing-for-agents/
+# >>> skills-sync:managed-end <<<
