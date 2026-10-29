@@ -1,0 +1,45 @@
+name: Sync skills
+
+# 每天自动拉一次上游技能；也可以手动触发。
+# 有变化就自动提交回 main，没有变化就什么都不做。
+
+on:
+  schedule:
+    - cron: "0 3 * * *" # 每天 UTC 03:00（北京时间 11:00）
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-skills
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 准备 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 同步上游技能
+        run: python3 tools/sync_skills.py
+
+      - name: 有变化就提交
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "上游没有更新，跳过提交。"
+            exit 0
+          fi
+          git config user.name  "skills-sync-bot"
+          git config user.email "skills-sync-bot@users.noreply.github.com"
+          git add -A
+          git commit -m "chore(skills): 同步上游技能"
+          git push
