@@ -1,5 +1,6 @@
 {
   "version": 1,
+  "$comment": "skill = 上游 skills/ 下的相对路径，可含子目录（如 productivity/grilling）；to = registry/ 下的相对目录。",
   "sources": {
     "antfu": {
       "repo": "https://github.com/antfu/skills",
@@ -8,6 +9,11 @@
     },
     "vuejs-ai": {
       "repo": "https://github.com/vuejs-ai/skills",
+      "ref": "main",
+      "skillsDir": "skills"
+    },
+    "mattpocock": {
+      "repo": "https://github.com/mattpocock/skills",
       "ref": "main",
       "skillsDir": "skills"
     }
@@ -26,6 +32,9 @@
     { "skill": "vue-pinia-best-practices", "from": "vuejs-ai", "to": "dev/frontend/vue-pinia-best-practices" },
     { "skill": "vue-router-best-practices", "from": "vuejs-ai", "to": "dev/frontend/vue-router-best-practices" },
     { "skill": "vue-testing-best-practices", "from": "vuejs-ai", "to": "dev/frontend/vue-testing-best-practices" },
-    { "skill": "create-adaptable-composable", "from": "vuejs-ai", "to": "dev/frontend/create-adaptable-composable" }
+    { "skill": "create-adaptable-composable", "from": "vuejs-ai", "to": "dev/frontend/create-adaptable-composable" },
+
+    { "skill": "productivity/grilling", "from": "mattpocock", "to": "workflow/grilling" },
+    { "skill": "productivity/writing-for-agents", "from": "mattpocock", "to": "workflow/writing-for-agents" }
   ]
 }

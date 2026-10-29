@@ -65,18 +65,36 @@
       "digest": "332a2f291b11b4524f790febbf1e8c80a82697f1137f8e37402b059c0c1cd846",
       "from": "vuejs-ai",
       "skill": "vue-testing-best-practices"
+    },
+    "workflow/grilling": {
+      "digest": "84ca0320c5fa81a1261d6d1d4c120ada9dea80f856a2c2565404f7125a809b86",
+      "from": "mattpocock",
+      "skill": "productivity/grilling"
+    },
+    "workflow/writing-for-agents": {
+      "digest": "dc53f07d1f662137317789b9b5d74cfcc26dbcfc15038a7faf676c844d8638e8",
+      "from": "mattpocock",
+      "skill": "productivity/writing-for-agents"
     }
   },
   "sources": {
     "antfu": {
       "commit": "8886fe2d385d3644cbb47e46ae9cb1cf09307d3b",
       "ref": "main",
-      "repo": "https://github.com/antfu/skills"
+      "repo": "https://github.com/antfu/skills",
+      "resolvedRef": "refs/heads/main"
+    },
+    "mattpocock": {
+      "commit": "59db609eb1e18aaf59b63284d0e52255aff0c63c",
+      "ref": "main",
+      "repo": "https://github.com/mattpocock/skills",
+      "resolvedRef": "refs/heads/main"
     },
     "vuejs-ai": {
       "commit": "198f0cd8f7f9c0a3d9b566ccc16de6677519ee78",
       "ref": "main",
-      "repo": "https://github.com/vuejs-ai/skills"
+      "repo": "https://github.com/vuejs-ai/skills",
+      "resolvedRef": "refs/heads/main"
     }
   }
 }
