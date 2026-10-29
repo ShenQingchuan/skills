@@ -16,10 +16,21 @@
       "repo": "https://github.com/mattpocock/skills",
       "ref": "main",
       "skillsDir": "skills"
+    },
+    "larksuite": {
+      "repo": "https://github.com/larksuite/cli",
+      "ref": "main",
+      "skillsDir": "skills"
+    },
+    "vercel-labs": {
+      "repo": "https://github.com/vercel-labs/agent-browser",
+      "ref": "main",
+      "skillsDir": "skills"
     }
   },
   "install": [
     { "skill": "vue", "from": "antfu", "to": "dev/frontend/vue" },
+    { "skill": "agent-browser", "from": "vercel-labs", "to": "dev/agent-browser" },
     { "skill": "pinia", "from": "antfu", "to": "dev/frontend/pinia" },
     { "skill": "vite", "from": "antfu", "to": "dev/frontend/vite" },
     { "skill": "vitepress", "from": "antfu", "to": "dev/frontend/vitepress" },
@@ -35,6 +46,8 @@
     { "skill": "create-adaptable-composable", "from": "vuejs-ai", "to": "dev/frontend/create-adaptable-composable" },
 
     { "skill": "productivity/grilling", "from": "mattpocock", "to": "workflow/grilling" },
-    { "skill": "productivity/writing-for-agents", "from": "mattpocock", "to": "workflow/writing-for-agents" }
+    { "skill": "productivity/writing-for-agents", "from": "mattpocock", "to": "workflow/writing-for-agents" },
+
+    { "skill": "*", "from": "larksuite", "to": "office/lark" }
   ]
 }

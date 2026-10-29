@@ -41,12 +41,16 @@ def parse_skill_meta(skill_dir: Path) -> dict:
         name_match = re.search(r"^name:\s*(.+)$", fm_text, re.MULTILINE)
         if name_match:
             name = name_match.group(1).strip().strip("\"'")
-        # 提取 description（支持多行或单行）
-        desc_match = re.search(r"^description:\s*(.+)$", fm_text, re.MULTILINE)
-        if desc_match:
-            desc = desc_match.group(1).strip().strip("\"'")
-            # 简单清洗多行或换行符
-            desc = desc.split("\n")[0].strip()
+        # 提取 description（支持多行、单行、以及 YAML 折叠标量 > 或 |）
+        desc_block_match = re.search(r"^description:\s*([>|]?)\s*\n((?:(?:[ \t]+[^\n]*|\s*)\n)+)", fm_text, re.MULTILINE)
+        if desc_block_match and desc_block_match.group(2).strip():
+            block_lines = [line.strip() for line in desc_block_match.group(2).splitlines() if line.strip()]
+            desc = " ".join(block_lines)
+        else:
+            desc_match = re.search(r"^description:\s*(.+)$", fm_text, re.MULTILINE)
+            if desc_match:
+                desc = desc_match.group(1).strip().strip("\"'")
+                desc = desc.split("\n")[0].strip()
     else:
         # 没有 frontmatter，尝试找第一个标题与第一段正文
         lines = [line.strip() for line in content.splitlines() if line.strip()]

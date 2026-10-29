@@ -7,7 +7,7 @@
 一个用「渐进式披露」打理的个人 Agent Skills 库。
 常驻上下文的只有路由器本身，其余技能用到才装载。
 
-[为什么](#为什么需要它) · [工作原理](#工作原理) · [快速开始](#快速开始) · [目录结构](#目录结构) · [日常使用](#日常使用) · [Agent 指引](#agent-使用指引) · [设计原则](#设计原则)
+[为什么](#为什么需要它) · [工作原理](#工作原理) · [快速开始](#快速开始) · [技能目录 (Catalog)](./CATALOG.md) · [目录结构](#目录结构) · [日常使用](#日常使用) · [Agent 指引](#agent-使用指引) · [设计原则](#设计原则)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Agent Skills](https://img.shields.io/badge/Agent_Skills-1_routed-informational.svg)](https://agentskills.io/specification)
@@ -74,19 +74,23 @@ python3 skills-router/scripts/list_skills.py
 
 ```text
 .
+├── CATALOG.md                     ← 技能清单索引（含上游源链接 Credit）
 ├── skills-router/                 ← 唯一被 Agent 默认感知的技能
 │   ├── SKILL.md                   ← 路由规则（刻意写得极短）
 │   ├── scripts/
 │   │   └── list_skills.py         ← 技能树探测：Agent 靠它「看目录」
 │   └── registry/                  ← 技能库本体
-│       ├── dev/frontend/vue/
-│       ├── dev/frontend/vue-best-practices/
-│       ├── workflow/grilling/
+│       ├── dev/
+│       │   ├── agent-browser/
+│       │   └── frontend/
+│       ├── office/lark/
+│       ├── workflow/
 │       └── …
 │
 ├── tools/                         ← 维护用工具，不参与 Agent 运行时
 │   ├── sources.json               ← 上游清单（人写）
 │   ├── sources.lock.json          ← 同步状态（机器写）
+│   ├── generate_catalog.py        ← CATALOG.md 自动生成脚本
 │   └── sync_skills.py             ← 同步脚本
 │
 └── .github/workflows/
@@ -112,22 +116,28 @@ python3 tools/sync_skills.py --check  # 只看有没有更新（有则退出码 
 
 同步的可靠性来自三条设计：**幂等**（跑一百遍结果一样）、**可重复**（内容只取决于上游 commit，不取决于时间或机器）、**可无人值守**（CI 里也能跑）。
 
-### 新增一个技能
+### 新增一个技能或技能套件
 
+本仓库支持两种引入方式，分别应对「单品挑选」与「整套镜像」：
+
+#### 方式一：单点选品（Pick 模式，适合散装仓库）
+上游仓库是个大杂烩，你只想要其中一两个技能时：
 1. 在 `tools/sources.json` 的 `sources` 里登记仓库（如果还没有）。
-2. 在 `install` 里加一行，`skill` 写「上游 `skills/` 下的相对路径」（可以带子目录），`to` 写「本仓库 `registry/` 下的相对目录」：
-
+2. 在 `install` 里指定具体的相对路径：
    ```json
    { "skill": "productivity/grilling", "from": "mattpocock", "to": "workflow/grilling" }
    ```
 
-   两者都是你自己定的，不必跟上游同名。
+#### 方式二：套件整包镜像（Suite 模式，适合官方套件库）
+像 `larksuite/cli` 这种官方自成体系的完整能力套件，内部技能紧密联动且随版本动态演进，不需要逐个维护清单：
+1. 在 `sources` 里登记套件仓库与 `skillsDir`。
+2. 在 `install` 里使用通配符 `"*"`，并指定归属分类目录：
+   ```json
+   { "skill": "*", "from": "larksuite", "to": "office/lark" }
+   ```
+3. 跑一次 `python3 tools/sync_skills.py`，上游全部技能会自动同步到 `registry/office/lark/` 下。未来上游无论新增、更名还是废弃子技能，同步脚本都会自动对齐，零人工维护成本。
 
-3. 跑一次 `python3 tools/sync_skills.py`。
-
-索引不用手工维护——`list_skills.py` 会自动发现新目录。
-
-### 移除一个技能
+### 移除一个技能或套件
 
 把 `install` 里对应的那一行删掉，再跑一次同步脚本。脚本会连目录一起清理，让 `registry/` 始终等于清单。
 
@@ -207,6 +217,8 @@ chore(registry): 同步上游技能
 - [antfu/skills](https://github.com/antfu/skills) —— Anthony Fu
 - [vuejs-ai/skills](https://github.com/vuejs-ai/skills) —— vuejs-ai
 - [mattpocock/skills](https://github.com/mattpocock/skills) —— Matt Pocock
+- [larksuite/cli](https://github.com/larksuite/cli) —— Lark / Feishu
+- [vercel-labs/agent-browser](https://github.com/vercel-labs/agent-browser) —— Vercel Labs
 
 ## 许可
 

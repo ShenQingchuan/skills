@@ -168,20 +168,39 @@ def main() -> int:
             commit_changed = previous_commit != commit
 
             # 本地现状：目录在不在、内容有没有被手改
-            current: dict[str, str | None] = {}
+            current_ok = True
             for entry in entries:
-                target = REGISTRY_DIR / entry["to"]
-                current[entry["to"]] = digest_dir(target) if (target / "SKILL.md").is_file() else None
-            local_ok = all(
-                current[entry["to"]] is not None
-                and current[entry["to"]] == lock_installed.get(entry["to"], {}).get("digest")
-                for entry in entries
-            )
+                if entry.get("skill") == "*":
+                    suite_items = [
+                        k for k, v in lock_installed.items()
+                        if v.get("from") == source_id and (v.get("suite") == entry["to"] or k.startswith(f"{entry['to']}/"))
+                    ]
+                    if not suite_items:
+                        current_ok = False
+                        break
+                    for k in suite_items:
+                        target = REGISTRY_DIR / k
+                        if not (target / "SKILL.md").is_file() or digest_dir(target) != lock_installed.get(k, {}).get("digest"):
+                            current_ok = False
+                            break
+                    if not current_ok:
+                        break
+                else:
+                    target = REGISTRY_DIR / entry["to"]
+                    if not (target / "SKILL.md").is_file() or digest_dir(target) != lock_installed.get(entry["to"], {}).get("digest"):
+                        current_ok = False
+                        break
+            local_ok = current_ok
 
             if not commit_changed and local_ok:
                 log(f"✓ {source_id}: 已是最新 ({commit[:8]})")
                 for entry in entries:
-                    new_installed[entry["to"]] = lock_installed[entry["to"]]
+                    if entry.get("skill") == "*":
+                        for k, v in lock_installed.items():
+                            if v.get("from") == source_id and (v.get("suite") == entry["to"] or k.startswith(f"{entry['to']}/")):
+                                new_installed[k] = v
+                    else:
+                        new_installed[entry["to"]] = lock_installed[entry["to"]]
                 continue
 
             reasons = []
@@ -194,33 +213,66 @@ def main() -> int:
             if args.check:
                 log(f"⚠ {source_id}: {'；'.join(reasons)}")
                 for entry in entries:
-                    new_installed[entry["to"]] = lock_installed.get(entry["to"], {})
+                    if entry.get("skill") == "*":
+                        for k, v in lock_installed.items():
+                            if v.get("from") == source_id and (v.get("suite") == entry["to"] or k.startswith(f"{entry['to']}/")):
+                                new_installed[k] = v
+                    else:
+                        new_installed[entry["to"]] = lock_installed.get(entry["to"], {})
                 continue
 
             log(f"↓ {source_id}: {'；'.join(reasons)}")
             checkout = workdir / source_id
-            subdirs = sorted({f"{skills_dir}/{entry['skill']}" for entry in entries})
+            has_suite = any(entry.get("skill") == "*" for entry in entries)
+            if has_suite:
+                subdirs = [skills_dir]
+            else:
+                subdirs = sorted({f"{skills_dir}/{entry['skill']}" for entry in entries})
             clone_sparse(repo, ref, subdirs, checkout)
 
             for entry in entries:
-                source_dir = checkout / skills_dir / entry["skill"]
-                if not (source_dir / "SKILL.md").is_file():
-                    log(f"  ✗ {entry['skill']}: 上游没有 SKILL.md，已跳过")
-                    continue
-                target = REGISTRY_DIR / entry["to"]
-                if target.exists():
-                    shutil.rmtree(target)
-                shutil.copytree(source_dir, target, ignore=IGNORE)
-                new_installed[entry["to"]] = {
-                    "from": source_id,
-                    "skill": entry["skill"],
-                    "digest": digest_dir(target),
-                }
-                touched.append(entry["to"])
-                log(f"  + {entry['to']}")
+                if entry.get("skill") == "*":
+                    suite_root = checkout / skills_dir
+                    found_skills = sorted(
+                        p for p in suite_root.iterdir()
+                        if p.is_dir() and (p / "SKILL.md").is_file()
+                    ) if suite_root.is_dir() else []
+                    if not found_skills:
+                        log(f"  ✗ {source_id}: 套件目录 ({skills_dir}) 下未找到任何有效技能")
+                        continue
+                    for skill_dir in found_skills:
+                        target_rel = f"{entry['to']}/{skill_dir.name}"
+                        target = REGISTRY_DIR / target_rel
+                        if target.exists():
+                            shutil.rmtree(target)
+                        shutil.copytree(skill_dir, target, ignore=IGNORE)
+                        new_installed[target_rel] = {
+                            "from": source_id,
+                            "skill": skill_dir.name,
+                            "suite": entry["to"],
+                            "digest": digest_dir(target),
+                        }
+                        touched.append(target_rel)
+                        log(f"  + {target_rel}")
+                else:
+                    source_dir = checkout / skills_dir / entry["skill"]
+                    if not (source_dir / "SKILL.md").is_file():
+                        log(f"  ✗ {entry['skill']}: 上游没有 SKILL.md，已跳过")
+                        continue
+                    target = REGISTRY_DIR / entry["to"]
+                    if target.exists():
+                        shutil.rmtree(target)
+                    shutil.copytree(source_dir, target, ignore=IGNORE)
+                    new_installed[entry["to"]] = {
+                        "from": source_id,
+                        "skill": entry["skill"],
+                        "digest": digest_dir(target),
+                    }
+                    touched.append(entry["to"])
+                    log(f"  + {entry['to']}")
 
         # 清单里已经删掉的技能，目录也一并清掉，让 registry 始终等于清单
-        wanted = {entry["to"] for entry in install}
+        wanted = set(new_installed.keys())
         for stale_path in [path for path in lock_installed if path not in wanted]:
             stale_dir = REGISTRY_DIR / stale_path
             if args.check:
@@ -262,6 +314,13 @@ def main() -> int:
             log(f"  · {path}")
     else:
         log("\n没有变化。")
+
+    try:
+        from generate_catalog import main as update_catalog
+        update_catalog()
+    except Exception as exc:
+        log(f"⚠ 自动刷新 CATALOG.md 失败：{exc}")
+
     return 0
 
 

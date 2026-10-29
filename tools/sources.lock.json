@@ -1,6 +1,11 @@
 {
   "generatedBy": "tools/sync_skills.py",
   "installed": {
+    "dev/agent-browser": {
+      "digest": "80161e6836b3b40f4e83730a290deb40ac14d877d38c97ad5f6d71be37ce74c3",
+      "from": "vercel-labs",
+      "skill": "agent-browser"
+    },
     "dev/frontend/create-adaptable-composable": {
       "digest": "3e74d6eb692393dcfcaa678dfe536341005766548baa152fee1009b560e3db9a",
       "from": "vuejs-ai",
@@ -66,6 +71,174 @@
       "from": "vuejs-ai",
       "skill": "vue-testing-best-practices"
     },
+    "office/lark/lark-approval": {
+      "digest": "c29890a558d1ac2a296ab0cfcebb703db42fb569612f7ad8720aaea7c801cbbf",
+      "from": "larksuite",
+      "skill": "lark-approval",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-apps": {
+      "digest": "a691b446790fc8b4e7fb0983715f120c5bee6915b1c5eee6e77d6ca16cd96fa0",
+      "from": "larksuite",
+      "skill": "lark-apps",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-attendance": {
+      "digest": "9a26445884b99d67312b09a1ad73343115c7be338a1bccca5df8cd84f5c117a3",
+      "from": "larksuite",
+      "skill": "lark-attendance",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-base": {
+      "digest": "09902e7c25076ea64a27685efbeab98d7cf347152e592a85a8d4c464fe6a4cb7",
+      "from": "larksuite",
+      "skill": "lark-base",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-calendar": {
+      "digest": "29fb96570963def23963b81c15b83e9db2e676508af0c3cbf288ddd82f037f3c",
+      "from": "larksuite",
+      "skill": "lark-calendar",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-contact": {
+      "digest": "2d38d33ae1d9a31e328b9f873d07dbc34ae72731ffe5c05c42d882379f076838",
+      "from": "larksuite",
+      "skill": "lark-contact",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-doc": {
+      "digest": "59e64577aabf95942d847979cf3be4c348909085899f612b4954d7a2ddae6c0b",
+      "from": "larksuite",
+      "skill": "lark-doc",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-drive": {
+      "digest": "156c7edb232355052096351dc6fe5c8ba8e6b55c32f641a84479dd3ba749701c",
+      "from": "larksuite",
+      "skill": "lark-drive",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-event": {
+      "digest": "0cba8588b83b7d4845b4cc6feb60df729af95c0f818924acd38d22211f1ba3f6",
+      "from": "larksuite",
+      "skill": "lark-event",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-im": {
+      "digest": "91e82d9f4a82c67524f98a65ce0677954dd5f4d91b49f88eb01e9c9724c6d2a6",
+      "from": "larksuite",
+      "skill": "lark-im",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-mail": {
+      "digest": "b779bdea485fbcec5f09b5477ed190a3cbc451a6a360f10a079d288b6c815015",
+      "from": "larksuite",
+      "skill": "lark-mail",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-markdown": {
+      "digest": "a915d63d8e3172eb85f662feab6fc3577242499818992eb92450ba3124ac58db",
+      "from": "larksuite",
+      "skill": "lark-markdown",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-meeting": {
+      "digest": "5d9d5afb01bec2c9be005fabeb90a824f11815eb0e7b5ac47c60fca3ee884b68",
+      "from": "larksuite",
+      "skill": "lark-meeting",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-minutes": {
+      "digest": "811a26032539233b6a38d1673a8fe720112cf107dbbaeeac7ef7aa2eaec52d23",
+      "from": "larksuite",
+      "skill": "lark-minutes",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-note": {
+      "digest": "ee0a75a1b65be2770e0f5266a3c3f7b2cf42b572a632af88492d0c3466577521",
+      "from": "larksuite",
+      "skill": "lark-note",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-okr": {
+      "digest": "fb4a35df9694b83eb9a9f3cf3cd6be4745d760abac8e93fb3e98b938d34ea3dc",
+      "from": "larksuite",
+      "skill": "lark-okr",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-openapi-explorer": {
+      "digest": "7a7e3382f75dd66b9fb0fe443c1dfcf7858d818b2076cab21b1133878cdb34bd",
+      "from": "larksuite",
+      "skill": "lark-openapi-explorer",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-shared": {
+      "digest": "4e52031d16e9eb563c0e72d9cf0faee65c57f0edff347ca053b4438ee8eff27a",
+      "from": "larksuite",
+      "skill": "lark-shared",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-sheets": {
+      "digest": "eb8a3db33e33c1c380f75b77b4690bb90825ffdc7f664606870be0c44b5ffba1",
+      "from": "larksuite",
+      "skill": "lark-sheets",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-skill-maker": {
+      "digest": "472abd5fc153f15dc8f4c31da3d4b38022564f114d9442e3022f7bbfbc0fd470",
+      "from": "larksuite",
+      "skill": "lark-skill-maker",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-slides": {
+      "digest": "d12270dd54fddd004d39c6f44b6baea99a1f4b6a801d4ec1e4dcb29258f2b091",
+      "from": "larksuite",
+      "skill": "lark-slides",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-task": {
+      "digest": "06b5e826cd78e7173132161caef1522c313527fab8700b8ec0a8aa748cb62cac",
+      "from": "larksuite",
+      "skill": "lark-task",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-vc": {
+      "digest": "579e01d6cb8a5c2f98677f794f05e0fa7f8be1b792505913446c900eabf29408",
+      "from": "larksuite",
+      "skill": "lark-vc",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-vc-agent": {
+      "digest": "519d621fa5e7c9f7d80af14a9e9c76faf9380e58a3580acdc174fdadbdc3c8c9",
+      "from": "larksuite",
+      "skill": "lark-vc-agent",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-whiteboard": {
+      "digest": "0f67128d20e972d8b7f4370351bb491b5caff60f9192fba72978f513c9c0c8de",
+      "from": "larksuite",
+      "skill": "lark-whiteboard",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-wiki": {
+      "digest": "42b33625cba4cc290dca16e47c8e2019577c8d33177f9e7500497d60388e2d41",
+      "from": "larksuite",
+      "skill": "lark-wiki",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-workflow-meeting-summary": {
+      "digest": "b069215723c53f82b000bfdc7bd79d1fb269f87324a5a9783502b086aeef5d3a",
+      "from": "larksuite",
+      "skill": "lark-workflow-meeting-summary",
+      "suite": "office/lark"
+    },
+    "office/lark/lark-workflow-standup-report": {
+      "digest": "6f0c8cfb9e45f8c9ebc89946d4d02f816ced1d53fb0de4a08ecd8efd4f1cdefa",
+      "from": "larksuite",
+      "skill": "lark-workflow-standup-report",
+      "suite": "office/lark"
+    },
     "workflow/grilling": {
       "digest": "84ca0320c5fa81a1261d6d1d4c120ada9dea80f856a2c2565404f7125a809b86",
       "from": "mattpocock",
@@ -84,10 +257,22 @@
       "repo": "https://github.com/antfu/skills",
       "resolvedRef": "refs/heads/main"
     },
+    "larksuite": {
+      "commit": "782a5a4db906ed4914223838cc98b129c60b0dab",
+      "ref": "main",
+      "repo": "https://github.com/larksuite/cli",
+      "resolvedRef": "refs/heads/main"
+    },
     "mattpocock": {
       "commit": "59db609eb1e18aaf59b63284d0e52255aff0c63c",
       "ref": "main",
       "repo": "https://github.com/mattpocock/skills",
+      "resolvedRef": "refs/heads/main"
+    },
+    "vercel-labs": {
+      "commit": "1453dd37a40c730fe00f592bc32198a896ff8747",
+      "ref": "main",
+      "repo": "https://github.com/vercel-labs/agent-browser",
       "resolvedRef": "refs/heads/main"
     },
     "vuejs-ai": {
