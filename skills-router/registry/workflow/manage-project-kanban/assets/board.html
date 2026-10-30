@@ -15,10 +15,10 @@
 <body>
 
   <!-- 顶部导航栏 -->
-  <nav class="navbar navbar-expand-lg kanban-header px-4 py-3">
+  <header class="navbar navbar-expand-lg kanban-header px-4 py-3">
     <div class="container-fluid p-0">
-      <div class="d-flex align-items-center gap-2">
-        <span class="badge text-bg-primary p-2 fs-6 rounded-3">
+      <div class="d-flex align-items-center gap-3">
+        <span class="badge text-bg-primary p-2 fs-6 rounded-3 shadow-sm">
           <i class="bi bi-kanban"></i>
         </span>
         <div>
@@ -36,50 +36,10 @@
         </button>
       </div>
     </div>
-  </nav>
+  </header>
 
-  <!-- 主体工作区 -->
+  <!-- 主体工作区：全宽画板展示 -->
   <main class="container-fluid px-4 py-4">
-    <!-- 泳道说明条 -->
-    <div class="row g-3 mb-4">
-      <div class="col-md-3">
-        <div class="card border-0 bg-body-tertiary p-3 rounded-3">
-          <div class="d-flex align-items-center gap-2 text-secondary mb-1">
-            <i class="bi bi-inbox-fill text-warning"></i>
-            <span class="fw-semibold">1. Backlog</span>
-          </div>
-          <small class="text-body-secondary">原始构想、问题分流、待细化排期</small>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card border-0 bg-body-tertiary p-3 rounded-3">
-          <div class="d-flex align-items-center gap-2 text-secondary mb-1">
-            <i class="bi bi-list-check text-info"></i>
-            <span class="fw-semibold">2. Todo</span>
-          </div>
-          <small class="text-body-secondary">目标明确、确定优先级、等待接单</small>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card border-0 bg-body-tertiary p-3 rounded-3">
-          <div class="d-flex align-items-center gap-2 text-secondary mb-1">
-            <i class="bi bi-lightning-charge-fill text-primary"></i>
-            <span class="fw-semibold">3. In Progress</span>
-          </div>
-          <small class="text-body-secondary">AI/研发全力攻坚中 (严格 WIP 限制)</small>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card border-0 bg-body-tertiary p-3 rounded-3">
-          <div class="d-flex align-items-center gap-2 text-secondary mb-1">
-            <i class="bi bi-check-circle-fill text-success"></i>
-            <span class="fw-semibold">4. Ready for Review</span>
-          </div>
-          <small class="text-body-secondary">开发与自测就绪 · 等待人类最终验收</small>
-        </div>
-      </div>
-    </div>
-
     <!-- 看板画板主卡片 (由 Pele 驱动渲染) -->
     <div class="kanban-board-card">
       <div id="kanban-mount">
@@ -114,13 +74,13 @@
             <li class="list-group-item d-flex justify-content-between align-items-start">
               <div class="ms-2 me-auto">
                 <div class="fw-bold">排期与标记优先级 (Todo)</div>
-                技术方案确定后进入 Todo，标明 <code>priority: high / medium / low</code>。
+                技术方案确定后进入 Todo，标明 <code>@{ priority: "High" }</code>。
               </div>
             </li>
             <li class="list-group-item d-flex justify-content-between align-items-start">
               <div class="ms-2 me-auto">
                 <div class="fw-bold">AI 认领并执行 (In Progress)</div>
-                AI 接单时将卡片剪切进 In Progress，标明 <code>assignee: AI</code>。
+                AI 接单时将卡片剪切进 In Progress，标明 <code>@{ assigned: "AI" }</code>。
               </div>
             </li>
             <li class="list-group-item d-flex justify-content-between align-items-start">
@@ -132,7 +92,7 @@
             <li class="list-group-item d-flex justify-content-between align-items-start">
               <div class="ms-2 me-auto">
                 <div class="fw-bold">验收通过与归档 (Archived)</div>
-                人类验收通过，卡片从 Mermaid 中删除，沉淀至 <code>history.md</code>。
+                人类验收通过，卡片从 Mermaid 中物理删除，沉淀至 <code>history.md</code>。
               </div>
             </li>
           </ol>
@@ -174,7 +134,7 @@ kanban
     feat001[支持微信与飞书多端授权登录]
     perf002[针对大型 SVG 画板进行渲染性能调优]
   todo[Todo]
-    feat003[增加看板数据一键导出为 JSON / Markdown 报告]@{ priority: "High" }
+    feat003[增加看板数据导出为 JSON 功能]@{ priority: "High" }
   in_progress[In Progress]
     work004[升级鉴权链路与会话状态管理]@{ assigned: "AI" }
   ready_for_review[Ready for Review]

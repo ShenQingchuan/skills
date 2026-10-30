@@ -1,73 +1,100 @@
 /* ==============================================================================
-   Project Kanban Custom Styles (Complements Halfmoon v2)
+   Project Kanban Custom Styles (Seamless Match with Halfmoon v2 & Pele)
    ============================================================================== */
 
 :root {
-  --kanban-card-bg: var(--bs-body-bg);
-  --kanban-border: var(--bs-border-color);
-  --kanban-radius: 0.75rem;
+  /* 1. 深度适配 Pele 的主题变量：与 Halfmoon v2 Dark 模式 100% 融合 */
+  --pele-bg: #212529;              /* 卡片背景：现代暗灰（与 Halfmoon Card 严格对齐） */
+  --pele-surface: #121517;         /* 泳道凹槽底色：沉浸深黑底色 */
+  --pele-surface-alt: #2b3035;     /* 次级高亮 */
+  --pele-border: #343a40;          /* 卡片与列的微边框线 */
+  --pele-fg: #f8f9fa;              /* 主文字：清晰明亮的白 */
+  --pele-muted: #868e96;           /* 次级文字与计数标签：高对比度灰色 */
+  --pele-line: #343a40;
+  --pele-accent: #0d6efd;          /* 强调色：Halfmoon 经典蓝 */
+  --pele-radius: 10px;             /* 现代圆角 */
+  --pele-font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --pele-font-mono: SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 body {
   min-height: 100vh;
-  background-color: var(--bs-tertiary-bg);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: #0b0d0e;       /* 整体沉浸式深暗底色 */
+  color: #f8f9fa;
+  font-family: var(--pele-font);
+  margin: 0;
+  padding: 0;
 }
 
-/* 顶部导航与工作台标题 */
+/* 顶部工作台头部 */
 .kanban-header {
-  background-color: var(--bs-body-bg);
-  border-bottom: 1px solid var(--bs-border-color);
+  background-color: #121517;
+  border-bottom: 1px solid #212529;
 }
 
-/* 画板主卡片容器 */
+/* 画板外层容器：大屏幕充裕展开 */
 .kanban-board-card {
-  background-color: var(--bs-body-bg);
-  border: 1px solid var(--bs-border-color);
-  border-radius: var(--kanban-radius);
-  box-shadow: var(--bs-box-shadow-sm);
-  overflow: hidden;
-  transition: box-shadow 0.2s ease-in-out;
+  background-color: #121517;
+  border: 1px solid #212529;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  overflow-x: auto;
 }
 
-.kanban-board-card:hover {
-  box-shadow: var(--bs-box-shadow);
-}
-
-/* Pele 生成的 SVG 容器 */
+/* Pele 生成的 SVG 容器：撑满宽度，大屏自适应舒展 */
 #kanban-mount {
   display: flex;
   justify-content: center;
-  align-items: center;
-  min-height: 480px;
-  overflow: auto;
-  position: relative;
-  background-color: var(--bs-body-bg);
-  border-radius: calc(var(--kanban-radius) - 1px);
-  padding: 1.5rem;
+  align-items: flex-start;
+  min-height: 600px;
+  padding: 2.5rem 2rem;
+  background-color: #121517;
 }
 
-#kanban-mount svg {
-  max-width: 100%;
-  height: auto;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+/* 让 Pele Kanban SVG 在宽屏上舒展开阔，彻底消灭局促感 */
+#kanban-mount svg.pele-kanban {
+  width: 100% !important;
+  max-width: 1600px !important;
+  min-width: 1000px !important;
+  height: auto !important;
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5));
 }
 
-/* Pele Zoom 按钮美化 */
+/* 卡片轻微悬浮高亮效果 */
+#kanban-mount svg.pele-kanban .pele-card {
+  transition: transform 0.15s ease, filter 0.15s ease;
+  cursor: pointer;
+}
+
+#kanban-mount svg.pele-kanban .pele-card:hover {
+  filter: brightness(1.15) drop-shadow(0 2px 8px rgba(13, 110, 253, 0.25));
+}
+
+/* 属性徽标文字美化 (priority, assigned) */
+#kanban-mount svg.pele-kanban text {
+  letter-spacing: -0.01em;
+}
+
+/* Pele Zoom 控件半透明浮层美化 */
 .pele-zoom-controls {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: 1.5rem;
+  right: 1.5rem;
   display: flex;
   gap: 0.5rem;
   z-index: 10;
+  background: rgba(18, 21, 23, 0.7);
+  backdrop-filter: blur(8px);
+  padding: 0.25rem;
+  border-radius: 8px;
+  border: 1px solid #343a40;
 }
 
 .pele-zoom-btn {
-  background-color: var(--bs-secondary-bg);
-  border: 1px solid var(--bs-border-color);
-  color: var(--bs-body-color);
-  border-radius: 0.375rem;
+  background-color: transparent;
+  border: none;
+  color: #adb5bd;
+  border-radius: 6px;
   width: 2rem;
   height: 2rem;
   display: flex;
@@ -78,22 +105,6 @@ body {
 }
 
 .pele-zoom-btn:hover {
-  background-color: var(--bs-tertiary-bg);
-  border-color: var(--bs-primary);
-  color: var(--bs-primary);
-}
-
-/* 浮动通知 Toast 容器 */
-.toast-container {
-  z-index: 1090;
-}
-
-/* 空状态占位提示 */
-.kanban-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem;
-  color: var(--bs-secondary-color);
+  background-color: #2b3035;
+  color: #f8f9fa;
 }
