@@ -200,7 +200,7 @@ body {
   filter: var(--card-hover-shadow) brightness(1.03);
 }
 
-/* 恢复 Pele 原生优先级指示线 */
+/* 优先级指示竖线 */
 #kanban-mount svg.pele-kanban path.pele-priority {
   display: block !important;
 }
