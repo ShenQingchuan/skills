@@ -34,7 +34,7 @@
   --pele-muted: var(--text-muted);
   --pele-line: var(--border-subtle);
   --pele-accent: var(--accent-blue);
-  --pele-radius: 4px;
+  --pele-radius: 4px;              /* 微圆角：干练硬朗 */
 }
 
 :root[data-theme="light"], body[data-theme="light"] {
@@ -60,7 +60,7 @@
   --pele-muted: var(--text-muted);
   --pele-line: var(--border-subtle);
   --pele-accent: var(--accent-blue);
-  --pele-radius: 4px;
+  --pele-radius: 4px;              /* 微圆角：干练硬朗 */
 }
 
 * {
@@ -200,18 +200,9 @@ body {
   filter: var(--card-hover-shadow) brightness(1.03);
 }
 
-/* 优先级指示器优化：隐藏生硬粗短线 */
+/* 恢复 Pele 原生优先级指示线 */
 #kanban-mount svg.pele-kanban path.pele-priority {
-  display: none !important;
-}
-
-/* Linear 风格微型阶梯信号格图标 */
-.custom-priority-icon rect {
-  transition: opacity 0.15s ease;
-}
-
-.pele-card:hover .custom-priority-icon rect {
-  opacity: 1 !important;
+  display: block !important;
 }
 
 /* 缩放控件 */

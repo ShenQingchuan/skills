@@ -167,8 +167,6 @@ export function initKanban(options = {}) {
       maxScale: 3,
     });
 
-    refinePriorityIndicators(mountEl);
-
     bindCardClickEvents(mountEl, rawMermaid, lang);
   } catch (error) {
     console.error('[Kanban] 渲染失败:', error);
@@ -178,42 +176,6 @@ export function initKanban(options = {}) {
       </div>
     `;
   }
-}
-
-function refinePriorityIndicators(mountEl) {
-  const cards = mountEl.querySelectorAll('.pele-card');
-  cards.forEach(card => {
-    const oldLine = card.querySelector('path.pele-priority');
-    if (!oldLine) return;
-
-    oldLine.remove();
-
-    const rect = card.querySelector('rect');
-    const width = rect ? parseFloat(rect.getAttribute('width')) : 184;
-    const height = rect ? parseFloat(rect.getAttribute('height')) : 37;
-
-    let level = 3;
-    let color = '#f43f5e';
-    if (card.classList.contains('pele-priority-medium')) {
-      level = 2;
-      color = '#f59e0b';
-    } else if (card.classList.contains('pele-priority-low')) {
-      level = 1;
-      color = '#3b82f6';
-    }
-
-    const iconGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    iconGroup.setAttribute('class', 'custom-priority-icon');
-    iconGroup.setAttribute('transform', `translate(${width - 20}, ${height - 13})`);
-    
-    iconGroup.innerHTML = `
-      <rect x="0" y="5" width="2" height="4" rx="0.5" fill="${color}" opacity="${level >= 1 ? 0.9 : 0.2}" />
-      <rect x="3.5" y="2.5" width="2" height="6.5" rx="0.5" fill="${color}" opacity="${level >= 2 ? 0.9 : 0.2}" />
-      <rect x="7" y="0" width="2" height="9" rx="0.5" fill="${color}" opacity="${level >= 3 ? 0.9 : 0.2}" />
-    `;
-
-    card.appendChild(iconGroup);
-  });
 }
 
 function bindCardClickEvents(mountEl, rawMermaid, lang) {
