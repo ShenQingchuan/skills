@@ -88,6 +88,6 @@
 | 技能 (Skill) | 相对路径 (Path) | 简介 (Description) | 来源 (Source) |
 | --- | --- | --- | --- |
 | [grilling](https://github.com/mattpocock/skills/blob/HEAD/skills/productivity/grilling/SKILL.md) | `workflow/grilling/` | Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any 'grill' trigger phrases. | [mattpocock/skills](https://github.com/mattpocock/skills) |
-| **manage-project-kanban** | `workflow/manage-project-kanban/` | 项目任务看板工具指南 - 教导 AI 如何在目标项目中从零初始化（Setup）基于 Mermaid 语法的项目任务看板，并在后续开发中持续读写维护任务流转与归档。 | Local（自建） |
+| **manage-project-kanban** | `workflow/manage-project-kanban/` | 软件项目任务看板管理工具。用于多任务追踪、进度可视化与任务全生命周期流转（待处理->待开发->攻坚执行->提请验收->验收归档）。当用户需要梳理项目任务、搭建本地可视化看板、排期跟踪功能/缺陷进展，或在开发过程中需要接单推进与验收归档时使用。 | Local（自建） |
 | [writing-for-agents](https://github.com/mattpocock/skills/blob/HEAD/skills/productivity/writing-for-agents/SKILL.md) | `workflow/writing-for-agents/` | Writing documents for agents. Use when creating or editing skills, or modifying AGENTS.md or CLAUDE.md. | [mattpocock/skills](https://github.com/mattpocock/skills) |
 
