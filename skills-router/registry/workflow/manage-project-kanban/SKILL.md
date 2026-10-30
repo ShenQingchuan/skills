@@ -1,11 +1,11 @@
 ---
 name: manage-project-kanban
-description: 项目看板与敏捷工作流工具指南 - 教导 AI 如何在目标项目中从零初始化（Setup）基于 Mermaid 语法的极简轻量看板，并在后续开发中持续读写维护任务流转与归档。
+description: 项目任务看板工具指南 - 教导 AI 如何在目标项目中从零初始化（Setup）基于 Mermaid 语法的项目任务看板，并在后续开发中持续读写维护任务流转与归档。
 ---
 
 # manage-project-kanban 技能指南
 
-本技能是一套面向软件项目的 **敏捷开发工作流与极简画板管理工具**。
+本技能是一套面向软件项目的 **项目任务看板工具**。
 
 它的核心职责有两个：
 1. **给项目搭建看板（Setup）**：把基于 Mermaid 文本驱动的轻量无框看板安装到目标项目中，并拉起本地热重载预览；
@@ -30,66 +30,59 @@ description: 项目看板与敏捷工作流工具指南 - 教导 AI 如何在目
 
 ---
 
-## 一、 场景一：如何为项目从零初始化看板（Setup）
+## 一、 Setup：如何为项目从零初始化看板
 
-当用户发出诸如“帮这个项目建个看板”、“用看板管理当前需求”、“初始化项目进度看板”等指令时，AI 执行以下标准初始化流程：
+当用户发出诸如“帮这个项目建个任务看板”、“用看板管理当前任务”、“初始化项目进度看板”等指令时，AI 首选使用一键安装脚本完成搭建：
 
-### 步骤 1：确认安装目录
-- 默认推荐直接安装在当前项目的**根目录**，或安装在 `.workflow/` 目录下（若项目根目录要求极致纯净）；
-- 下文以安装在项目根目录为例。
+### 方式 A：使用一键安装脚本（推荐）
 
-### 步骤 2：从本技能模板库复制静态资产
-本技能的模版文件位于：
-`~/.agents/skills/skills-router/registry/workflow/manage-project-kanban/assets/`
-
-将该目录下的 3 个核心文件复制到目标项目：
-1. `kanban.html`：画板入口，内嵌 Mermaid 纯文本数据源；
-2. `kanban-style.css`：Linear / Raycast 质感的暗黑/明亮自适应无框样式；
-3. `kanban-app.js`：看板驱动引擎（包含画板自适应渲染、缩放、卡片抽屉与国际化多语言支持）。
-
-### 步骤 3：初始化历史归档文件 `history.md`
-在项目根目录创建（或检查）`history.md`，用于存放未来所有验收移出的已完成卡片：
-
-```markdown
-# 项目任务历史归档
-
-本项目所有通过人类验收（Accepted）的任务均会从实时看板中移出，按时间顺序沉淀于此。
-
----
-```
-
-### 步骤 4：根据项目现状填充初始任务
-打开项目中的 `kanban.html`，定位到底部的 `<script type="text/mermaid" id="kanban-source">` 区块。
-根据用户当前的诉求或现存代码，初始化四大标准泳道：
-
-```mermaid
-kanban
-  backlog[待处理]
-    feat001[初始化项目工程架构]
-  todo[待开发]
-    feat002[核心业务流程梳理与原型验证]@{ priority: "High" }
-  in_progress[进行中]
-  ready_for_review[待验收]
-```
-
-### 步骤 5：启动极轻量本地热重载预览
-使用独立运行时的 Bun 启动 Vite 开发服务器：
+AI 可直接在终端调用本技能配套的安装脚本，将 `kanban-app` vendor 资源一键部署到目标项目，并自动初始化 `kanban.html` 与 `history.md`：
 
 - **macOS / Linux**：
   ```bash
-  ~/.agents/skills/.runtime/bin/bun x vite --port 5173
+  ~/.agents/skills/skills-router/registry/workflow/manage-project-kanban/scripts/install-kanban-app [目标目录，默认当前目录 .]
   ```
 - **Windows (PowerShell)**：
   ```powershell
-  & "$HOME\.agents\skills\.runtime\bin\bun.exe" x vite --port 5173
+  powershell -ExecutionPolicy Bypass -File "$HOME\.agents\skills\skills-router\registry\workflow\manage-project-kanban\scripts\install-kanban-app.ps1" [目标目录，默认当前目录 .]
   ```
-
-启动后在对话中友善告知用户：
-> “项目看板已初始化完毕！可在浏览器中打开 `http://localhost:5173/kanban.html` 实时查看需求进展。后续任何任务变动，画板都会自动无感热重载刷新。”
 
 ---
 
-## 二、 场景二：已有看板的项目如何日常维护（Manage）
+### 方式 B：手动复制 Vendor 应用资产
+
+若无需使用脚本，AI 也可以直接复制独立封装的静态前端应用包：
+
+- **应用模版目录**：
+  `~/.agents/skills/skills-router/registry/workflow/manage-project-kanban/assets/kanban-app/`
+- **核心文件说明**：
+  1. `kanban.html`：画板入口，内嵌 Mermaid 纯文本数据源；
+  2. `kanban-style.css`：Linear / Raycast 质感的暗黑/明亮自适应无框样式；
+  3. `kanban-app.js`：看板驱动引擎（包含画板自适应渲染、缩放、卡片抽屉与国际化多语言支持）。
+- **初始化归档**：
+  在目标目录建立 `history.md`，用于存放未来所有验收移出的已完成卡片。
+
+---
+
+### 步骤：填充初始任务并拉起预览
+
+安装就绪后：
+1. 打开目标项目中的 `kanban.html`，定位到底部的 `<script type="text/mermaid" id="kanban-source">` 区块，根据项目现状填入初始卡片或保留四大标准泳道；
+2. 启动本地轻量热重载预览服务器：
+   - **macOS / Linux**：
+     ```bash
+     ~/.agents/skills/.runtime/bin/bun x vite --port 5173
+     ```
+   - **Windows (PowerShell)**：
+     ```powershell
+     & "$HOME\.agents\skills\.runtime\bin\bun.exe" x vite --port 5173
+     ```
+3. 在对话中引导用户：
+   > “项目任务看板已安装完毕！可在浏览器中打开 `http://localhost:5173/kanban.html` 实时查看任务进展。后续任何任务变动，画板都会自动无感热重载刷新。”
+
+---
+
+## 二、 Manage：已有看板的项目如何日常维护
 
 当项目已经存在 `kanban.html` 时，AI 的日常工作遵循以下四大核心原则与操作规范：
 
@@ -104,7 +97,7 @@ kanban
 
 | 泳道 Key | 中文标签 | 英文标签 | 职责与准入准出规则 |
 | :--- | :--- | :--- | :--- |
-| `backlog` | **待处理** | Backlog | **需求池**：收集尚未细化的高层想法、临时 Bug 报告；待方案明确后排期移入待开发。 |
+| `backlog` | **待处理** | Backlog | **任务池**：收集尚未细化的高层想法、临时待办事项或 Bug 报告；待方案明确后排期移入待开发。 |
 | `todo` | **待开发** | Todo | **排期就绪**：方案清晰、优先级已定（如 `@{ priority: "High" }`），随时可以接单。 |
 | `in_progress` | **进行中** | In Progress | **AI 执行中**：AI 正在编写代码与自测（**严格限制同时仅 1 项**），标记 `@{ assigned: "AI" }`。 |
 | `ready_for_review` | **待验收** | Ready for Review | **看板终点**：AI 开发自测完成，提交人类验收。验收通过即刻物理移出看板。 |
@@ -113,8 +106,8 @@ kanban
 
 ### 3. AI 的四大流转动作（SOP）
 
-#### 动作 A：录入新需求（入库）
-用户提出新需求或讨论出新缺陷时：
+#### 动作 A：录入新任务（入库）
+用户提出新想法、新任务或讨论出新缺陷时：
 - 分配唯一的短 ID（如 `feat003`、`fix004`、`perf005`）；
 - 用文件编辑工具在 `kanban.html` 的 `backlog` 或 `todo` 下插入卡片：
   ```text

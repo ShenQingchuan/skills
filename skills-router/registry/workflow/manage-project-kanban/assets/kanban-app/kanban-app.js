@@ -23,7 +23,7 @@ export const I18N_LOCALES = {
       assignee_label: '负责人',
       status_label: '当前阶段',
       history_title: '历史日志',
-      created: '需求录入并在看板创建',
+      created: '任务录入并在看板创建',
       created_desc: (id, lane) => `分配编号 ${id}，录入至 ${lane}`,
       started: 'AI 认领任务并开始进入攻坚',
       started_desc: (assignee) => `负责人: ${assignee}`,

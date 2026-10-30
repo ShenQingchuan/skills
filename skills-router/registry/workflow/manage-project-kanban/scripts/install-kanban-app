@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# install-kanban-app
+# 项目任务看板一键安装脚本 (macOS / Linux)
+# 用法:
+#   ~/.agents/skills/skills-router/registry/workflow/manage-project-kanban/scripts/install-kanban-app [target_dir]
+# ==============================================================================
+
+set -euo pipefail
+
+# 1. 解析脚本所在物理路径与 vendor 静态源目录
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do
+  DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+SCRIPT_DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+VENDOR_APP_DIR="$(cd -P "$SCRIPT_DIR/../assets/kanban-app" && pwd)"
+
+# 2. 解析目标安装目录（默认为当前工作目录）
+TARGET_DIR="${1:-.}"
+mkdir -p "$TARGET_DIR"
+TARGET_DIR="$(cd "$TARGET_DIR" && pwd)"
+
+echo "📦 正在向目标目录安装看板应用: $TARGET_DIR"
+
+# 3. 复制静态应用核心资产
+if [ ! -d "$VENDOR_APP_DIR" ]; then
+  echo "❌ 错误: 未找到看板应用模版源目录: $VENDOR_APP_DIR" >&2
+  exit 1
+fi
+
+# 复制样式与前端驱动核心
+cp -f "$VENDOR_APP_DIR/kanban-style.css" "$TARGET_DIR/"
+cp -f "$VENDOR_APP_DIR/kanban-app.js" "$TARGET_DIR/"
+
+# 检查 kanban.html 是否已存在（保护既有数据不被无端冲刷）
+if [ -f "$TARGET_DIR/kanban.html" ]; then
+  echo "ℹ️  $TARGET_DIR/kanban.html 已存在，已保留现有任务数据并更新配套引擎文件。"
+else
+  cp -f "$VENDOR_APP_DIR/kanban.html" "$TARGET_DIR/"
+  echo "✓ 已生成看板页面: $TARGET_DIR/kanban.html"
+fi
+
+# 4. 检查并初始化历史归档文件 history.md
+HISTORY_FILE="$TARGET_DIR/history.md"
+if [ ! -f "$HISTORY_FILE" ]; then
+  cat > "$HISTORY_FILE" <<'EOF'
+# 项目任务历史归档
+
+本项目所有通过人类验收（Accepted）的任务均会从实时看板中移出，按时间顺序沉淀于此。
+
+---
+EOF
+  echo "✓ 已初始化归档文件: $HISTORY_FILE"
+else
+  echo "ℹ️  $HISTORY_FILE 已存在，无需重复创建。"
+fi
+
+# 5. 输出启动指引
+echo ""
+echo "🎉 看板安装就绪！"
+echo ""
+echo "启动本地实时画板服务推荐命令:"
+echo "  ~/.agents/skills/.runtime/bin/bun x vite --port 5173"
+echo "浏览器访问入口:"
+echo "  http://localhost:5173/kanban.html"
+echo ""
