@@ -87,6 +87,7 @@
 
 | 技能 (Skill) | 相对路径 (Path) | 简介 (Description) | 来源 (Source) |
 | --- | --- | --- | --- |
+| **create-issue-ticket** | `workflow/create-issue-ticket/` | 快速记录项目问题与待办卡片的工具。当用户随口提到 Bug、缺陷、新想法或临时待办，或调用 /create-issue-ticket 时使用。不建多余文件，自动为任务编号并直接写入项目看板的待处理池。 | Local（自建） |
 | [grilling](https://github.com/mattpocock/skills/blob/HEAD/skills/productivity/grilling/SKILL.md) | `workflow/grilling/` | Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any 'grill' trigger phrases. | [mattpocock/skills](https://github.com/mattpocock/skills) |
 | **manage-project-kanban** | `workflow/manage-project-kanban/` | 项目任务看板工具。在项目事情多、容易忘、分不清做到哪一步时使用。用来给任务排队、记录当前正在做什么、做完了让人检查确认，确认通过后归档到历史记录。支持一键搭建网页看板，方便随时看进度。 | Local（自建） |
 
