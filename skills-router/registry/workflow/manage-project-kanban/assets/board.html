@@ -14,32 +14,35 @@
 </head>
 <body>
 
-  <!-- 顶部导航栏 -->
-  <header class="navbar navbar-expand-lg kanban-header px-4 py-3">
-    <div class="container-fluid p-0">
-      <div class="d-flex align-items-center gap-3">
-        <span class="badge text-bg-primary p-2 fs-6 rounded-3 shadow-sm">
+  <!-- 极简通透顶部工具栏 (Linear / Vercel 风格) -->
+  <header class="kanban-header">
+    <div class="kanban-header-inner">
+      <div class="brand-group">
+        <div class="brand-icon">
           <i class="bi bi-kanban"></i>
-        </span>
-        <div>
-          <h5 class="mb-0 fw-bold">Project Kanban</h5>
-          <span class="text-body-secondary small">待验收即为看板终点 · 验收通过自动归档</span>
+        </div>
+        <h1 class="brand-title">Project Kanban</h1>
+        <div class="live-indicator">
+          <span class="live-dot"></span>
+          <span>Live Sync</span>
         </div>
       </div>
 
-      <div class="d-flex align-items-center gap-2">
-        <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#guideModal">
-          <i class="bi bi-journal-text me-1"></i>流转规范
+      <div class="header-actions">
+        <button class="btn-ghost-nav" data-bs-toggle="modal" data-bs-target="#guideModal">
+          <i class="bi bi-book"></i>
+          <span>流转规范</span>
         </button>
-        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#historyModal">
-          <i class="bi bi-clock-history me-1"></i>需求历史
+        <button class="btn-ghost-nav" data-bs-toggle="modal" data-bs-target="#historyModal">
+          <i class="bi bi-clock-history"></i>
+          <span>需求历史</span>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- 主体工作区：全宽画板展示 -->
-  <main class="container-fluid px-4 py-4">
+  <!-- 主体工作区：全宽居中画板展示 (与顶栏同一最大宽度对齐) -->
+  <main class="kanban-main">
     <!-- 看板画板主卡片 (由 Pele 驱动渲染) -->
     <div class="kanban-board-card">
       <div id="kanban-mount">
@@ -54,42 +57,42 @@
   <!-- 模态弹窗：流转规范指引 -->
   <div class="modal fade" id="guideModal" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title"><i class="bi bi-compass me-2"></i>看板流转与维护核心守则</h5>
+      <div class="modal-content border-secondary">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title fw-bold"><i class="bi bi-compass me-2 text-primary"></i>看板流转与维护核心守则</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
-          <div class="alert alert-info">
+          <div class="alert alert-info bg-opacity-10 border-info border-opacity-25 text-info-emphasis mb-3">
             <i class="bi bi-lightbulb-fill me-2"></i>
             <strong>第一性原理</strong>：实时看板不是垃圾堆。看板的终点是<strong>“待验收 (Ready for Review)”</strong>，一旦用户确认通过，必须立即物理移出看板，归档沉淀为需求历史。
           </div>
-          <ol class="list-group list-group-numbered mb-3">
-            <li class="list-group-item d-flex justify-content-between align-items-start">
+          <ol class="list-group list-group-numbered mb-2">
+            <li class="list-group-item d-flex justify-content-between align-items-start bg-transparent border-secondary text-body">
               <div class="ms-2 me-auto">
                 <div class="fw-bold">发现问题或构想 (Issue -> Backlog)</div>
                 新想法或 Bug 统一编号进入 Backlog，待细化分解。
               </div>
             </li>
-            <li class="list-group-item d-flex justify-content-between align-items-start">
+            <li class="list-group-item d-flex justify-content-between align-items-start bg-transparent border-secondary text-body">
               <div class="ms-2 me-auto">
                 <div class="fw-bold">排期与标记优先级 (Todo)</div>
                 技术方案确定后进入 Todo，标明 <code>@{ priority: "High" }</code>。
               </div>
             </li>
-            <li class="list-group-item d-flex justify-content-between align-items-start">
+            <li class="list-group-item d-flex justify-content-between align-items-start bg-transparent border-secondary text-body">
               <div class="ms-2 me-auto">
                 <div class="fw-bold">AI 认领并执行 (In Progress)</div>
                 AI 接单时将卡片剪切进 In Progress，标明 <code>@{ assigned: "AI" }</code>。
               </div>
             </li>
-            <li class="list-group-item d-flex justify-content-between align-items-start">
+            <li class="list-group-item d-flex justify-content-between align-items-start bg-transparent border-secondary text-body">
               <div class="ms-2 me-auto">
                 <div class="fw-bold">送审待验收 (Ready for Review)</div>
                 代码编写与自测通过，移入 Ready for Review，提醒用户体验与确认。
               </div>
             </li>
-            <li class="list-group-item d-flex justify-content-between align-items-start">
+            <li class="list-group-item d-flex justify-content-between align-items-start bg-transparent border-secondary text-body">
               <div class="ms-2 me-auto">
                 <div class="fw-bold">验收通过与归档 (Archived)</div>
                 人类验收通过，卡片从 Mermaid 中物理删除，沉淀至 <code>history.md</code>。
@@ -104,20 +107,27 @@
   <!-- 模态弹窗：需求历史记录 -->
   <div class="modal fade" id="historyModal" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title"><i class="bi bi-archive-fill me-2"></i>需求归档历史档案</h5>
+      <div class="modal-content border-secondary">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title fw-bold"><i class="bi bi-archive-fill me-2 text-primary"></i>需求归档历史档案</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
-          <p class="text-body-secondary">已通过验收并移出看板的历史交付物：</p>
+          <p class="text-body-secondary small mb-3">已通过验收并从看板中物理移出的历史交付项：</p>
           <div class="list-group" id="history-list">
-            <div class="list-group-item list-group-item-action">
-              <div class="d-flex w-100 justify-content-between">
-                <h6 class="mb-1 text-success"><i class="bi bi-check-all me-1"></i>[INIT-000] 完成项目骨架与运行时注入器配置</h6>
-                <small class="text-body-secondary">已归档</small>
+            <div class="list-group-item list-group-item-action bg-transparent border-secondary">
+              <div class="d-flex w-100 justify-content-between align-items-center">
+                <h6 class="mb-1 text-success fw-semibold"><i class="bi bi-check-all me-1"></i>[INIT-000] 完成项目骨架与运行时注入器配置</h6>
+                <span class="badge bg-success-subtle text-success-emphasis rounded-pill">已归档</span>
               </div>
-              <p class="mb-1 small text-body-secondary">实现 Node LTS / uv / Python / Bun / rg 绿色免安装自举，支持 TypeScript 零编译原生执行。</p>
+              <p class="mb-0 small text-body-secondary mt-1">实现 Node LTS / uv / Python / Bun / rg 绿色免安装自举，支持 TypeScript 零编译原生执行。</p>
+            </div>
+            <div class="list-group-item list-group-item-action bg-transparent border-secondary">
+              <div class="d-flex w-100 justify-content-between align-items-center">
+                <h6 class="mb-1 text-success fw-semibold"><i class="bi bi-check-all me-1"></i>[DOCS-005] 完成 Project Kanban 全流程流转规范文档</h6>
+                <span class="badge bg-success-subtle text-success-emphasis rounded-pill">已归档</span>
+              </div>
+              <p class="mb-0 small text-body-secondary mt-1">规范已落盘至 SKILL.md 与 board.html，通过人类终审验收并移出看板。</p>
             </div>
           </div>
         </div>
