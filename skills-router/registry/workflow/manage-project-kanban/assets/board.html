@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,9 +11,9 @@
   <!-- 纯原生精雕样式 (0 第三方框架依赖) -->
   <link href="./kanban-style.css" rel="stylesheet" />
 </head>
-<body>
+<body data-theme="dark">
 
-  <!-- 极简通透顶栏：品牌与极简语言切换器 -->
+  <!-- 极简通透顶栏：品牌与两个纯 Icon 功能按钮 -->
   <header class="app-header">
     <div class="header-container">
       <div class="brand">
@@ -29,7 +29,22 @@
       </div>
 
       <nav class="nav-actions">
-        <button class="btn-lang" id="btn-lang-toggle" title="切换语言 / Switch Language">EN</button>
+        <!-- 语言切换 Icon 按钮 -->
+        <button class="btn-icon-action" id="btn-lang-toggle" title="切换语言 (中 / EN)">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m5 8 6 6"></path>
+            <path d="m4 14 6-6 2-3"></path>
+            <path d="M2 5h12"></path>
+            <path d="M7 2h1"></path>
+            <path d="m22 22-5-10-5 10"></path>
+            <path d="M14 18h6"></path>
+          </svg>
+        </button>
+
+        <!-- 主题切换 Icon 按钮 (明 / 暗) -->
+        <button class="btn-icon-action" id="btn-theme-toggle" title="切换模式 (浅色 / 深色)">
+          <!-- JS 自动注入对应太阳或月亮图标 -->
+        </button>
       </nav>
     </div>
   </header>
@@ -41,9 +56,43 @@
     </div>
   </main>
 
+  <!-- Linear 风格任务详情与日志侧边抽屉 -->
+  <div class="drawer-backdrop" id="drawer-backdrop">
+    <div class="task-drawer" id="task-drawer">
+      <div class="drawer-header">
+        <span class="drawer-status-badge" id="drawer-badge-status">进行中</span>
+        <button class="drawer-close-btn" id="btn-drawer-close" aria-label="关闭">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="drawer-content">
+        <div class="drawer-task-id" id="drawer-task-id-text">FEAT-006</div>
+        <h2 class="drawer-task-title" id="drawer-task-title-text">国际化多语言支持</h2>
+
+        <div class="properties-grid">
+          <span class="prop-label">优先级</span>
+          <span class="prop-value" id="drawer-prop-priority">High</span>
+
+          <span class="prop-label">负责人</span>
+          <span class="prop-value" id="drawer-prop-assignee">AI Agent</span>
+
+          <span class="prop-label">当前阶段</span>
+          <span class="prop-value" id="drawer-prop-lane">进行中</span>
+        </div>
+
+        <div class="timeline-section-title">流转轨迹与活动日志</div>
+        <div class="timeline-list" id="drawer-timeline">
+          <!-- 动态注入时间线节点 -->
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ==============================================================================
        数据源定义：AI 直接维护与编辑下方的 Mermaid Kanban 纯文本
-       泳道标签会自动由内置 i18n 引擎动态映射为当前语言
        ============================================================================== -->
   <script type="text/mermaid" id="kanban-source">
 kanban
@@ -58,7 +107,7 @@ kanban
     work004[升级鉴权链路与会话状态管理]
   </script>
 
-  <!-- 看板核心引擎应用 (含内置 i18n) -->
+  <!-- 看板核心引擎应用 (含内置 i18n、明暗模式、抽屉事件) -->
   <script type="module" src="./kanban-app.js"></script>
 
 </body>

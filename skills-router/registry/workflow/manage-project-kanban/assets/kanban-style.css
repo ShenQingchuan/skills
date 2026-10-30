@@ -1,38 +1,82 @@
 /* ==============================================================================
-   Project Kanban - Pure Native Minimalist Engine (Zero Framework Bloat)
-   Design Philosophy: Frameless, Dark-first, Built-in i18n
+   Project Kanban - Pure Native Minimalist Engine (Linear / Raycast Style)
+   Features: Light/Dark Mode, Frameless Cards, Zero Button Outline, Linear Drawer
    ============================================================================== */
 
 :root {
-  /* 调色板：纯正现代深邃暗黑系 (Linear/Vercel 级标准) */
+  --pele-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --pele-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* ==============================================================================
+   1. 双模主题调色板 (Dark / Light)
+   ============================================================================== */
+:root[data-theme="dark"], body[data-theme="dark"] {
   --bg-canvas: #090a0c;            /* 全局纯黑底色 */
   --bg-surface: #121417;           /* 泳道列槽底色 */
-  --bg-card: #1a1d21;              /* 卡片底色 */
-  --bg-hover: #22262c;             /* 卡片悬停底色 */
-  --border-subtle: rgba(255, 255, 255, 0.06); /* 细微发丝线 */
-  --border-active: rgba(255, 255, 255, 0.12); /* 悬浮边框光晕 */
-  --text-main: #ededed;            /* 纯白主字 */
-  --text-muted: #737880;           /* 次要弱化文字 */
-  --accent-blue: #3b82f6;          /* 电光蓝 */
+  --bg-card: #1c1f24;              /* 卡片底色 (微亮于槽底，靠色阶区分) */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-hover: rgba(255, 255, 255, 0.16);
+  --text-main: #ededed;
+  --text-muted: #737880;
+  --accent-blue: #3b82f6;
+  --header-bg: rgba(9, 10, 12, 0.8);
+  --drawer-bg: #121417;
+  --drawer-shadow: -12px 0 36px rgba(0, 0, 0, 0.6);
+  --card-shadow: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45));
+  --card-hover-shadow: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.65));
 
-  /* 深度适配并驱动 Pele 的内部变量 */
+  /* Pele 暗色变量 */
   --pele-bg: var(--bg-card);
   --pele-surface: var(--bg-surface);
-  --pele-surface-alt: #24282f;
-  --pele-border: var(--border-subtle);
+  --pele-surface-alt: #22262d;
+  --pele-border: transparent;      /* 彻底消灭实线边框 */
   --pele-fg: var(--text-main);
   --pele-muted: var(--text-muted);
   --pele-line: var(--border-subtle);
   --pele-accent: var(--accent-blue);
   --pele-radius: 8px;
-  --pele-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-  --pele-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+:root[data-theme="light"], body[data-theme="light"] {
+  --bg-canvas: #f8f9fa;            /* 全局明亮浅灰 */
+  --bg-surface: #eef1f4;           /* 泳道优雅浅槽底色 */
+  --bg-card: #ffffff;              /* 卡片纯白 */
+  --border-subtle: rgba(0, 0, 0, 0.06);
+  --border-hover: rgba(0, 0, 0, 0.18);
+  --text-main: #1f2328;
+  --text-muted: #656d76;
+  --accent-blue: #2563eb;
+  --header-bg: rgba(248, 249, 250, 0.85);
+  --drawer-bg: #ffffff;
+  --drawer-shadow: -12px 0 36px rgba(0, 0, 0, 0.12);
+  --card-shadow: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.06)) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.04));
+  --card-hover-shadow: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
+
+  /* Pele 明色变量 */
+  --pele-bg: var(--bg-card);
+  --pele-surface: var(--bg-surface);
+  --pele-surface-alt: #e1e5eb;
+  --pele-border: transparent;      /* 彻底消灭实线边框 */
+  --pele-fg: var(--text-main);
+  --pele-muted: var(--text-muted);
+  --pele-line: var(--border-subtle);
+  --pele-accent: var(--accent-blue);
+  --pele-radius: 8px;
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+/* 彻底全局消灭所有按钮与可聚焦元素的恶心 outline */
+button, button:focus, button:focus-visible, button:active,
+a, a:focus, a:focus-visible, a:active {
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -42,29 +86,30 @@ body {
   font-family: var(--pele-font);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* ==============================================================================
-   1. 极简通透毛玻璃顶栏 (44px 紧凑高度)
+   2. 极简通透毛玻璃顶栏 (42px)
    ============================================================================== */
 .app-header {
   position: sticky;
   top: 0;
   z-index: 50;
-  height: 44px;
-  background: rgba(9, 10, 12, 0.75);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  height: 42px;
+  background: var(--header-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
 }
 
 .header-container {
-  max-width: 1600px;
+  max-width: 1400px;
   width: 100%;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 1.25rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -73,7 +118,7 @@ body {
 .brand {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.5rem;
   user-select: none;
 }
 
@@ -84,7 +129,7 @@ body {
 }
 
 .brand-name {
-  font-size: 0.875rem;
+  font-size: 0.84rem;
   font-weight: 600;
   letter-spacing: -0.015em;
   color: var(--text-main);
@@ -93,83 +138,90 @@ body {
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.25rem;
 }
 
-/* 极简语言切换胶囊按钮 */
-.btn-lang {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--border-subtle);
+/* 极简 Icon 按钮 (30x30px) - 彻底无 outline */
+.btn-icon-action {
+  background: transparent;
+  border: 1px solid transparent;
   color: var(--text-muted);
-  font-size: 0.75rem;
-  font-weight: 500;
-  padding: 0.2rem 0.55rem;
+  width: 30px;
+  height: 30px;
   border-radius: 6px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.15s ease;
-  font-family: inherit;
-  letter-spacing: 0.02em;
 }
 
-.btn-lang:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: var(--border-active);
+.btn-icon-action:hover {
+  background: rgba(125, 125, 125, 0.12);
   color: var(--text-main);
 }
 
+.btn-icon-action svg {
+  width: 15px;
+  height: 15px;
+}
+
 /* ==============================================================================
-   2. 无界画布区 (Frameless Canvas)
+   3. 无界画布与“高级无边框卡片” (Frameless Tiles)
    ============================================================================== */
 .canvas-wrapper {
-  max-width: 1600px;
-  margin: 2rem auto 4rem auto;
-  padding: 0 1.5rem;
+  max-width: 1400px;
+  margin: 1.5rem auto 3rem auto;
+  padding: 0 1.25rem;
 }
 
 #kanban-mount {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  min-height: 600px;
+  min-height: 560px;
   position: relative;
 }
 
-/* 让 Pele Kanban SVG 在宽屏上完全无拘束地舒展 */
+/* 适度收敛宽度，排版紧凑高级 */
 #kanban-mount svg.pele-kanban {
   width: 100% !important;
-  max-width: 1500px !important;
-  min-width: 1000px !important;
+  max-width: 1240px !important;
+  min-width: 900px !important;
   height: auto !important;
-  filter: drop-shadow(0 12px 36px rgba(0, 0, 0, 0.5));
+  overflow: visible;
 }
 
-/* 卡片细腻微交互：纯光效过渡，坚决不做几何位移以消灭边缘抖动 */
+/* 彻底干掉卡片那条粗粗老旧的边框线 (stroke: none)！改用现代弥散柔光 */
+#kanban-mount svg.pele-kanban .pele-card rect {
+  stroke: none !important;
+  filter: var(--card-shadow);
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+/* 泳道列凹槽的矩形：同样去掉生硬黑边 */
+#kanban-mount svg.pele-kanban .pele-column > rect {
+  stroke: none !important;
+}
+
+/* 卡片悬停：微浮柔光，不抽搐，无粗框 */
 #kanban-mount svg.pele-kanban .pele-card {
-  transition: filter 0.15s ease;
   cursor: pointer;
 }
 
-#kanban-mount svg.pele-kanban .pele-card rect {
-  transition: stroke 0.15s ease, fill 0.15s ease;
-}
-
-#kanban-mount svg.pele-kanban .pele-card:hover {
-  filter: brightness(1.15) drop-shadow(0 4px 14px rgba(59, 130, 246, 0.25));
-}
-
 #kanban-mount svg.pele-kanban .pele-card:hover rect {
-  stroke: rgba(59, 130, 246, 0.45);
+  filter: var(--card-hover-shadow) brightness(1.03);
 }
 
-/* 缩放控制器悬浮胶囊 */
+/* 缩放控制器微型悬浮胶囊 */
 .pele-zoom-controls {
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
   display: flex;
-  gap: 0.25rem;
+  gap: 0.2rem;
   z-index: 10;
-  background: rgba(18, 20, 23, 0.8);
+  background: var(--header-bg);
   backdrop-filter: blur(12px);
   padding: 0.2rem;
   border-radius: 6px;
@@ -181,16 +233,202 @@ body {
   border: none;
   color: var(--text-muted);
   border-radius: 4px;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.4rem;
+  height: 1.4rem;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.12s ease;
 }
 
 .pele-zoom-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(125, 125, 125, 0.12);
   color: var(--text-main);
+}
+
+/* ==============================================================================
+   4. Linear 级任务详情侧边抽屉 (Slide-over Drawer)
+   ============================================================================== */
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.drawer-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.task-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 480px;
+  max-width: 90vw;
+  background: var(--drawer-bg);
+  border-left: 1px solid var(--border-subtle);
+  box-shadow: var(--drawer-shadow);
+  z-index: 210;
+  transform: translateX(100%);
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.drawer-backdrop.active .task-drawer {
+  transform: translateX(0);
+}
+
+.drawer-header {
+  height: 48px;
+  padding: 0 1.25rem;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.drawer-status-badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--accent-blue);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.drawer-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.drawer-close-btn:hover {
+  background: rgba(125, 125, 125, 0.1);
+  color: var(--text-main);
+}
+
+.drawer-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem 1.25rem;
+}
+
+.drawer-task-id {
+  font-size: 0.75rem;
+  font-family: var(--pele-font-mono);
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+}
+
+.drawer-task-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--text-main);
+  line-height: 1.4;
+  margin-bottom: 1.5rem;
+}
+
+.properties-grid {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 0.75rem 0;
+  align-items: center;
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 0.8125rem;
+}
+
+.prop-label {
+  color: var(--text-muted);
+}
+
+.prop-value {
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.timeline-section-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 1rem;
+}
+
+.timeline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+  padding-left: 1.25rem;
+}
+
+.timeline-list::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 4px;
+  width: 1px;
+  background: var(--border-subtle);
+}
+
+.timeline-event {
+  position: relative;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -1.25rem;
+  top: 4px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 2px solid var(--accent-blue);
+}
+
+.timeline-event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.2rem;
+}
+
+.timeline-event-title {
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+.timeline-event-time {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.timeline-event-desc {
+  color: var(--text-muted);
+  font-size: 0.75rem;
 }
