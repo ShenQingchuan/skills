@@ -5,7 +5,7 @@ description: 项目看板与敏捷工作流维护指南 - 教导 AI 如何读写
 
 # manage-project-kanban 技能指南
 
-本技能定义了一套基于 **Mermaid Kanban 纯文本** 与 **Pele 矢量画板** 的极简敏捷研发工作流。
+本技能定义了一套基于 **Mermaid Kanban 纯文本** 记录项目进展的敏捷研发工作流。
 
 让日常软件开发像在轻量看板中协同一样直观自然：遇到问题提 Issue、排期进入看板、AI 读取看板接单开发、自测完成提交待验收，最终验收通过后归档移出。
 
@@ -105,9 +105,9 @@ AI 在维护看板时，必须遵循以下标准动作：
 当用户需要打开可视化画板时，AI 可提示或协助运行：
 
 ```bash
-# 利用套件自举自带的 Bun，0 秒拉起 Vite 热重载服务
+# 利用套件自带的 Bun 运行环境，拉起 Vite 热重载服务
 .runtime/bin/bun x vite
 ```
 
-- 启动后浏览器访问输出的本地地址（如 `http://localhost:5173/board.html`）；
-- AI 后续每次通过文件工具修改 `board.html` 中的 Mermaid 内容时，Vite 将通过 WebSocket 实现**毫秒级无感热重载**，人类浏览器里的 SVG 看板卡片会实时自动重绘并滑向下一泳道！
+- 启动后浏览器访问输出的本地地址（如 `http://localhost:5173/board.html`）
+- AI 后续每次通过文件工具修改 `board.html` 中的 Mermaid 内容，浏览器里的 SVG 看板卡片会实时自动重绘

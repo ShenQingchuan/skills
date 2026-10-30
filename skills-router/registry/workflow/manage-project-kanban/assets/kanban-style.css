@@ -1,10 +1,12 @@
 /* ==============================================================================
    Project Kanban - Pure Native Minimalist Engine (Linear / Raycast Style)
-   Features: Light/Dark Mode, Frameless Cards, Zero Button Outline, Linear Drawer
+   Features: Light/Dark Mode (Zero-lag), Figtree Typography, Frameless Cards
    ============================================================================== */
 
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap');
+
 :root {
-  --pele-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --pele-font: 'Figtree', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   --pele-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
@@ -20,7 +22,7 @@
   --text-main: #ededed;
   --text-muted: #737880;
   --accent-blue: #3b82f6;
-  --header-bg: rgba(9, 10, 12, 0.8);
+  --header-bg: rgba(9, 10, 12, 0.85);
   --drawer-bg: #121417;
   --drawer-shadow: -12px 0 36px rgba(0, 0, 0, 0.6);
   --card-shadow: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45));
@@ -47,7 +49,7 @@
   --text-main: #1f2328;
   --text-muted: #656d76;
   --accent-blue: #2563eb;
-  --header-bg: rgba(248, 249, 250, 0.85);
+  --header-bg: rgba(248, 249, 250, 0.9);
   --drawer-bg: #ffffff;
   --drawer-shadow: -12px 0 36px rgba(0, 0, 0, 0.12);
   --card-shadow: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.06)) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.04));
@@ -71,7 +73,7 @@
   padding: 0;
 }
 
-/* 彻底全局消灭所有按钮与可聚焦元素的恶心 outline */
+/* 全局消灭所有按钮与可聚焦元素的 outline 杂质 */
 button, button:focus, button:focus-visible, button:active,
 a, a:focus, a:focus-visible, a:active {
   outline: none !important;
@@ -86,7 +88,6 @@ body {
   font-family: var(--pele-font);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
-  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* ==============================================================================
@@ -129,7 +130,7 @@ body {
 }
 
 .brand-name {
-  font-size: 0.84rem;
+  font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: -0.015em;
   color: var(--text-main);
@@ -153,7 +154,7 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.15s ease;
+  transition: background 0.12s ease, color 0.12s ease;
 }
 
 .btn-icon-action:hover {
@@ -196,7 +197,7 @@ body {
 #kanban-mount svg.pele-kanban .pele-card rect {
   stroke: none !important;
   filter: var(--card-shadow);
-  transition: filter 0.15s ease, transform 0.15s ease;
+  transition: filter 0.12s ease;
 }
 
 /* 泳道列凹槽的矩形：同样去掉生硬黑边 */
@@ -278,7 +279,7 @@ body {
   box-shadow: var(--drawer-shadow);
   z-index: 210;
   transform: translateX(100%);
-  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
 }
@@ -317,7 +318,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.15s ease;
+  transition: all 0.12s ease;
 }
 
 .drawer-close-btn:hover {
