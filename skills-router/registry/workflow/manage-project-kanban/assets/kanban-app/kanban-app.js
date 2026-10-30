@@ -12,6 +12,9 @@ export const I18N_LOCALES = {
     title: '项目看板',
     empty: '当前看板尚无任务数据',
     render_failed: '看板语法解析失败',
+    btn_lang: '切换语言 (中 / EN)',
+    btn_theme: '切换模式 (浅色 / 深色)',
+    close: '关闭',
     lanes: {
       backlog: '待处理',
       todo: '待开发',
@@ -25,10 +28,10 @@ export const I18N_LOCALES = {
       history_title: '历史日志',
       created: '任务录入并在看板创建',
       created_desc: (id, lane) => `分配编号 ${id}，录入至 ${lane}`,
-      started: 'AI 认领任务并开始进入攻坚',
+      started: 'AI 接单并开始处理',
       started_desc: (assignee) => `负责人: ${assignee}`,
-      ready: '已完成自测，提交进入待验收阶段',
-      ready_desc: '完成实现与自动化验证，等待人类终审验收',
+      ready: '已做完并通过自测，等待确认',
+      ready_desc: '开发与验证完成，等待用户检查确认',
       unassigned: '暂未分配',
       normal: '普通',
       high: '高',
@@ -40,6 +43,9 @@ export const I18N_LOCALES = {
     title: 'Project Kanban',
     empty: 'No tasks on the board yet',
     render_failed: 'Kanban syntax parse error',
+    btn_lang: 'Switch Language (EN / 中)',
+    btn_theme: 'Toggle Theme (Light / Dark)',
+    close: 'Close',
     lanes: {
       backlog: 'Backlog',
       todo: 'Todo',
@@ -53,10 +59,10 @@ export const I18N_LOCALES = {
       history_title: 'History',
       created: 'Task created on board',
       created_desc: (id, lane) => `Assigned ${id}, added to ${lane}`,
-      started: 'AI claimed task and started execution',
+      started: 'AI claimed task and started work',
       started_desc: (assignee) => `Assignee: ${assignee}`,
-      ready: 'Implemented & verified, ready for review',
-      ready_desc: 'Implementation & tests passed, awaiting acceptance',
+      ready: 'Completed & tested, ready for review',
+      ready_desc: 'Implementation & tests passed, awaiting review',
       unassigned: 'Unassigned',
       normal: 'Normal',
       high: 'High',
@@ -119,9 +125,28 @@ function updateFavicon(theme) {
 
 export function applyI18n(lang = getCurrentLang()) {
   const t = I18N_LOCALES[lang] || I18N_LOCALES.zh;
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+
+  // 动态更新页面中所有挂载 data-i18n 的元素
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = getNestedValue(t, key);
+    if (val !== undefined) el.textContent = val;
+  });
+
+  document.querySelectorAll('[data-i18n-title]').forEach(el => {
+    const key = el.getAttribute('data-i18n-title');
+    const val = getNestedValue(t, key);
+    if (val !== undefined) el.setAttribute('title', val);
+  });
+
+  document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+    const key = el.getAttribute('data-i18n-aria');
+    const val = getNestedValue(t, key);
+    if (val !== undefined) el.setAttribute('aria-label', val);
+  });
+
   document.title = t.title;
-  const brandEl = document.getElementById('brand-title');
-  if (brandEl) brandEl.textContent = t.title;
 
   initKanban({ lang });
 
@@ -129,6 +154,10 @@ export function applyI18n(lang = getCurrentLang()) {
     const rawMermaid = document.getElementById('kanban-source')?.textContent.trim() || '';
     openTaskDrawer(activeDrawerCard.id, activeDrawerCard.title, rawMermaid, lang);
   }
+}
+
+function getNestedValue(obj, path) {
+  return path.split('.').reduce((acc, part) => (acc && acc[part] !== undefined ? acc[part] : undefined), obj);
 }
 
 function localizeMermaid(source, lang) {
