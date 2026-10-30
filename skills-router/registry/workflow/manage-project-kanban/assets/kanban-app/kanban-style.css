@@ -161,25 +161,78 @@ body {
 
 /* 画板主区域 */
 .canvas-wrapper {
-  max-width: 1400px;
-  margin: 1.5rem auto 3rem auto;
+  width: 100%;
+  max-width: 100%;
+  margin: 1.5rem 0 3rem 0;
   padding: 0 1.25rem;
+  box-sizing: border-box;
+}
+
+/* 横向平移滚动容器（由 OverlayScrollbars 托管） */
+.kanban-scroll-container {
+  width: 100%;
+  min-height: 560px;
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-radius: 6px;
 }
 
 #kanban-mount {
   display: flex;
   justify-content: center;
+  justify-content: safe center;
   align-items: flex-start;
   min-height: 560px;
+  width: max-content;
+  min-width: 100%;
   position: relative;
+  padding: 0.5rem 0.5rem 2rem 0.5rem;
+  box-sizing: border-box;
 }
 
 #kanban-mount svg.pele-kanban {
-  width: 100% !important;
-  max-width: 1240px !important;
-  min-width: 900px !important;
+  display: block;
+  width: auto !important;
+  max-width: none !important;
+  min-width: unset !important;
   height: auto !important;
   overflow: visible;
+}
+
+/* 粘性悬浮缩放控件：横向滚动时不被卷出视口 */
+.kanban-scroll-container .pele-zoom-controls {
+  position: sticky;
+  top: 0.5rem;
+  right: 0.5rem;
+  margin-left: auto;
+  z-index: 20;
+}
+
+/* OverlayScrollbars 滚动条极简无缝定制 (Linear / Raycast 风格) */
+.os-theme-light, .os-theme-dark {
+  --os-size: 8px;
+  --os-padding-axis: 4px;
+  --os-padding-perpendicular: 4px;
+  --os-handle-border-radius: 9999px;
+  --os-track-bg: transparent;
+  --os-track-bg-hover: transparent;
+  --os-track-bg-active: transparent;
+  --os-track-border: none;
+}
+
+/* 深色模式下的浮动滑块 */
+[data-theme="dark"] .os-theme-light {
+  --os-handle-bg: rgba(255, 255, 255, 0.22);
+  --os-handle-bg-hover: rgba(255, 255, 255, 0.4);
+  --os-handle-bg-active: rgba(255, 255, 255, 0.55);
+}
+
+/* 浅色模式下的浮动滑块 */
+[data-theme="light"] .os-theme-dark {
+  --os-handle-bg: rgba(0, 0, 0, 0.22);
+  --os-handle-bg-hover: rgba(0, 0, 0, 0.4);
+  --os-handle-bg-active: rgba(0, 0, 0, 0.55);
 }
 
 #kanban-mount svg.pele-kanban .pele-card rect {

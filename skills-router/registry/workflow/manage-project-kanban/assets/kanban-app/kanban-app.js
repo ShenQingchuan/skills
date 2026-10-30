@@ -73,6 +73,71 @@ export const I18N_LOCALES = {
 };
 
 let activeDrawerCard = null;
+let osInstance = null;
+
+export async function getOverlayScrollbars() {
+  if (typeof window !== 'undefined' && window.OverlayScrollbarsGlobal?.OverlayScrollbars) {
+    return window.OverlayScrollbarsGlobal.OverlayScrollbars;
+  }
+  try {
+    const mod = await import('https://cdn.jsdelivr.net/npm/overlayscrollbars@2.17.0/overlayscrollbars.esm.min.js');
+    return mod.OverlayScrollbars;
+  } catch (e) {
+    console.warn('[Kanban] 无法加载 OverlayScrollbars:', e);
+    return null;
+  }
+}
+
+export async function initScrollbar() {
+  const container = document.getElementById('kanban-scroll-container');
+  if (!container) return;
+
+  const OS = await getOverlayScrollbars();
+  if (!OS) return;
+
+  const currentTheme = getCurrentTheme();
+  const osTheme = currentTheme === 'dark' ? 'os-theme-light' : 'os-theme-dark';
+
+  if (osInstance) {
+    osInstance.options({
+      scrollbars: {
+        theme: osTheme,
+      },
+    });
+    osInstance.update();
+    return;
+  }
+
+  osInstance = OS(container, {
+    scrollbars: {
+      theme: osTheme,
+      autoHide: 'leave',
+      autoHideDelay: 600,
+    },
+    overflow: {
+      x: 'scroll',
+      y: 'hidden',
+    },
+  });
+
+  bindHorizontalWheel(container);
+}
+
+function bindHorizontalWheel(container) {
+  const viewport = osInstance?.elements().viewport || container;
+  if (!viewport || viewport._wheelBound) return;
+  viewport._wheelBound = true;
+
+  viewport.addEventListener('wheel', (e) => {
+    if (e.shiftKey) return;
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      if (viewport.scrollWidth > viewport.clientWidth) {
+        e.preventDefault();
+        viewport.scrollLeft += e.deltaY;
+      }
+    }
+  }, { passive: false });
+}
 
 export function getCurrentLang() {
   const saved = localStorage.getItem('kanban_lang');
@@ -106,6 +171,14 @@ export function applyTheme(theme = getCurrentTheme()) {
   document.body.setAttribute('data-theme', theme);
   updateThemeIcon(theme);
   updateFavicon(theme);
+
+  if (osInstance) {
+    osInstance.options({
+      scrollbars: {
+        theme: theme === 'dark' ? 'os-theme-light' : 'os-theme-dark',
+      },
+    });
+  }
 }
 
 function updateThemeIcon(theme) {
@@ -197,6 +270,7 @@ export function initKanban(options = {}) {
     });
 
     bindCardClickEvents(mountEl, rawMermaid, lang);
+    initScrollbar();
   } catch (error) {
     console.error('[Kanban] 渲染失败:', error);
     mountEl.innerHTML = `
