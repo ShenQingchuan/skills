@@ -255,13 +255,11 @@ chore(registry): 同步上游技能
 
 ## 参与贡献
 
-这是个人技能库，但欢迎提 Issue 和 PR：
+这是一个高度个人化的技能库（比较 opinionated），服务于个人的工作习惯与 Agent 架构思考。
 
-- 想加某个上游的技能：改 `sources.json` 并跑一次同步脚本，一起提交。
-- 发现两个上游的规则冲突：在对应的 `registry/<分类>/README.md` 里补上对照结论。
-- 路由器或同步脚本的改进：请附上「为什么现有做法不够好」。
-
-提交前请确认 `python3 tools/sync_skills.py --check` 是干净的（退出码 0）。
+- **不接收 Pull Request**：本项目不合并外部代码 PR，请勿提交 Pull Request；
+- **欢迎提 Issue**：如果你在使用过程中发现了 Bug、规则缺陷或有建设性的想法，非常欢迎在 [Issues](../../issues) 区讨论与反馈问题；
+- **Feel free to Fork**：代码完全开源，欢迎自由 Fork 到你自己的账号下进行二次开发与个性化定制。
 
 ## 致谢
 
