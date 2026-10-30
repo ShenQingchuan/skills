@@ -40,7 +40,7 @@ if [ "$1" = "--status" ] || [ "$1" = "-s" ]; then
 fi
 
 if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
-    echo "用法: ./tools/setup-runtime [选项]"
+    echo "用法: skill-boss setup-runtime [选项]"
     echo ""
     echo "选项:"
     echo "  (无参数)      为本 skills 套件下载并配置全套绿色运行时引擎"

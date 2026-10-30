@@ -15,16 +15,16 @@ description: 项目任务看板工具。在项目事情多、容易忘、分不�
 
 ## 零、 跨平台独立运行时调用规范
 
-本技能配套的所有工具执行，严格依赖本 skills 仓库自带的沙箱运行时，不污染宿主全局环境：
+本技能配套工具执行时，使用本仓库内置的运行环境：
 
 - **标准基准路径**：`~/.agents/skills/.runtime/`
 - **各操作系统与 Shell 执行对照**：
 
 | 平台 / 环境 | 路径写法示例 | 说明 |
 | :--- | :--- | :--- |
-| **macOS / Linux (Bash/Zsh)** | `~/.agents/skills/.runtime/bin/bun` | Shell 会自动将 `~` 展开为当前用户主目录 |
-| **Windows (PowerShell)** | `$HOME\.agents\skills\.runtime\bin\bun.exe` | PowerShell 中 `$HOME` 对应用户主目录 |
-| **Windows (cmd.exe)** | `%USERPROFILE%\.agents\skills\.runtime\bin\bun.exe` | cmd 不支持 `~` 展开，必须使用 `%USERPROFILE%` 环境变量 |
+| **macOS / Linux (Bash/Zsh)** | `~/.agents/skills/.runtime/bin/python3` | Shell 会自动将 `~` 展开为当前用户主目录 |
+| **Windows (PowerShell)** | `$HOME\.agents\skills\.runtime\bin\python.exe` | PowerShell 中 `$HOME` 对应用户主目录 |
+| **Windows (cmd.exe)** | `%USERPROFILE%\.agents\skills\.runtime\bin\python.exe` | cmd 不支持 `~` 展开，必须使用 `%USERPROFILE%` 环境变量 |
 
 > **提示**：AI 在向系统终端发送命令时，应根据当前宿主操作系统自动选取上述对应的执行路径。
 
@@ -68,17 +68,21 @@ description: 项目任务看板工具。在项目事情多、容易忘、分不�
 
 安装好之后：
 1. 打开项目里的 `kanban.html`，滑到底部的 `<script type="text/mermaid" id="kanban-source">`，把当前手头要办的事填进去；
-2. 启动本地轻量预览服务：
+2. 启动本地预览服务：
    - **macOS / Linux**：
      ```bash
-     ~/.agents/skills/.runtime/bin/bun x vite --port 5173
+     ~/.agents/skills/.runtime/bin/python3 -m http.server 5173
      ```
    - **Windows (PowerShell)**：
      ```powershell
-     & "$HOME\.agents\skills\.runtime\bin\bun.exe" x vite --port 5173
+     & "$HOME\.agents\skills\.runtime\bin\python.exe" -m http.server 5173
+     ```
+   - **Windows (cmd.exe)**：
+     ```cmd
+     "%USERPROFILE%\.agents\skills\.runtime\bin\python.exe" -m http.server 5173
      ```
 3. 告诉用户：
-   > “项目任务看板已经搭好了！在浏览器打开 `http://localhost:5173/kanban.html` 就能看进度。后面改了任务，网页会自动刷新。”
+   > “项目任务看板已经搭好了！在浏览器打开 `http://localhost:5173/kanban.html` 就能看进度。后续改了任务，画板内置了自动同步，网页会自动实时更新。”
 
 ---
 

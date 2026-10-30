@@ -20,9 +20,8 @@ echo "=================================================="
 # 1. 自动为项目内部所有脚本赋予执行权限（静默自动完成，无需用户介入）
 chmod +x "$REPO_ROOT/bin/skill-boss" 2>/dev/null || true
 chmod +x "$REPO_ROOT/install.sh" 2>/dev/null || true
-chmod +x "$REPO_ROOT/tools/setup-runtime.sh" 2>/dev/null || true
-chmod +x "$REPO_ROOT/tools/sync_skills.py" 2>/dev/null || true
-chmod +x "$REPO_ROOT/tools/generate_catalog.py" 2>/dev/null || true
+chmod +x "$REPO_ROOT/bin/setup-runtime.sh" 2>/dev/null || true
+chmod +x "$REPO_ROOT/bin/sync_skills.py" 2>/dev/null || true
 chmod +x "$REPO_ROOT/skills-router/scripts/list_skills.py" 2>/dev/null || true
 
 # 2. 确保用户可执行目录 ~/.local/bin 存在

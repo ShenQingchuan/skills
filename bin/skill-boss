@@ -10,9 +10,9 @@ import subprocess
 import sys
 from pathlib import Path
 
-# 定位仓库根目录（以当前脚本所在 bin/ 的上一级为准）
-ROOT_DIR = Path(__file__).resolve().parent.parent
-TOOLS_DIR = ROOT_DIR / "tools"
+# 定位仓库根目录与内部 bin 目录
+BIN_DIR = Path(__file__).resolve().parent
+ROOT_DIR = BIN_DIR.parent
 ROUTER_SCRIPTS_DIR = ROOT_DIR / "skills-router" / "scripts"
 
 
@@ -32,15 +32,9 @@ def cmd_list(args: list[str]) -> int:
     return run_python_script(list_script, args)
 
 
-def cmd_catalog(args: list[str]) -> int:
-    """单独刷新全量技能目录 CATALOG.md"""
-    catalog_script = TOOLS_DIR / "generate_catalog.py"
-    return run_python_script(catalog_script, args)
-
-
 def cmd_sync(args: list[str]) -> int:
-    """同步第三方技能（类似 npm install），底层已在成功后自动联动更新 CATALOG.md"""
-    sync_script = TOOLS_DIR / "sync_skills.py"
+    """依据 sources.json 一键同步第三方技能（类似 npm install）"""
+    sync_script = BIN_DIR / "sync_skills.py"
     return run_python_script(sync_script, args)
 
 
@@ -48,13 +42,13 @@ def cmd_setup_runtime(args: list[str]) -> int:
     """安装部署独立沙盒运行引擎（Node/Bun/uv/Python/rg）"""
     is_windows = sys.platform.startswith("win")
     if is_windows:
-        ps_script = TOOLS_DIR / "setup-runtime.ps1"
+        ps_script = BIN_DIR / "setup-runtime.ps1"
         if not ps_script.exists():
             print(f"❌ 找不到脚本: {ps_script}", file=sys.stderr)
             return 1
         cmd = ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(ps_script)] + args
     else:
-        sh_script = TOOLS_DIR / "setup-runtime.sh"
+        sh_script = BIN_DIR / "setup-runtime.sh"
         if not sh_script.exists():
             print(f"❌ 找不到脚本: {sh_script}", file=sys.stderr)
             return 1
@@ -69,16 +63,18 @@ def print_help() -> None:
 skill-boss - 个人 Agent 技能治理框架 CLI
 
 用法:
-  skill-boss <命令> [参数]
+  skill-boss <命令> [选项...]
 
 可用命令:
-  list-skills       查看技能树与各技能入口路径
-  sync-skills       依据 sources.json 同步第三方外部技能
-  generate-catalog  重新生成全量技能目录文档 CATALOG.md
-  setup-runtime     安装并配置本地沙盒运行环境
+  list, list-skills          查看层级技能树（展示描述与绝对入口路径）
+                             支持传参单独探查子分类，如: skill-boss list dev/
+  sync, sync-skills          依据 sources.json 一键同步第三方技能
+                             支持传参: --check（仅检查是否有更新）
+  setup-runtime              为本框架安装/检查独立沙盒运行引擎（Node/Bun/uv/Python/rg）
+                             支持传参: -s, --status（查看就绪状态）
 
-通用参数:
-  --help            查看帮助信息
+选项:
+  -h, --help                 查看当前帮助说明
 """
     print(help_text.strip())
 
@@ -96,8 +92,6 @@ def main() -> int:
         "list-skills": cmd_list,
         "sync": cmd_sync,
         "sync-skills": cmd_sync,
-        "catalog": cmd_catalog,
-        "generate-catalog": cmd_catalog,
         "setup-runtime": cmd_setup_runtime,
     }
 
