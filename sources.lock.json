@@ -2,7 +2,7 @@
   "generatedBy": "tools/sync_skills.py",
   "installed": {
     "dev/agent-browser": {
-      "digest": "80161e6836b3b40f4e83730a290deb40ac14d877d38c97ad5f6d71be37ce74c3",
+      "digest": "79add54dd6de82a262a88c94744d7decde000159c1d7f67c78eb9d4e523d54bb",
       "from": "vercel-labs",
       "skill": "agent-browser"
     },
@@ -270,7 +270,7 @@
       "resolvedRef": "refs/heads/main"
     },
     "vercel-labs": {
-      "commit": "1453dd37a40c730fe00f592bc32198a896ff8747",
+      "commit": "099e84ea23ee995422dc94d02c9c2309e34d3e02",
       "ref": "main",
       "repo": "https://github.com/vercel-labs/agent-browser",
       "resolvedRef": "refs/heads/main"
