@@ -148,15 +148,22 @@ body {
   filter: drop-shadow(0 12px 36px rgba(0, 0, 0, 0.5));
 }
 
-/* 卡片细腻微交互 */
+/* 卡片细腻微交互：纯光效过渡，坚决不做几何位移以消灭边缘抖动 */
 #kanban-mount svg.pele-kanban .pele-card {
-  transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), filter 0.12s ease;
+  transition: filter 0.15s ease;
   cursor: pointer;
 }
 
+#kanban-mount svg.pele-kanban .pele-card rect {
+  transition: stroke 0.15s ease, fill 0.15s ease;
+}
+
 #kanban-mount svg.pele-kanban .pele-card:hover {
-  filter: brightness(1.15) drop-shadow(0 4px 12px rgba(59, 130, 246, 0.25));
-  transform: translateY(-2px);
+  filter: brightness(1.15) drop-shadow(0 4px 14px rgba(59, 130, 246, 0.25));
+}
+
+#kanban-mount svg.pele-kanban .pele-card:hover rect {
+  stroke: rgba(59, 130, 246, 0.45);
 }
 
 /* 缩放控制器悬浮胶囊 */
