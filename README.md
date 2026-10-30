@@ -2,10 +2,10 @@
 
 # Skills
 
-**让你的 Agent 一次只看见一个技能。**
+**让 Agent 更有条理地调度技能。**
 
-一个用「渐进式披露」打理的个人 Agent 技能治理框架。
-常驻上下文的只有路由器本身，其余技能用到才装载。
+一个基于「渐进式披露」理念的个人 Agent 技能治理框架。
+常驻上下文的只有一个技能路由器，其余技能用到才载入。
 内置跨平台 CLI 工具 `skill-boss`，一行命令完成全套安装与技能同步。
 
 [为什么](#为什么需要它) · [工作原理](#工作原理) · [一键安装与快速开始](#一键安装与快速开始) · [CLI 使用指引](#cli-使用指引-skill-boss) · [技能目录 (Catalog)](./CATALOG.md) · [目录结构](#目录结构) · [日常使用](#日常使用) · [Agent 指引](#agent-使用指引) · [设计原则](#设计原则)
@@ -85,15 +85,15 @@ cd ~/.agents/skills
 在任意终端敲击（首次安装类似 `npm install`，根据 `sources.lock.json` 拉齐全部技能）：
 
 ```bash
-skill-boss sync
+skill-boss sync-skills
 ```
 
-> **设计亮点**：`skill-boss sync` 完成后，系统会**全自动联动更新 `CATALOG.md`**，永远无需人类手动记两步！
+> **设计亮点**：`skill-boss sync-skills` 完成后，系统会**全自动联动更新 `CATALOG.md`**，永远无需人类手动记两步！
 
 ### 4. 验证就绪
 
 ```bash
-skill-boss list
+skill-boss list-skills
 ```
 
 你的 Agent 默认**只感知到 `skills-router` 这一个入口技能**；`registry/` 下的所有技能对它保持静默，直到真正需要时由路由器按需展开。
@@ -104,12 +104,12 @@ skill-boss list
 
 框架提供自包含的 `skill-boss` 命令，既方便人类日常打理，也是 Agent 调度的绝佳接口：
 
-| 命令 | 别名 | 职责说明 | 联动特性 |
-| :--- | :--- | :--- | :--- |
-| `skill-boss list` | `list-skills` | 查看当前技能树，输出包含分类、一句话描述与入口路径 | 支持子路径过滤，如 `skill-boss list dev/` |
-| `skill-boss sync` | `sync-skills` | 依据 `sources.json` 同步第三方依赖，对齐指纹锁定 | **执行完毕自动刷新 `CATALOG.md`**；支持 `--check` |
-| `skill-boss catalog` | `generate-catalog` | 手动/单独全量生成 `CATALOG.md` | 本地自建原创技能后，无需网络同步，敲此命令直接刷新文档 |
-| `skill-boss setup-runtime` | - | 一键部署/检查独立绿色沙盒引擎 (Node/Bun/uv/Python/rg) | 支持 `-s` 或 `--status` 查看引擎就绪状态 |
+| 命令 | 职责说明 | 联动特性 |
+| :--- | :--- | :--- |
+| `skill-boss list-skills` | 查看当前技能树，输出包含分类、一句话描述与入口路径 | 支持子路径过滤，如 `skill-boss list-skills dev/` |
+| `skill-boss sync-skills` | 依据 `sources.json` 同步第三方依赖，对齐指纹锁定 | **执行完毕自动刷新 `CATALOG.md`**；支持 `--check` |
+| `skill-boss generate-catalog` | 手动/单独全量生成 `CATALOG.md` | 本地自建原创技能后，无需网络同步，敲此命令直接刷新文档 |
+| `skill-boss setup-runtime` | 一键部署/检查独立绿色沙盒引擎 (Node/Bun/uv/Python/rg) | 支持 `-s` 或 `--status` 查看引擎就绪状态 |
 
 ---
 
@@ -159,8 +159,8 @@ Agent 的技能发现只认**仓库根目录下的第一层**。`tools/` 里没�
 ### 同步上游更新
 
 ```bash
-skill-boss sync          # 拉取并更新 registry/，成功后全自动刷新 CATALOG.md
-skill-boss sync --check  # 只看有没有更新（有则退出码 1，不写任何文件）
+skill-boss sync-skills          # 拉取并更新 registry/，成功后全自动刷新 CATALOG.md
+skill-boss sync-skills --check  # 只看有没有更新（有则退出码 1，不写任何文件）
 ```
 
 也可以完全交给 CI：`.github/workflows/sync-skills.yml` 每天自动跑一次，有变化就自动提交回 `main`，没变化就什么也不做。你只需要 `git pull`。
@@ -198,7 +198,7 @@ skill-boss sync --check  # 只看有没有更新（有则退出码 1，不写任
 
 ### 运行时：需要技能时
 
-1. 跑 `skill-boss list`（或 `python3 skills-router/scripts/list_skills.py`）。
+1. 跑 `skill-boss list-skills`（或 `python3 skills-router/scripts/list_skills.py`）。
 2. 按描述挑最匹配的 **1 个**；确有互补需要时最多再加 1 个（例如「架构规约」配「API 参考」）。
 3. **只**读选中技能目录下的 `SKILL.md`；其中若指向 `references/`、`reference/` 或 `scripts/`，再按需下钻。
 
@@ -212,9 +212,9 @@ skill-boss sync --check  # 只看有没有更新（有则退出码 1，不写任
 
 | 你想做的事 | 推荐做法 |
 | --- | --- |
-| 新增 / 移除第三方技能 | 改 `sources.json` 后执行 `skill-boss sync` |
-| 升级上游技能 | 跑 `skill-boss sync`（自动对齐并更新 `CATALOG.md`） |
-| 本地新建原创技能 | 在 `registry/` 对应分类下新建，完成后跑 `skill-boss catalog` 刷新索引 |
+| 新增 / 移除第三方技能 | 改 `sources.json` 后执行 `skill-boss sync-skills` |
+| 升级上游技能 | 跑 `skill-boss sync-skills`（自动对齐并更新 `CATALOG.md`） |
+| 本地新建原创技能 | 在 `registry/` 对应分类下新建，完成后跑 `skill-boss generate-catalog` 刷新索引 |
 | 调整路由规则 | `skills-router/SKILL.md` |
 | 调整技能树展示 | `skills-router/scripts/list_skills.py` |
 | 调整底层同步逻辑 | `tools/sync_skills.py` |
