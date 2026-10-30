@@ -77,3 +77,4 @@ skills-router/registry/office/lark/lark-workflow-standup-report/
 skills-router/registry/workflow/grilling/
 skills-router/registry/workflow/writing-for-agents/
 # >>> skills-sync:managed-end <<<
+.vite/
