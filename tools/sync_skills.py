@@ -54,7 +54,7 @@ def update_root_gitignore(lock_installed: dict) -> None:
     managed_lines = [
         MANAGED_START,
         "# 由 tools/sync_skills.py 自动管理：精准黑名单排除所有已安装的第三方技能产物",
-        "# 本地原创技能（如 dev/agent-friendly 等）与说明文档不在名单中，正常受 Git 跟踪与保护",
+        "# 本地原创技能（如 dev/agent-friendly-context 等）与说明文档不在名单中，正常受 Git 跟踪与保护",
     ]
 
     for path in sorted(lock_installed.keys()):

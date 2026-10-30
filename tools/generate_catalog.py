@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 生成全量技能目录 CATALOG.md。
-严格按照真实目录结构（dev/agent-friendly, dev/frontend, office/lark 等）分层组织，
+严格按照真实目录结构（dev/agent-friendly-context, dev/frontend, office/lark 等）分层组织，
 自动为外部引入技能标注源链接（Credit），本地自建技能清晰归类，并在表格中呈现精准相对路径。
 """
 
@@ -20,7 +20,7 @@ CATALOG_FILE = REPO_ROOT / "CATALOG.md"
 # 目录友好中文标注（若未登记则默认使用目录名自身）
 CATEGORY_META = {
     "dev": "开发与智能体生态",
-    "dev/agent-friendly": "本地自建 · 智能体规约",
+    "dev/agent-friendly-context": "本地自建 · 智能体规约",
     "dev/frontend": "前端开发",
     "dev/agent-browser": "浏览器自动化",
     "office": "办公与协同生态",
@@ -115,7 +115,7 @@ def main():
             else:
                 sub_dir = f"{top_dir}/{parts[1]}"
         else:
-            # 例如 dev/agent-friendly/create-rule -> sub_dir 是 dev/agent-friendly
+            # 例如 dev/agent-friendly-context/create-rule -> sub_dir 是 dev/agent-friendly-context
             # office/lark/lark-approval -> sub_dir 是 office/lark
             sub_dir = f"{top_dir}/{parts[1]}"
 
@@ -188,9 +188,9 @@ def main():
         top_label = CATEGORY_META.get(top, top)
         out.append(f"## 📂 {top}/ ({top_label})\n")
 
-        # 排序子目录，把包含 agent-friendly（自建）的排在最前
+        # 排序子目录，把包含 agent-friendly-context（自建）的排在最前
         def sub_sort_key(sub_key: str):
-            if "agent-friendly" in sub_key:
+            if "agent-friendly-context" in sub_key:
                 return (0, sub_key)
             return (1, sub_key)
 

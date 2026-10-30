@@ -37,17 +37,14 @@
     { "skill": "vitest", "from": "antfu", "to": "dev/frontend/vitest" },
     { "skill": "unocss", "from": "antfu", "to": "dev/frontend/unocss" },
     { "skill": "pnpm", "from": "antfu", "to": "dev/frontend/pnpm" },
-
     { "skill": "vue-best-practices", "from": "vuejs-ai", "to": "dev/frontend/vue-best-practices" },
     { "skill": "vue-debug-guides", "from": "vuejs-ai", "to": "dev/frontend/vue-debug-guides" },
     { "skill": "vue-pinia-best-practices", "from": "vuejs-ai", "to": "dev/frontend/vue-pinia-best-practices" },
     { "skill": "vue-router-best-practices", "from": "vuejs-ai", "to": "dev/frontend/vue-router-best-practices" },
     { "skill": "vue-testing-best-practices", "from": "vuejs-ai", "to": "dev/frontend/vue-testing-best-practices" },
     { "skill": "create-adaptable-composable", "from": "vuejs-ai", "to": "dev/frontend/create-adaptable-composable" },
-
-    { "skill": "productivity/grilling", "from": "mattpocock", "to": "workflow/grilling" },
-    { "skill": "productivity/writing-for-agents", "from": "mattpocock", "to": "workflow/writing-for-agents" },
-
+    { "skill": "productivity/grilling", "from": "mattpocock", "to": "workflow/grilling" },    
+    { "skill": "productivity/writing-for-agents", "from": "mattpocock", "to": "writing/writing-for-agents" },
     { "skill": "*", "from": "larksuite", "to": "office/lark" }
   ]
 }

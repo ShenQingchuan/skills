@@ -14,15 +14,15 @@
 
 ## 📂 dev/ (开发与智能体生态)
 
-### 🎯 dev/agent-friendly/ (本地自建 · 智能体规约)
+### 🎯 dev/agent-friendly-context/ (本地自建 · 智能体规约)
 
 | 技能 (Skill) | 相对路径 (Path) | 简介 (Description) | 来源 (Source) |
 | --- | --- | --- | --- |
-| **create-rule** | `dev/agent-friendly/create-rule/` | 为项目创建或沉淀规则约束文件（Rule）。当用户要求记录编码规范、固化团队开发约束、沉淀 Code Review 经验或在 .agents/rules/ 下新建规则时使用。 | Local（自建） |
-| **create-skill** | `dev/agent-friendly/create-skill/` | 为当前项目创建私有专属技能（Project Skill）。当用户要求沉淀项目专有流程、固化自动化操作套路、或在 .agents/skills/ 下新增技能时使用。 | Local（自建） |
-| **create-spec** | `dev/agent-friendly/create-spec/` | 将讨论好的业务需求、产品方案或技术设计落盘为规范的 Spec 目录。当用户要求整理需求、记录设计方案、编写 PRD 或将讨论成果沉淀为规范时使用。 | Local（自建） |
-| **manage-AGENTS-md** | `dev/agent-friendly/manage-AGENTS-md/` | 创建、更新、审查与精简项目根目录的 AGENTS.md 文件。当用户要求初始化入口导航、更新测试或启动命令、调整项目红线、或对膨胀腐烂的 AGENTS.md 进行修剪瘦身时使用。 | Local（自建） |
-| **setup-project-for-agents** | `dev/agent-friendly/setup-project-for-agents/` | 为项目初始化对 Agent 友好的上下文环境与目录结构，引导渐进式信息披露。 | Local（自建） |
+| **create-rule** | `dev/agent-friendly-context/create-rule/` | 为项目创建或沉淀规则约束文件（Rule）。当用户要求记录编码规范、固化团队开发约束、沉淀 Code Review 经验或在 .agents/rules/ 下新建规则时使用。 | Local（自建） |
+| **create-skill** | `dev/agent-friendly-context/create-skill/` | 为当前项目创建私有专属技能（Project Skill）。当用户要求沉淀项目专有流程、固化自动化操作套路、或在 .agents/skills/ 下新增技能时使用。 | Local（自建） |
+| **create-spec** | `dev/agent-friendly-context/create-spec/` | 将讨论好的业务需求、产品方案或技术设计落盘为规范的 Spec 目录。当用户要求整理需求、记录设计方案、编写 PRD 或将讨论成果沉淀为规范时使用。 | Local（自建） |
+| **manage-AGENTS-md** | `dev/agent-friendly-context/manage-AGENTS-md/` | 创建、更新、审查与精简项目根目录的 AGENTS.md 文件。当用户要求初始化入口导航、更新测试或启动命令、调整项目红线、或对膨胀腐烂的 AGENTS.md 进行修剪瘦身时使用。 | Local（自建） |
+| **setup-project-for-agents** | `dev/agent-friendly-context/setup-project-for-agents/` | 为项目初始化对 Agent 友好的上下文环境与目录结构，引导渐进式信息披露。 | Local（自建） |
 
 ### 🎯 dev/agent-browser/ (浏览器自动化)
 

@@ -86,7 +86,7 @@ python3 skills-router/scripts/list_skills.py
 │   └── registry/                  ← 技能库本体（类似 node_modules，第三方技能不入库）
 │       ├── .gitignore             ← 自动精准忽略第三方下载产物，绝不误伤本地自建技能
 │       ├── dev/
-│       │   ├── agent-friendly/    ← 本地自建原创技能（受 Git 跟踪与保护）
+│       │   ├── agent-friendly-context/ ← 本地自建原创技能（受 Git 跟踪与保护）
 │       │   └── ...                ← 第三方安装产物（本地存在但 Git 忽略）
 │       ├── office/lark/           ← 飞书套件安装产物（Git 忽略）
 │       ├── workflow/              ← 工作流技能（Git 忽略）
