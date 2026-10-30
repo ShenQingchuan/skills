@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Kanban | 需求看板与流转画板</title>
+  
+  <!-- Halfmoon v2 现代 SaaS / Dashboard UI 框架 -->
+  <link href="https://cdn.jsdelivr.net/npm/halfmoon@2.0.1/css/halfmoon.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons 图标库 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <!-- 看板专属定制样式 -->
+  <link href="./kanban-style.css" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- 顶部导航栏 -->
+  <nav class="navbar navbar-expand-lg kanban-header px-4 py-3">
+    <div class="container-fluid p-0">
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge text-bg-primary p-2 fs-6 rounded-3">
+          <i class="bi bi-kanban"></i>
+        </span>
+        <div>
+          <h5 class="mb-0 fw-bold">Project Kanban</h5>
+          <span class="text-body-secondary small">待验收即为看板终点 · 验收通过自动归档</span>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#guideModal">
+          <i class="bi bi-journal-text me-1"></i>流转规范
+        </button>
+        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#historyModal">
+          <i class="bi bi-clock-history me-1"></i>需求历史
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 主体工作区 -->
+  <main class="container-fluid px-4 py-4">
+    <!-- 泳道说明条 -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-3">
+        <div class="card border-0 bg-body-tertiary p-3 rounded-3">
+          <div class="d-flex align-items-center gap-2 text-secondary mb-1">
+            <i class="bi bi-inbox-fill text-warning"></i>
+            <span class="fw-semibold">1. Backlog</span>
+          </div>
+          <small class="text-body-secondary">原始构想、问题分流、待细化排期</small>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card border-0 bg-body-tertiary p-3 rounded-3">
+          <div class="d-flex align-items-center gap-2 text-secondary mb-1">
+            <i class="bi bi-list-check text-info"></i>
+            <span class="fw-semibold">2. Todo</span>
+          </div>
+          <small class="text-body-secondary">目标明确、确定优先级、等待接单</small>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card border-0 bg-body-tertiary p-3 rounded-3">
+          <div class="d-flex align-items-center gap-2 text-secondary mb-1">
+            <i class="bi bi-lightning-charge-fill text-primary"></i>
+            <span class="fw-semibold">3. In Progress</span>
+          </div>
+          <small class="text-body-secondary">AI/研发全力攻坚中 (严格 WIP 限制)</small>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card border-0 bg-body-tertiary p-3 rounded-3">
+          <div class="d-flex align-items-center gap-2 text-secondary mb-1">
+            <i class="bi bi-check-circle-fill text-success"></i>
+            <span class="fw-semibold">4. Ready for Review</span>
+          </div>
+          <small class="text-body-secondary">开发与自测就绪 · 等待人类最终验收</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- 看板画板主卡片 (由 Pele 驱动渲染) -->
+    <div class="kanban-board-card">
+      <div id="kanban-mount">
+        <!-- SVG 将被动态挂载在此处 -->
+      </div>
+    </div>
+  </main>
+
+  <!-- 浮动通知容器 -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toast-container"></div>
+
+  <!-- 模态弹窗：流转规范指引 -->
+  <div class="modal fade" id="guideModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-compass me-2"></i>看板流转与维护核心守则</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-info">
+            <i class="bi bi-lightbulb-fill me-2"></i>
+            <strong>第一性原理</strong>：实时看板不是垃圾堆。看板的终点是<strong>“待验收 (Ready for Review)”</strong>，一旦用户确认通过，必须立即物理移出看板，归档沉淀为需求历史。
+          </div>
+          <ol class="list-group list-group-numbered mb-3">
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+              <div class="ms-2 me-auto">
+                <div class="fw-bold">发现问题或构想 (Issue -> Backlog)</div>
+                新想法或 Bug 统一编号进入 Backlog，待细化分解。
+              </div>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+              <div class="ms-2 me-auto">
+                <div class="fw-bold">排期与标记优先级 (Todo)</div>
+                技术方案确定后进入 Todo，标明 <code>priority: high / medium / low</code>。
+              </div>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+              <div class="ms-2 me-auto">
+                <div class="fw-bold">AI 认领并执行 (In Progress)</div>
+                AI 接单时将卡片剪切进 In Progress，标明 <code>assignee: AI</code>。
+              </div>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+              <div class="ms-2 me-auto">
+                <div class="fw-bold">送审待验收 (Ready for Review)</div>
+                代码编写与自测通过，移入 Ready for Review，提醒用户体验与确认。
+              </div>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+              <div class="ms-2 me-auto">
+                <div class="fw-bold">验收通过与归档 (Archived)</div>
+                人类验收通过，卡片从 Mermaid 中删除，沉淀至 <code>history.md</code>。
+              </div>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 模态弹窗：需求历史记录 -->
+  <div class="modal fade" id="historyModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-archive-fill me-2"></i>需求归档历史档案</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-body-secondary">已通过验收并移出看板的历史交付物：</p>
+          <div class="list-group" id="history-list">
+            <div class="list-group-item list-group-item-action">
+              <div class="d-flex w-100 justify-content-between">
+                <h6 class="mb-1 text-success"><i class="bi bi-check-all me-1"></i>[INIT-000] 完成项目骨架与运行时注入器配置</h6>
+                <small class="text-body-secondary">已归档</small>
+              </div>
+              <p class="mb-1 small text-body-secondary">实现 Node LTS / uv / Python / Bun / rg 绿色免安装自举，支持 TypeScript 零编译原生执行。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================================================================
+       数据源定义：AI 直接维护与编辑下方的 Mermaid Kanban 纯文本
+       ============================================================================== -->
+  <script type="text/mermaid" id="kanban-source">
+kanban
+  Backlog
+    [FEAT-001] 支持微信与飞书多端授权登录
+    [PERF-002] 针对大型 SVG 画板进行渲染性能调优
+  Todo
+    [FEAT-003] 增加看板数据一键导出为 JSON / Markdown 报告
+      priority: high
+  In Progress
+    [WORK-004] 升级鉴权链路与会话状态管理
+      assignee: AI
+  Ready for Review
+    [DOCS-005] 完成 Project Kanban 全流程流转规范文档
+  </script>
+
+  <!-- Bootstrap 5 Bundle JS (支撑 Halfmoon 弹窗与交互) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- 看板核心引擎应用 -->
+  <script type="module" src="./kanban-app.js"></script>
+
+</body>
+</html>

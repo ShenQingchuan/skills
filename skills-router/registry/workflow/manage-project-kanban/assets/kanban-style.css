@@ -1,0 +1,99 @@
+/* ==============================================================================
+   Project Kanban Custom Styles (Complements Halfmoon v2)
+   ============================================================================== */
+
+:root {
+  --kanban-card-bg: var(--bs-body-bg);
+  --kanban-border: var(--bs-border-color);
+  --kanban-radius: 0.75rem;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--bs-tertiary-bg);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* 顶部导航与工作台标题 */
+.kanban-header {
+  background-color: var(--bs-body-bg);
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+/* 画板主卡片容器 */
+.kanban-board-card {
+  background-color: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--kanban-radius);
+  box-shadow: var(--bs-box-shadow-sm);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.kanban-board-card:hover {
+  box-shadow: var(--bs-box-shadow);
+}
+
+/* Pele 生成的 SVG 容器 */
+#kanban-mount {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 480px;
+  overflow: auto;
+  position: relative;
+  background-color: var(--bs-body-bg);
+  border-radius: calc(var(--kanban-radius) - 1px);
+  padding: 1.5rem;
+}
+
+#kanban-mount svg {
+  max-width: 100%;
+  height: auto;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+}
+
+/* Pele Zoom 按钮美化 */
+.pele-zoom-controls {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+.pele-zoom-btn {
+  background-color: var(--bs-secondary-bg);
+  border: 1px solid var(--bs-border-color);
+  color: var(--bs-body-color);
+  border-radius: 0.375rem;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pele-zoom-btn:hover {
+  background-color: var(--bs-tertiary-bg);
+  border-color: var(--bs-primary);
+  color: var(--bs-primary);
+}
+
+/* 浮动通知 Toast 容器 */
+.toast-container {
+  z-index: 1090;
+}
+
+/* 空状态占位提示 */
+.kanban-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: var(--bs-secondary-color);
+}
