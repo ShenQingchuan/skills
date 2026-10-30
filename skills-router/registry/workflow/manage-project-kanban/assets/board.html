@@ -170,17 +170,15 @@
        ============================================================================== -->
   <script type="text/mermaid" id="kanban-source">
 kanban
-  Backlog
-    [FEAT-001] 支持微信与飞书多端授权登录
-    [PERF-002] 针对大型 SVG 画板进行渲染性能调优
-  Todo
-    [FEAT-003] 增加看板数据一键导出为 JSON / Markdown 报告
-      priority: high
-  In Progress
-    [WORK-004] 升级鉴权链路与会话状态管理
-      assignee: AI
-  Ready for Review
-    [DOCS-005] 完成 Project Kanban 全流程流转规范文档
+  backlog[Backlog]
+    feat001[支持微信与飞书多端授权登录]
+    perf002[针对大型 SVG 画板进行渲染性能调优]
+  todo[Todo]
+    feat003[增加看板数据一键导出为 JSON / Markdown 报告]@{ priority: "High" }
+  in_progress[In Progress]
+    work004[升级鉴权链路与会话状态管理]@{ assigned: "AI" }
+  ready_for_review[Ready for Review]
+    docs005[完成 Project Kanban 全流程流转规范文档]
   </script>
 
   <!-- Bootstrap 5 Bundle JS (支撑 Halfmoon 弹窗与交互) -->

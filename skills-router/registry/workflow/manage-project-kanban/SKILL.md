@@ -29,16 +29,14 @@ Mermaid 看板必须严格维护以下 4 个泳道，不要随意增添混乱分
 
 ```mermaid
 kanban
-  Backlog
-    [REQ-001] 原始想法 / 待细化分解的 Bug
-  Todo
-    [REQ-002] 目标已明确、排期待做
-      priority: high
-  In Progress
-    [REQ-003] AI 正在攻坚的任务 (WIP 限制)
-      assignee: AI
-  Ready for Review
-    [REQ-004] 开发与自测就绪，等待人类最终验收
+  backlog[Backlog]
+    feat001[原始想法 / 待细化分解的 Bug]
+  todo[Todo]
+    feat002[目标已明确、排期待做]@{ priority: "High" }
+  in_progress[In Progress]
+    work003[AI 正在攻坚的任务 (WIP 限制)]@{ assigned: "AI" }
+  ready_for_review[Ready for Review]
+    docs004[开发与自测就绪，等待人类最终验收]
 ```
 
 | 泳道名称 | 职责定位 | 进入准则 | 离开准则 |
@@ -55,14 +53,13 @@ kanban
 AI 在维护看板时，必须遵循以下标准动作：
 
 ### 1. 发现新问题或记录新想法（入库）
-- 为新需求分配唯一编号（如 `[FEAT-001]`、`[BUG-002]`、`[PERF-003]`）；
-- 追加放入 `Backlog`（粗粒度想法）或 `Todo`（明确可做的任务）；
+- 为新需求分配唯一编号与卡片（格式为 `id[标题]`，可通过 `@{ priority: "High" }` 附加属性）；
+- 追加放入 `backlog[Backlog]`（粗粒度想法）或 `todo[Todo]`（明确可做的任务）；
 - 示例：
   ```mermaid
   kanban
-    Todo
-      [FEAT-006] 增加用户头像裁剪上传功能
-        priority: medium
+    todo[Todo]
+      feat006[增加用户头像裁剪上传功能]@{ priority: "Medium" }
   ```
 
 ### 2. 认领任务并开始开发（接单）
