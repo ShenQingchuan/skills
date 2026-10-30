@@ -26,6 +26,7 @@ CATEGORY_META = {
     "office": "办公与协同生态",
     "office/lark": "飞书全能力套件",
     "workflow": "工作流与决策",
+    "writing": "写作与文档",
 }
 
 

@@ -89,5 +89,12 @@
 | --- | --- | --- | --- |
 | [grilling](https://github.com/mattpocock/skills/blob/HEAD/skills/productivity/grilling/SKILL.md) | `workflow/grilling/` | Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any 'grill' trigger phrases. | [mattpocock/skills](https://github.com/mattpocock/skills) |
 | **manage-project-kanban** | `workflow/manage-project-kanban/` | 项目任务看板工具。在项目事情多、容易忘、分不清做到哪一步时使用。用来给任务排队、记录当前正在做什么、做完了让人检查确认，确认通过后归档到历史记录。支持一键搭建网页看板，方便随时看进度。 | Local（自建） |
-| [writing-for-agents](https://github.com/mattpocock/skills/blob/HEAD/skills/productivity/writing-for-agents/SKILL.md) | `workflow/writing-for-agents/` | Writing documents for agents. Use when creating or editing skills, or modifying AGENTS.md or CLAUDE.md. | [mattpocock/skills](https://github.com/mattpocock/skills) |
+
+## 📂 writing/ (写作与文档)
+
+### 🎯 writing/writing-for-agents/ (writing/writing-for-agents)
+
+| 技能 (Skill) | 相对路径 (Path) | 简介 (Description) | 来源 (Source) |
+| --- | --- | --- | --- |
+| [writing-for-agents](https://github.com/mattpocock/skills/blob/HEAD/skills/productivity/writing-for-agents/SKILL.md) | `writing/writing-for-agents/` | Writing documents for agents. Use when creating or editing skills, or modifying AGENTS.md or CLAUDE.md. | [mattpocock/skills](https://github.com/mattpocock/skills) |
 
