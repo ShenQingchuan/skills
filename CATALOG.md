@@ -88,6 +88,6 @@
 | 技能 (Skill) | 相对路径 (Path) | 简介 (Description) | 来源 (Source) |
 | --- | --- | --- | --- |
 | [grilling](https://github.com/mattpocock/skills/blob/HEAD/skills/productivity/grilling/SKILL.md) | `workflow/grilling/` | Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any 'grill' trigger phrases. | [mattpocock/skills](https://github.com/mattpocock/skills) |
-| **manage-project-kanban** | `workflow/manage-project-kanban/` | 软件项目任务看板管理工具。用于多任务追踪、进度可视化与任务全生命周期流转（待处理->待开发->攻坚执行->提请验收->验收归档）。当用户需要梳理项目任务、搭建本地可视化看板、排期跟踪功能/缺陷进展，或在开发过程中需要接单推进与验收归档时使用。 | Local（自建） |
+| **manage-project-kanban** | `workflow/manage-project-kanban/` | 项目任务看板工具。在项目事情多、容易忘、分不清做到哪一步时使用。用来给任务排队、记录当前正在做什么、做完了让人检查确认，确认通过后归档到历史记录。支持一键搭建网页看板，方便随时看进度。 | Local（自建） |
 | [writing-for-agents](https://github.com/mattpocock/skills/blob/HEAD/skills/productivity/writing-for-agents/SKILL.md) | `workflow/writing-for-agents/` | Writing documents for agents. Use when creating or editing skills, or modifying AGENTS.md or CLAUDE.md. | [mattpocock/skills](https://github.com/mattpocock/skills) |
 
