@@ -1,33 +1,39 @@
 /**
  * ==============================================================================
- * Project Kanban App Engine (Linear/Raycast Precision Edition)
- * 核心特性：明暗主题切换、双语 Icon 切换、Pele SVG 渲染、Linear 级任务抽屉
+ * Project Kanban App Engine
+ * 驱动核心：Pele (SVG 渲染) + 动态明暗主题自适应 + 双语 i18n
  * ==============================================================================
  */
 
 import { render, enableZoom } from 'https://esm.sh/pele';
 
-// 1. 多语言字典
 export const I18N_LOCALES = {
   zh: {
     title: '项目看板',
     empty: '当前看板尚无任务数据',
     render_failed: '看板语法解析失败',
     lanes: {
-      backlog: '需求池',
+      backlog: '待处理',
       todo: '待开发',
       in_progress: '进行中',
       ready_for_review: '待验收',
     },
     drawer: {
-      priority: '优先级',
-      assignee: '负责人',
-      status: '当前状态',
-      activity: '流转轨迹与活动日志',
+      priority_label: '优先级',
+      assignee_label: '负责人',
+      status_label: '当前阶段',
+      history_title: '历史日志',
       created: '需求录入并在看板创建',
+      created_desc: (id, lane) => `分配编号 ${id}，录入至 ${lane}`,
       started: 'AI 认领任务并开始进入攻坚',
+      started_desc: (assignee) => `负责人: ${assignee}`,
       ready: '已完成自测，提交进入待验收阶段',
+      ready_desc: '完成实现与自动化验证，等待人类终审验收',
       unassigned: '暂未分配',
+      normal: '普通',
+      high: '高',
+      medium: '中',
+      low: '低',
     },
   },
   en: {
@@ -41,21 +47,27 @@ export const I18N_LOCALES = {
       ready_for_review: 'Ready for Review',
     },
     drawer: {
-      priority: 'Priority',
-      assignee: 'Assignee',
-      status: 'Status',
-      activity: 'Activity & Timeline',
+      priority_label: 'Priority',
+      assignee_label: 'Assignee',
+      status_label: 'Status',
+      history_title: 'History',
       created: 'Task created on board',
+      created_desc: (id, lane) => `Assigned ${id}, added to ${lane}`,
       started: 'AI claimed task and started execution',
+      started_desc: (assignee) => `Assignee: ${assignee}`,
       ready: 'Implemented & verified, ready for review',
+      ready_desc: 'Implementation & tests passed, awaiting acceptance',
       unassigned: 'Unassigned',
+      normal: 'Normal',
+      high: 'High',
+      medium: 'Medium',
+      low: 'Low',
     },
   },
 };
 
-// ==============================================================================
-// 语言状态管理
-// ==============================================================================
+let activeDrawerCard = null;
+
 export function getCurrentLang() {
   const saved = localStorage.getItem('kanban_lang');
   if (saved && (saved === 'zh' || saved === 'en')) return saved;
@@ -70,9 +82,6 @@ export function toggleLang() {
   applyI18n(next);
 }
 
-// ==============================================================================
-// 明暗主题状态管理
-// ==============================================================================
 export function getCurrentTheme() {
   const saved = localStorage.getItem('kanban_theme');
   if (saved && (saved === 'dark' || saved === 'light')) return saved;
@@ -90,7 +99,7 @@ export function applyTheme(theme = getCurrentTheme()) {
   document.documentElement.setAttribute('data-theme', theme);
   document.body.setAttribute('data-theme', theme);
   updateThemeIcon(theme);
-  initKanban();
+  updateFavicon(theme);
 }
 
 function updateThemeIcon(theme) {
@@ -101,17 +110,27 @@ function updateThemeIcon(theme) {
     : `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`;
 }
 
+function updateFavicon(theme) {
+  const favicon = document.getElementById('favicon');
+  if (!favicon) return;
+  const strokeColor = theme === 'dark' ? '%23ffffff' : '%231f2328';
+  favicon.href = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='${strokeColor}' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect width='18' height='18' x='3' y='3' rx='3'/><path d='M8 7v7'/><path d='M12 7v4'/><path d='M16 7v9'/></svg>`;
+}
+
 export function applyI18n(lang = getCurrentLang()) {
   const t = I18N_LOCALES[lang] || I18N_LOCALES.zh;
   document.title = t.title;
   const brandEl = document.getElementById('brand-title');
   if (brandEl) brandEl.textContent = t.title;
+
   initKanban({ lang });
+
+  if (activeDrawerCard) {
+    const rawMermaid = document.getElementById('kanban-source')?.textContent.trim() || '';
+    openTaskDrawer(activeDrawerCard.id, activeDrawerCard.title, rawMermaid, lang);
+  }
 }
 
-// ==============================================================================
-// 智能本地化 Mermaid 泳道标签
-// ==============================================================================
 function localizeMermaid(source, lang) {
   const lanes = (I18N_LOCALES[lang] || I18N_LOCALES.zh).lanes;
   let result = source;
@@ -122,9 +141,6 @@ function localizeMermaid(source, lang) {
   return result;
 }
 
-// ==============================================================================
-// 看板主渲染逻辑
-// ==============================================================================
 export function initKanban(options = {}) {
   const sourceId = options.sourceId || 'kanban-source';
   const mountId = options.mountId || 'kanban-mount';
@@ -143,13 +159,15 @@ export function initKanban(options = {}) {
 
   try {
     const localizedMermaid = localizeMermaid(rawMermaid, lang);
-    const result = render(localizedMermaid, { fontSize: 13 });
+    const result = render(localizedMermaid, { fontSize: 13, fontFamily: "'Figtree', -apple-system, sans-serif" });
     mountEl.innerHTML = result.svg;
 
     enableZoom(mountEl, {
       controls: true,
       maxScale: 3,
     });
+
+    refinePriorityIndicators(mountEl);
 
     bindCardClickEvents(mountEl, rawMermaid, lang);
   } catch (error) {
@@ -162,9 +180,42 @@ export function initKanban(options = {}) {
   }
 }
 
-// ==============================================================================
-// Linear 风格任务详情抽屉逻辑
-// ==============================================================================
+function refinePriorityIndicators(mountEl) {
+  const cards = mountEl.querySelectorAll('.pele-card');
+  cards.forEach(card => {
+    const oldLine = card.querySelector('path.pele-priority');
+    if (!oldLine) return;
+
+    oldLine.remove();
+
+    const rect = card.querySelector('rect');
+    const width = rect ? parseFloat(rect.getAttribute('width')) : 184;
+    const height = rect ? parseFloat(rect.getAttribute('height')) : 37;
+
+    let level = 3;
+    let color = '#f43f5e';
+    if (card.classList.contains('pele-priority-medium')) {
+      level = 2;
+      color = '#f59e0b';
+    } else if (card.classList.contains('pele-priority-low')) {
+      level = 1;
+      color = '#3b82f6';
+    }
+
+    const iconGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    iconGroup.setAttribute('class', 'custom-priority-icon');
+    iconGroup.setAttribute('transform', `translate(${width - 20}, ${height - 13})`);
+    
+    iconGroup.innerHTML = `
+      <rect x="0" y="5" width="2" height="4" rx="0.5" fill="${color}" opacity="${level >= 1 ? 0.9 : 0.2}" />
+      <rect x="3.5" y="2.5" width="2" height="6.5" rx="0.5" fill="${color}" opacity="${level >= 2 ? 0.9 : 0.2}" />
+      <rect x="7" y="0" width="2" height="9" rx="0.5" fill="${color}" opacity="${level >= 3 ? 0.9 : 0.2}" />
+    `;
+
+    card.appendChild(iconGroup);
+  });
+}
+
 function bindCardClickEvents(mountEl, rawMermaid, lang) {
   const cards = mountEl.querySelectorAll('.pele-card');
   cards.forEach(card => {
@@ -182,9 +233,10 @@ function openTaskDrawer(cardId, cardTitle, rawMermaid, lang) {
   const backdrop = document.getElementById('drawer-backdrop');
   if (!backdrop) return;
 
+  activeDrawerCard = { id: cardId, title: cardTitle };
   const t = I18N_LOCALES[lang] || I18N_LOCALES.zh;
 
-  let priority = 'Normal';
+  let priorityText = t.drawer.normal;
   let assigned = t.drawer.unassigned;
   let lane = t.lanes.todo;
 
@@ -192,9 +244,9 @@ function openTaskDrawer(cardId, cardTitle, rawMermaid, lang) {
   const match = rawMermaid.match(cardRegex);
   if (match && match[1]) {
     const attrs = match[1];
-    if (attrs.includes('priority: "High"')) priority = 'High';
-    if (attrs.includes('priority: "Medium"')) priority = 'Medium';
-    if (attrs.includes('priority: "Low"')) priority = 'Low';
+    if (attrs.includes('priority: "High"')) priorityText = t.drawer.high;
+    else if (attrs.includes('priority: "Medium"')) priorityText = t.drawer.medium;
+    else if (attrs.includes('priority: "Low"')) priorityText = t.drawer.low;
     if (attrs.includes('assigned: "AI"')) assigned = 'AI Agent';
   }
 
@@ -207,11 +259,20 @@ function openTaskDrawer(cardId, cardTitle, rawMermaid, lang) {
     else if (before.includes('backlog')) lane = t.lanes.backlog;
   }
 
-  document.getElementById('drawer-badge-status').textContent = lane;
+  const labelPri = document.getElementById('label-priority');
+  if (labelPri) labelPri.textContent = t.drawer.priority_label;
+  const labelAss = document.getElementById('label-assignee');
+  if (labelAss) labelAss.textContent = t.drawer.assignee_label;
+  const labelSta = document.getElementById('label-status');
+  if (labelSta) labelSta.textContent = t.drawer.status_label;
+
+  const titleSec = document.getElementById('drawer-timeline-title');
+  if (titleSec) titleSec.textContent = t.drawer.history_title;
+
   document.getElementById('drawer-task-id-text').textContent = cardId.toUpperCase();
   document.getElementById('drawer-task-title-text').textContent = cardTitle;
 
-  document.getElementById('drawer-prop-priority').textContent = priority;
+  document.getElementById('drawer-prop-priority').textContent = priorityText;
   document.getElementById('drawer-prop-assignee').textContent = assigned;
   document.getElementById('drawer-prop-lane').textContent = lane;
 
@@ -223,25 +284,25 @@ function openTaskDrawer(cardId, cardTitle, rawMermaid, lang) {
         <span class="timeline-event-title">${t.drawer.created}</span>
         <span class="timeline-event-time">2025-10-30</span>
       </div>
-      <div class="timeline-event-desc">分配编号 ${cardId.toUpperCase()}，录入至 ${lane}</div>
+      <div class="timeline-event-desc">${t.drawer.created_desc(cardId.toUpperCase(), lane)}</div>
     </div>
     ${lane === t.lanes.in_progress || lane === t.lanes.ready_for_review ? `
     <div class="timeline-event">
       <span class="timeline-dot"></span>
       <div class="timeline-event-header">
         <span class="timeline-event-title">${t.drawer.started}</span>
-        <span class="timeline-event-time">进行中</span>
+        <span class="timeline-event-time">${lane}</span>
       </div>
-      <div class="timeline-event-desc">负责人: ${assigned}</div>
+      <div class="timeline-event-desc">${t.drawer.started_desc(assigned)}</div>
     </div>` : ''}
     ${lane === t.lanes.ready_for_review ? `
     <div class="timeline-event">
       <span class="timeline-dot" style="border-color:#10b981;"></span>
       <div class="timeline-event-header">
         <span class="timeline-event-title" style="color:#10b981;">${t.drawer.ready}</span>
-        <span class="timeline-event-time">待验收</span>
+        <span class="timeline-event-time">${lane}</span>
       </div>
-      <div class="timeline-event-desc">完成实现与自动化验证，等待人类终审验收</div>
+      <div class="timeline-event-desc">${t.drawer.ready_desc}</div>
     </div>` : ''}
   `;
 
@@ -251,11 +312,9 @@ function openTaskDrawer(cardId, cardTitle, rawMermaid, lang) {
 export function closeTaskDrawer() {
   const backdrop = document.getElementById('drawer-backdrop');
   if (backdrop) backdrop.classList.remove('active');
+  activeDrawerCard = null;
 }
 
-// ==============================================================================
-// 启动与事件绑定
-// ==============================================================================
 if (typeof window !== 'undefined') {
   window.addEventListener('DOMContentLoaded', () => {
     const langBtn = document.getElementById('btn-lang-toggle');

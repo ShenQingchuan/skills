@@ -5,15 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>项目看板</title>
   
-  <!-- 极简矢量 SVG Favicon (Data URI 0 外部依赖) -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect width='18' height='18' x='3' y='3' rx='3'/><path d='M8 7v7'/><path d='M12 7v4'/><path d='M16 7v9'/></svg>" type="image/svg+xml" />
+  <link id="favicon" rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><style>@media (prefers-color-scheme: dark){:root{stroke:%23fff}}</style><rect width='18' height='18' x='3' y='3' rx='3'/><path d='M8 7v7'/><path d='M12 7v4'/><path d='M16 7v9'/></svg>" type="image/svg+xml" />
 
-  <!-- 纯原生精雕样式 (0 第三方框架依赖) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <link href="./kanban-style.css" rel="stylesheet" />
 </head>
 <body data-theme="dark">
 
-  <!-- 极简通透顶栏：品牌与两个纯 Icon 功能按钮 -->
   <header class="app-header">
     <div class="header-container">
       <div class="brand">
@@ -29,38 +30,30 @@
       </div>
 
       <nav class="nav-actions">
-        <!-- 语言切换 Icon 按钮 -->
+        <!-- 语言切换 (ant-design:translation-outlined) -->
         <button class="btn-icon-action" id="btn-lang-toggle" title="切换语言 (中 / EN)">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m5 8 6 6"></path>
-            <path d="m4 14 6-6 2-3"></path>
-            <path d="M2 5h12"></path>
-            <path d="M7 2h1"></path>
-            <path d="m22 22-5-10-5 10"></path>
-            <path d="M14 18h6"></path>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 1024 1024">
+            <path fill="currentColor" d="M140 188h584v164h76V144c0-17.7-14.3-32-32-32H96c-17.7 0-32 14.3-32 32v736c0 17.7 14.3 32 32 32h544v-76H140z"/>
+            <path fill="currentColor" d="M414.3 256h-60.6c-3.4 0-6.4 2.2-7.6 5.4L219 629.4c-.3.8-.4 1.7-.4 2.6c0 4.4 3.6 8 8 8h55.1c3.4 0 6.4-2.2 7.6-5.4L322 540h196.2L422 261.4c-1.3-3.2-4.3-5.4-7.7-5.4m12.4 228h-85.5L384 360.2zM936 528H800v-93c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v93H592c-13.3 0-24 10.7-24 24v176c0 13.3 10.7 24 24 24h136v152c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8V752h136c13.3 0 24-10.7 24-24V552c0-13.3-10.7-24-24-24M728 680h-88v-80h88zm160 0h-88v-80h88z"/>
           </svg>
         </button>
 
-        <!-- 主题切换 Icon 按钮 (明 / 暗) -->
+        <!-- 主题切换 -->
         <button class="btn-icon-action" id="btn-theme-toggle" title="切换模式 (浅色 / 深色)">
-          <!-- JS 自动注入对应太阳或月亮图标 -->
         </button>
       </nav>
     </div>
   </header>
 
-  <!-- 主体工作区：无边框纯净舒展画布 -->
   <main class="canvas-wrapper">
     <div id="kanban-mount">
-      <!-- Pele 渲染的 SVG 将挂载于此 -->
     </div>
   </main>
 
-  <!-- Linear 风格任务详情与日志侧边抽屉 -->
+  <!-- 任务详情抽屉 -->
   <div class="drawer-backdrop" id="drawer-backdrop">
     <div class="task-drawer" id="task-drawer">
       <div class="drawer-header">
-        <span class="drawer-status-badge" id="drawer-badge-status">进行中</span>
         <button class="drawer-close-btn" id="btn-drawer-close" aria-label="关闭">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -73,30 +66,26 @@
         <h2 class="drawer-task-title" id="drawer-task-title-text">国际化多语言支持</h2>
 
         <div class="properties-grid">
-          <span class="prop-label">优先级</span>
+          <span class="prop-label" id="label-priority">优先级</span>
           <span class="prop-value" id="drawer-prop-priority">High</span>
 
-          <span class="prop-label">负责人</span>
+          <span class="prop-label" id="label-assignee">负责人</span>
           <span class="prop-value" id="drawer-prop-assignee">AI Agent</span>
 
-          <span class="prop-label">当前阶段</span>
+          <span class="prop-label" id="label-status">当前阶段</span>
           <span class="prop-value" id="drawer-prop-lane">进行中</span>
         </div>
 
-        <div class="timeline-section-title">流转轨迹与活动日志</div>
+        <div class="timeline-section-title" id="drawer-timeline-title">历史日志</div>
         <div class="timeline-list" id="drawer-timeline">
-          <!-- 动态注入时间线节点 -->
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ==============================================================================
-       数据源定义：AI 直接维护与编辑下方的 Mermaid Kanban 纯文本
-       ============================================================================== -->
   <script type="text/mermaid" id="kanban-source">
 kanban
-  backlog[需求池]
+  backlog[待处理]
     feat001[支持微信与飞书多端授权登录]
     perf002[针对大型 SVG 画板进行渲染性能调优]
   todo[待开发]
@@ -107,7 +96,6 @@ kanban
     work004[升级鉴权链路与会话状态管理]
   </script>
 
-  <!-- 看板核心引擎应用 (含内置 i18n、明暗模式、抽屉事件) -->
   <script type="module" src="./kanban-app.js"></script>
 
 </body>

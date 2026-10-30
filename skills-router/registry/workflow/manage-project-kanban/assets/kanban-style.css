@@ -6,17 +6,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap');
 
 :root {
-  --pele-font: 'Figtree', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-  --pele-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-sans: 'Figtree', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
-/* ==============================================================================
-   1. 双模主题调色板 (Dark / Light)
-   ============================================================================== */
+/* 主题变量定义 */
 :root[data-theme="dark"], body[data-theme="dark"] {
-  --bg-canvas: #090a0c;            /* 全局纯黑底色 */
-  --bg-surface: #121417;           /* 泳道列槽底色 */
-  --bg-card: #1c1f24;              /* 卡片底色 (微亮于槽底，靠色阶区分) */
+  --bg-canvas: #090a0c;
+  --bg-surface: #121417;
+  --bg-card: #1c1f24;
   --border-subtle: rgba(255, 255, 255, 0.06);
   --border-hover: rgba(255, 255, 255, 0.16);
   --text-main: #ededed;
@@ -25,25 +23,24 @@
   --header-bg: rgba(9, 10, 12, 0.85);
   --drawer-bg: #121417;
   --drawer-shadow: -12px 0 36px rgba(0, 0, 0, 0.6);
-  --card-shadow: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45));
-  --card-hover-shadow: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.65));
+  --card-shadow: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
+  --card-hover-shadow: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.6));
 
-  /* Pele 暗色变量 */
   --pele-bg: var(--bg-card);
   --pele-surface: var(--bg-surface);
   --pele-surface-alt: #22262d;
-  --pele-border: transparent;      /* 彻底消灭实线边框 */
+  --pele-border: transparent;
   --pele-fg: var(--text-main);
   --pele-muted: var(--text-muted);
   --pele-line: var(--border-subtle);
   --pele-accent: var(--accent-blue);
-  --pele-radius: 8px;
+  --pele-radius: 4px;
 }
 
 :root[data-theme="light"], body[data-theme="light"] {
-  --bg-canvas: #f8f9fa;            /* 全局明亮浅灰 */
-  --bg-surface: #eef1f4;           /* 泳道优雅浅槽底色 */
-  --bg-card: #ffffff;              /* 卡片纯白 */
+  --bg-canvas: #f8f9fa;
+  --bg-surface: #eef1f4;
+  --bg-card: #ffffff;
   --border-subtle: rgba(0, 0, 0, 0.06);
   --border-hover: rgba(0, 0, 0, 0.18);
   --text-main: #1f2328;
@@ -52,19 +49,18 @@
   --header-bg: rgba(248, 249, 250, 0.9);
   --drawer-bg: #ffffff;
   --drawer-shadow: -12px 0 36px rgba(0, 0, 0, 0.12);
-  --card-shadow: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.06)) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.04));
-  --card-hover-shadow: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
+  --card-shadow: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.06));
+  --card-hover-shadow: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.1));
 
-  /* Pele 明色变量 */
   --pele-bg: var(--bg-card);
   --pele-surface: var(--bg-surface);
   --pele-surface-alt: #e1e5eb;
-  --pele-border: transparent;      /* 彻底消灭实线边框 */
+  --pele-border: transparent;
   --pele-fg: var(--text-main);
   --pele-muted: var(--text-muted);
   --pele-line: var(--border-subtle);
   --pele-accent: var(--accent-blue);
-  --pele-radius: 8px;
+  --pele-radius: 4px;
 }
 
 * {
@@ -73,7 +69,6 @@
   padding: 0;
 }
 
-/* 全局消灭所有按钮与可聚焦元素的 outline 杂质 */
 button, button:focus, button:focus-visible, button:active,
 a, a:focus, a:focus-visible, a:active {
   outline: none !important;
@@ -85,14 +80,12 @@ body {
   min-height: 100vh;
   background-color: var(--bg-canvas);
   color: var(--text-main);
-  font-family: var(--pele-font);
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
 
-/* ==============================================================================
-   2. 极简通透毛玻璃顶栏 (42px)
-   ============================================================================== */
+/* 顶栏 */
 .app-header {
   position: sticky;
   top: 0;
@@ -124,7 +117,7 @@ body {
 }
 
 .brand-icon {
-  color: var(--accent-blue);
+  color: var(--text-main);
   display: flex;
   align-items: center;
 }
@@ -142,14 +135,13 @@ body {
   gap: 0.25rem;
 }
 
-/* 极简 Icon 按钮 (30x30px) - 彻底无 outline */
 .btn-icon-action {
   background: transparent;
   border: 1px solid transparent;
   color: var(--text-muted);
   width: 30px;
   height: 30px;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -167,9 +159,7 @@ body {
   height: 15px;
 }
 
-/* ==============================================================================
-   3. 无界画布与“高级无边框卡片” (Frameless Tiles)
-   ============================================================================== */
+/* 画板主区域 */
 .canvas-wrapper {
   max-width: 1400px;
   margin: 1.5rem auto 3rem auto;
@@ -184,7 +174,6 @@ body {
   position: relative;
 }
 
-/* 适度收敛宽度，排版紧凑高级 */
 #kanban-mount svg.pele-kanban {
   width: 100% !important;
   max-width: 1240px !important;
@@ -193,19 +182,16 @@ body {
   overflow: visible;
 }
 
-/* 彻底干掉卡片那条粗粗老旧的边框线 (stroke: none)！改用现代弥散柔光 */
 #kanban-mount svg.pele-kanban .pele-card rect {
   stroke: none !important;
   filter: var(--card-shadow);
   transition: filter 0.12s ease;
 }
 
-/* 泳道列凹槽的矩形：同样去掉生硬黑边 */
 #kanban-mount svg.pele-kanban .pele-column > rect {
   stroke: none !important;
 }
 
-/* 卡片悬停：微浮柔光，不抽搐，无粗框 */
 #kanban-mount svg.pele-kanban .pele-card {
   cursor: pointer;
 }
@@ -214,7 +200,21 @@ body {
   filter: var(--card-hover-shadow) brightness(1.03);
 }
 
-/* 缩放控制器微型悬浮胶囊 */
+/* 优先级指示器优化：隐藏生硬粗短线 */
+#kanban-mount svg.pele-kanban path.pele-priority {
+  display: none !important;
+}
+
+/* Linear 风格微型阶梯信号格图标 */
+.custom-priority-icon rect {
+  transition: opacity 0.15s ease;
+}
+
+.pele-card:hover .custom-priority-icon rect {
+  opacity: 1 !important;
+}
+
+/* 缩放控件 */
 .pele-zoom-controls {
   position: absolute;
   top: 0.5rem;
@@ -225,7 +225,7 @@ body {
   background: var(--header-bg);
   backdrop-filter: blur(12px);
   padding: 0.2rem;
-  border-radius: 6px;
+  border-radius: 4px;
   border: 1px solid var(--border-subtle);
 }
 
@@ -233,7 +233,7 @@ body {
   background: transparent;
   border: none;
   color: var(--text-muted);
-  border-radius: 4px;
+  border-radius: 3px;
   width: 1.4rem;
   height: 1.4rem;
   display: flex;
@@ -248,9 +248,7 @@ body {
   color: var(--text-main);
 }
 
-/* ==============================================================================
-   4. Linear 级任务详情侧边抽屉 (Slide-over Drawer)
-   ============================================================================== */
+/* 任务详情抽屉 */
 .drawer-backdrop {
   position: fixed;
   inset: 0;
@@ -289,22 +287,12 @@ body {
 }
 
 .drawer-header {
-  height: 48px;
-  padding: 0 1.25rem;
+  height: 44px;
+  padding: 0 1rem;
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-}
-
-.drawer-status-badge {
-  font-size: 0.75rem;
-  font-weight: 500;
-  padding: 0.15rem 0.5rem;
-  border-radius: 4px;
-  background: rgba(59, 130, 246, 0.1);
-  color: var(--accent-blue);
-  border: 1px solid rgba(59, 130, 246, 0.2);
+  justify-content: flex-end;
 }
 
 .drawer-close-btn {
@@ -334,7 +322,7 @@ body {
 
 .drawer-task-id {
   font-size: 0.75rem;
-  font-family: var(--pele-font-mono);
+  font-family: var(--font-mono);
   color: var(--text-muted);
   margin-bottom: 0.35rem;
 }
