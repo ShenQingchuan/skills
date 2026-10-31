@@ -252,7 +252,7 @@
   },
   "sources": {
     "antfu": {
-      "commit": "8886fe2d385d3644cbb47e46ae9cb1cf09307d3b",
+      "commit": "7de210b51c8d48cc405a4eac3e17cbb1396c653b",
       "ref": "main",
       "repo": "https://github.com/antfu/skills",
       "resolvedRef": "refs/heads/main"
@@ -270,7 +270,7 @@
       "resolvedRef": "refs/heads/main"
     },
     "vercel-labs": {
-      "commit": "099e84ea23ee995422dc94d02c9c2309e34d3e02",
+      "commit": "28898e4cc2d3ee47c7080ab653b4ad29340cef57",
       "ref": "main",
       "repo": "https://github.com/vercel-labs/agent-browser",
       "resolvedRef": "refs/heads/main"
