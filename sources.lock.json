@@ -1,5 +1,5 @@
 {
-  "generatedBy": "skill-boss (bin/sync_skills.py)",
+  "generatedBy": "boss (bin/sync_skills.py)",
   "installed": {
     "dev/agent-browser": {
       "digest": "79add54dd6de82a262a88c94744d7decde000159c1d7f67c78eb9d4e523d54bb",

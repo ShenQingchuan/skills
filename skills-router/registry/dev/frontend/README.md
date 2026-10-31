@@ -1,6 +1,6 @@
 # dev/frontend
 
-本目录下的技能全部由 `skill-boss sync` 从上游仓库同步而来。
+本目录下的技能全部由 `boss sync` 从上游仓库同步而来。
 **不要手改这里的文件**——下次同步会原样覆盖。要改就改上游，或把 `sources.json` 里的 `repo` 换成你自己的 fork。
 
 ## 两个上游，两种定位
@@ -59,8 +59,8 @@
 ## 怎么更新
 
 ```bash
-skill-boss sync          # 本地手动同步
-skill-boss sync --check  # 只看有没有更新，退出码 1 表示有
+boss sync          # 本地手动同步
+boss sync --check  # 只看有没有更新，退出码 1 表示有
 ```
 
 也可以交给 CI：`.github/workflows/sync-skills.yml` 每天自动拉一次，有变化就自动提交。
@@ -69,6 +69,6 @@ skill-boss sync --check  # 只看有没有更新，退出码 1 表示有
 
 1. 在 `sources.json` 的 `sources` 里登记仓库（没有的话）。
 2. 在 `install` 里加一行：`{ "skill": "<上游的技能目录名>", "from": "<仓库 id>", "to": "dev/frontend/<目标目录名>" }`。
-3. 跑一次 `skill-boss sync`。
+3. 跑一次 `boss sync`。
 
 脚本会自动处理稀疏检出、覆盖更新和变更记录，不需要手工维护索引。

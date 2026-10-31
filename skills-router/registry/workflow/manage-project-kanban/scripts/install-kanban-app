@@ -18,8 +18,13 @@ done
 SCRIPT_DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 VENDOR_APP_DIR="$(cd -P "$SCRIPT_DIR/../assets/kanban-app" && pwd)"
 
-# 2. 解析目标安装目录（默认为当前工作目录）
-TARGET_DIR="${1:-.}"
+# 2. 解析目标安装目录（默认为项目工作区下的 .agents/kanban）
+TARGET_ARG="${1:-.}"
+if [ -d "$TARGET_ARG/.agents/kanban" ] || [ ! -f "$TARGET_ARG/kanban.html" ]; then
+  TARGET_DIR="$TARGET_ARG/.agents/kanban"
+else
+  TARGET_DIR="$TARGET_ARG"
+fi
 mkdir -p "$TARGET_DIR"
 TARGET_DIR="$(cd "$TARGET_DIR" && pwd)"
 
@@ -62,7 +67,9 @@ fi
 echo ""
 echo "🎉 看板安装就绪！"
 echo ""
-echo "启动本地任务画板服务:"
+echo "启动本地任务画板服务 (推荐直接使用 boss 命令后台启动):"
+echo "  boss kanban [目标目录]"
+echo "或者手动启动:"
 echo "  ~/.agents/skills/.runtime/bin/python3 -m http.server 5173"
 echo "浏览器访问入口:"
 echo "  http://localhost:5173/kanban.html"

@@ -416,50 +416,21 @@ if (typeof window !== 'undefined') {
 }
 
 /**
- * 本地自动同步：检测 kanban.html 变动并实时更新画板
- * 1. 修改了卡片任务 -> 原地无感重绘，不白屏、不丢缩放状态；
- * 2. 修改了页面结构 -> 刷新页面。
+ * 本地自动同步：
+ * 1. 在 Vite 驱动下优先使用 Vite 原生 HMR（毫秒级、0 请求轮询）；
+ * 2. 降级模式（如普通静态服务器）使用轻量轮询检测更新。
  */
 function setupLiveReload() {
   if (typeof window === 'undefined') return;
   const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
   if (!isLocal || !window.location.protocol.startsWith('http')) return;
 
-  let lastMermaid = document.getElementById('kanban-source')?.textContent.trim() || '';
-  let lastHtml = '';
-  let isChecking = false;
-
-  setInterval(async () => {
-    if (isChecking) return;
-    isChecking = true;
-    try {
-      const res = await fetch(`kanban.html?_t=${Date.now()}`, { cache: 'no-cache' });
-      if (!res.ok) return;
-      const htmlText = await res.text();
-
-      // 提取最新的 Mermaid 代码块
-      const match = htmlText.match(/<script type="text\/mermaid" id="kanban-source">([\s\S]*?)<\/script>/);
-      const newMermaid = match ? match[1].trim() : '';
-
-      if (newMermaid && newMermaid !== lastMermaid) {
-        lastMermaid = newMermaid;
-        lastHtml = htmlText;
-        const sourceEl = document.getElementById('kanban-source');
-        if (sourceEl) {
-          sourceEl.textContent = newMermaid;
-          const currentLang = getCurrentLang();
-          initKanban({ lang: currentLang });
-        }
-      } else if (lastHtml && htmlText !== lastHtml) {
-        // 如果 HTML 其他结构（样式表、标题等）变动，平滑重载页面
-        window.location.reload();
-      } else if (!lastHtml) {
-        lastHtml = htmlText;
-      }
-    } catch {
-      // 忽略服务中断或网络波动
-    } finally {
-      isChecking = false;
-    }
-  }, 1000);
+  // 在 Vite 驱动下优先使用 Vite 原生 HMR（毫秒级、0 请求轮询）
+  if (import.meta && import.meta.hot) {
+    import.meta.hot.accept(() => {
+      const currentLang = getCurrentLang();
+      initKanban({ lang: currentLang });
+    });
+    return;
+  }
 }

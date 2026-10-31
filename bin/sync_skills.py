@@ -53,7 +53,7 @@ def update_root_gitignore(lock_installed: dict) -> None:
     """
     managed_lines = [
         MANAGED_START,
-        "# 由 skill-boss (bin/sync_skills.py) 自动管理：精准黑名单排除所有已安装的第三方技能产物",
+        "# 由 boss (bin/sync_skills.py) 自动管理：精准黑名单排除所有已安装的第三方技能产物",
         "# 本地原创技能（如 dev/agent-friendly-context 等）与说明文档不在名单中，正常受 Git 跟踪与保护",
     ]
 
@@ -324,7 +324,7 @@ def main() -> int:
 
     if args.check:
         if needs_update:
-            log("\n发现上游更新或本地改动。运行 skill-boss sync 进行同步。")
+            log("\n发现上游更新或本地改动。运行 boss sync 进行同步。")
             return 1
         log("\n全部已是最新。")
         return 0
@@ -332,7 +332,7 @@ def main() -> int:
     LOCK_FILE.write_text(
         json.dumps(
             {
-                "generatedBy": "skill-boss (bin/sync_skills.py)",
+                "generatedBy": "boss (bin/sync_skills.py)",
                 "sources": new_sources,
                 "installed": new_installed,
             },

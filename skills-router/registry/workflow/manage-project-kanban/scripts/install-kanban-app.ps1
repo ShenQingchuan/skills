@@ -26,6 +26,20 @@ if (-not $ResolvedTarget) {
   $ResolvedTarget = $ResolvedTarget.Path
 }
 
+$AgentsKanbanDir = Join-Path $ResolvedTarget ".agents\kanban"
+$DirectKanbanHtml = Join-Path $ResolvedTarget "kanban.html"
+
+if ((Test-Path $AgentsKanbanDir) -or (-not (Test-Path $DirectKanbanHtml))) {
+  $FinalTarget = $AgentsKanbanDir
+} else {
+  $FinalTarget = $ResolvedTarget
+}
+
+if (-not (Test-Path $FinalTarget)) {
+  New-Item -ItemType Directory -Path $FinalTarget -Force | Out-Null
+}
+$ResolvedTarget = (Resolve-Path -Path $FinalTarget).Path
+
 Write-Host "📦 正在向目标目录安装看板应用: $ResolvedTarget"
 
 Copy-Item -Path "$VendorAppDir\kanban-style.css" -Destination "$ResolvedTarget\" -Force

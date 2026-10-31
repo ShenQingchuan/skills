@@ -6,9 +6,9 @@
 
 一个基于「渐进式披露」理念的个人 Agent 技能治理框架。
 常驻上下文的只有一个技能路由器，其余技能用到才载入。
-内置跨平台 CLI 工具 `skill-boss`，一行命令完成全套安装与技能同步。
+内置跨平台 CLI 工具 `boss`，一行命令完成全套安装与技能同步。
 
-[为什么](#为什么需要它) · [工作原理](#工作原理) · [一键安装与快速开始](#一键安装与快速开始) · [CLI 使用指引](#cli-使用指引-skill-boss) · [目录结构](#目录结构) · [日常使用](#日常使用) · [Agent 指引](#agent-使用指引) · [设计原则](#设计原则)
+[为什么](#为什么需要它) · [工作原理](#工作原理) · [一键安装与快速开始](#一键安装与快速开始) · [CLI 使用指引](#cli-使用指引-boss) · [目录结构](#目录结构) · [日常使用](#日常使用) · [Agent 指引](#agent-使用指引) · [设计原则](#设计原则)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Agent Skills](https://img.shields.io/badge/Agent_Skills-1_routed-informational.svg)](https://agentskills.io/specification)
@@ -65,7 +65,7 @@ git clone git@github.com:ShenQingchuan/skills.git ~/.agents/skills
 cd ~/.agents/skills
 ```
 
-### 2. 一键安装 `skill-boss` CLI
+### 2. 一键安装 `boss` CLI
 
 - **macOS / Linux**：
   ```bash
@@ -85,28 +85,32 @@ cd ~/.agents/skills
 在任意终端敲击（首次安装类似 `npm install`，根据 `sources.lock.json` 拉齐全部技能）：
 
 ```bash
-skill-boss sync
+boss sync
 ```
 
 ### 4. 验证就绪
 
 ```bash
-skill-boss list
+boss list
 ```
 
 你的 Agent 默认**只感知到 `skills-router` 这一个入口技能**；`registry/` 下的所有技能对它保持静默，直到真正需要时由路由器按需展开。
 
 ---
 
-## CLI 使用指引 (`skill-boss`)
+## CLI 使用指引 (`boss`)
 
-框架提供自包含的 `skill-boss` 命令，既方便人类日常打理，也是 Agent 调度的绝佳接口：
+框架提供自包含的 `boss` 命令，既方便人类日常打理，也是 Agent 调度的绝佳接口：
 
 | 命令 | 别名 | 职责说明 |
 | :--- | :--- | :--- |
-| `skill-boss list` | `list-skills` | 查看当前技能树，输出包含分类、一句话描述与入口路径（支持子路径过滤，如 `skill-boss list dev/`） |
-| `skill-boss sync` | `sync-skills` | 依据 `sources.json` 同步第三方外部技能，对齐指纹锁定（支持传参 `--check` 纯只读检查） |
-| `skill-boss setup-runtime` | - | 一键部署/检查独立绿色沙盒引擎 (Node/Bun/uv/Python/rg，支持 `-s` 查看状态) |
+| `boss kanban [路径] [--port 5173]` | - | 启动当前项目的 `.agents/kanban/` 网页看板（Vite 驱动 HMR，无缓存残留，未安装时自动初始化） |
+| `boss kanban stop [--port 5173]` | - | 停止看板服务（按端口释放进程，不留任何临时文件） |
+| `boss code [路径] [--port 6063]` | - | 启动网页版 VS Code（coderaft），自动打开浏览器并预装常用插件；同一目录重复调用只重新激活，不换端口；闲置 2 小时自动关闭 |
+| `boss code stop [--port 6063]` | - | 停止网页编辑器服务 |
+| `boss list` | `list-skills` | 查看当前技能树，输出包含分类、一句话描述与入口路径（支持子路径过滤，如 `boss list dev/`） |
+| `boss sync` | `sync-skills` | 依据 `sources.json` 同步第三方外部技能，对齐指纹锁定（支持传参 `--check` 纯只读检查） |
+| `boss setup-runtime` | - | 一键部署/检查独立绿色沙盒引擎 (Node/Bun/uv/Python/rg，支持 `-s` 查看状态) |
 
 ---
 
@@ -120,8 +124,8 @@ skill-boss list
 ├── install.ps1                    ← Windows PowerShell 一键安装脚本
 ├── install.cmd                    ← Windows 双击即装批处理脚本
 ├── bin/
-│   ├── skill-boss                 ← 框架统一 CLI 入口（分发 list/sync/runtime）
-│   ├── sync_skills.py             ← 依赖同步引擎（由 skill-boss 调度）
+│   ├── boss                       ← 框架统一 CLI 入口（分发 kanban/code/list/sync/runtime）
+│   ├── sync_skills.py             ← 依赖同步引擎（由 boss 调度）
 │   ├── setup-runtime.sh           ← Unix 运行环境部署引擎
 │   └── setup-runtime.ps1          ← Windows 运行环境部署引擎
 ├── skills-router/                 ← 唯一被 Agent 默认感知的入口技能
@@ -152,8 +156,8 @@ Agent 的技能发现只认**仓库根目录下的第一层**。`bin/` 里没有
 ### 同步上游更新
 
 ```bash
-skill-boss sync          # 拉取并更新 registry/
-skill-boss sync --check  # 只看有没有更新（有则退出码 1，不写任何文件）
+boss sync          # 拉取并更新 registry/
+boss sync --check  # 只看有没有更新（有则退出码 1，不写任何文件）
 ```
 
 也可以完全交给 CI：`.github/workflows/sync-skills.yml` 每天自动跑一次，有变化就自动提交回 `main`，没变化就什么也不做。你只需要 `git pull`。
@@ -179,7 +183,7 @@ skill-boss sync --check  # 只看有没有更新（有则退出码 1，不写任
    ```json
    { "skill": "*", "from": "larksuite", "to": "office/lark" }
    ```
-3. 跑一次 `skill-boss sync`，上游全部技能会自动同步到 `registry/office/lark/` 下。未来上游无论新增、更名还是废弃子技能，同步脚本都会自动对齐，零人工维护成本。
+3. 跑一次 `boss sync`，上游全部技能会自动同步到 `registry/office/lark/` 下。未来上游无论新增、更名还是废弃子技能，同步脚本都会自动对齐，零人工维护成本。
 
 ### 移除一个技能或套件
 
@@ -191,7 +195,7 @@ skill-boss sync --check  # 只看有没有更新（有则退出码 1，不写任
 
 ### 运行时：需要技能时
 
-1. 跑 `skill-boss list`（或 `python3 skills-router/scripts/list_skills.py`）。
+1. 跑 `boss list`（或 `python3 skills-router/scripts/list_skills.py`）。
 2. 按描述挑最匹配的 **1 个**；确有互补需要时最多再加 1 个（例如「架构规约」配「API 参考」）。
 3. **只**读选中技能目录下的 `SKILL.md`；其中若指向 `references/`、`reference/` 或 `scripts/`，再按需下钻。
 
@@ -205,13 +209,14 @@ skill-boss sync --check  # 只看有没有更新（有则退出码 1，不写任
 
 | 你想做的事 | 推荐做法 |
 | --- | --- |
-| 新增 / 移除第三方技能 | 改 `sources.json` 后执行 `skill-boss sync` |
-| 升级上游技能 | 跑 `skill-boss sync` |
+| 新增 / 移除第三方技能 | 改 `sources.json` 后执行 `boss sync` |
+| 升级上游技能 | 跑 `boss sync` |
 | 本地新建原创技能 | 在 `registry/` 对应分类下新建即可，受 Git 自动跟踪保护 |
 | 调整路由规则 | `skills-router/SKILL.md` |
 | 调整技能树展示 | `skills-router/scripts/list_skills.py` |
 | 调整底层同步逻辑 | `bin/sync_skills.py` |
-| 部署绿色运行时沙盒 | 跑 `skill-boss setup-runtime` |
+| 部署绿色运行时沙盒 | 跑 `boss setup-runtime` |
+| 启动项目任务看板 | 跑 `boss kanban [项目路径]` |
 | 调整自动同步节奏 | `.github/workflows/sync-skills.yml` |
 
 `sources.lock.json` 由脚本自动生成，不要手改。它记录上游 commit 与每个技能目录的内容指纹，同步脚本靠它判断「有没有变」。

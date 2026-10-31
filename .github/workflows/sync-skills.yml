@@ -30,7 +30,7 @@ jobs:
           python-version: "3.11"
 
       - name: 同步上游技能
-        run: python3 bin/skill-boss sync
+        run: python3 bin/boss sync
 
       - name: 有变化就提交
         run: |

@@ -1,5 +1,5 @@
 # ==============================================================================
-# skill-boss 一键无感安装脚本 (Windows PowerShell)
+# boss 一键无感安装脚本 (Windows PowerShell)
 #
 # 特性：
 # 1. 零手动赋权：自动生成 .cmd 批处理包装器，开箱即用；
@@ -10,11 +10,11 @@ $ErrorActionPreference = "Stop"
 
 $RepoRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $UserBinDir = Join-Path $env:USERPROFILE ".local\bin"
-$CmdWrapper = Join-Path $UserBinDir "skill-boss.cmd"
-$PythonScript = Join-Path $RepoRoot "bin\skill-boss"
+$CmdWrapper = Join-Path $UserBinDir "boss.cmd"
+$PythonScript = Join-Path $RepoRoot "bin\boss"
 
 Write-Host "==================================================" -ForegroundColor Cyan
-Write-Host "🚀 [skill-boss] 正在安装个人 Skill 治理框架..." -ForegroundColor Cyan
+Write-Host "🚀 [boss] 正在安装个人 Skill 治理框架..." -ForegroundColor Cyan
 Write-Host "=================================================="
 
 # 1. 创建用户级 bin 目录
@@ -34,6 +34,13 @@ if %ERRORLEVEL% equ 0 (
 "@
 
 Set-Content -Path $CmdWrapper -Value $WrapperContent -Encoding ASCII
+
+# 清理旧版 skill-boss 命令（如果存在）
+$LegacyCmdWrapper = Join-Path $UserBinDir "skill-boss.cmd"
+if (Test-Path $LegacyCmdWrapper) {
+    Remove-Item -Force $LegacyCmdWrapper
+}
+
 Write-Host "✓ 已生成 Windows 执行代理: $CmdWrapper" -ForegroundColor Green
 
 # 3. 自动检测并写入用户环境变量 PATH
@@ -44,11 +51,12 @@ if ($Paths -notcontains $UserBinDir) {
     $NewPath = if ([string]::IsNullOrWhiteSpace($UserPath)) { $UserBinDir } else { "$UserPath;$UserBinDir" }
     [Environment]::SetEnvironmentVariable("Path", $NewPath, "User")
     Write-Host "✓ 已自动将 $UserBinDir 添加至当前用户的 PATH 环境变量中。" -ForegroundColor Green
-    Write-Host "💡 提示: 环境变量已自动配置！新打开的终端窗口可直接输入 skill-boss 使用。" -ForegroundColor Yellow
+    Write-Host "💡 提示: 环境变量已自动配置！新打开的终端窗口可直接输入 boss 使用。" -ForegroundColor Yellow
 } else {
     Write-Host "✓ 环境变量已就绪: $UserBinDir 已在当前用户的 PATH 中。" -ForegroundColor Green
 }
 
 Write-Host "==================================================" -ForegroundColor Cyan
-Write-Host "🎉 安装完成！你可以在新终端窗口直接输入: skill-boss --help" -ForegroundColor Cyan
+Write-Host "🎉 安装完成！你可以在新终端窗口直接输入: boss --help" -ForegroundColor Cyan
 Write-Host "=================================================="
+

@@ -27,7 +27,7 @@ New-Item -ItemType Directory -Force -Path $RuntimeDir | Out-Null
 New-Item -ItemType Directory -Force -Path $RuntimeBin | Out-Null
 
 if ($Help) {
-    Write-Host "用法: skill-boss setup-runtime [选项]"
+    Write-Host "用法: boss setup-runtime [选项]"
     Write-Host ""
     Write-Host "选项:"
     Write-Host "  (无参数)      为本 skills 套件下载并配置全套绿色运行时引擎"

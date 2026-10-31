@@ -32,26 +32,32 @@ description: 项目任务看板工具。在项目事情多、容易忘、分不�
 
 ## 一、 Setup：如何为项目从零初始化看板
 
-当用户说“帮这个项目建个任务看板”、“用看板管一下现在的任务”、“不知道做到哪了，做个进度看板”时，AI 优先使用一键安装脚本完成搭建：
+当用户说“帮这个项目建个任务看板”、“用看板管一下现在的任务”、“不知道做到哪了，做个进度看板”时，看板应用默认统一部署在项目工作区的 `.agents/kanban/` 目录下。AI 优先使用一键安装脚本或 `boss kanban` 完成搭建：
 
-### 方式 A：使用一键安装脚本（推荐）
+### 方式 A：使用一键命令（最推荐）
 
-直接在终端调用安装脚本，把 `kanban-app` 文件包拷到目标项目，并自动生成初始的 `kanban.html` 与 `history.md`：
+直接在终端执行：
+```bash
+boss kanban [项目路径，默认当前项目 .]
+```
+*(命令会自动在项目的 `.agents/kanban/` 下初始化看板应用，并自动在后台启动预览服务)*
+
+或者使用安装脚本单独部署文件：
 
 - **macOS / Linux**：
   ```bash
-  ~/.agents/skills/skills-router/registry/workflow/manage-project-kanban/scripts/install-kanban-app [目标目录，默认当前目录 .]
+  ~/.agents/skills/skills-router/registry/workflow/manage-project-kanban/scripts/install-kanban-app [目标项目路径，默认当前目录 .]
   ```
 - **Windows (PowerShell)**：
   ```powershell
-  powershell -ExecutionPolicy Bypass -File "$HOME\.agents\skills\skills-router\registry\workflow\manage-project-kanban\scripts\install-kanban-app.ps1" [目标目录，默认当前目录 .]
+  powershell -ExecutionPolicy Bypass -File "$HOME\.agents\skills\skills-router\registry\workflow\manage-project-kanban\scripts\install-kanban-app.ps1" [目标项目路径，默认当前目录 .]
   ```
 
 ---
 
 ### 方式 B：手动复制应用文件
 
-如果不方便运行脚本，也可以直接复制前端文件包：
+如果不方便运行脚本，也可以直接把前端文件包复制到项目的 `.agents/kanban/` 目录：
 
 - **模版目录**：
   `~/.agents/skills/skills-router/registry/workflow/manage-project-kanban/assets/kanban-app/`
@@ -60,39 +66,36 @@ description: 项目任务看板工具。在项目事情多、容易忘、分不�
   2. `kanban-style.css`：黑白自适应的网页样式；
   3. `kanban-app.js`：网页画板的交互驱动脚本。
 - **再建一个归档文件**：
-  在项目里建一个 `history.md`，专门放以后做完并确认通过的历史任务。
+  在 `.agents/kanban/` 里建一个 `history.md`，专门放以后做完并确认通过的历史任务。
 
 ---
 
 ### 步骤：填入初始任务并打开网页预览
 
 安装好之后：
-1. 打开项目里的 `kanban.html`，滑到底部的 `<script type="text/mermaid" id="kanban-source">`，把当前手头要办的事填进去；
-2. 启动本地预览服务：
-   - **macOS / Linux**：
+1. 打开项目里 `.agents/kanban/kanban.html`，滑到底部的 `<script type="text/mermaid" id="kanban-source">`，把当前手头要办的事填进去；
+2. 启动或停止本地预览服务：
+   - **启动看板（后台静默运行，默认 5173 端口）**：
      ```bash
-     ~/.agents/skills/.runtime/bin/python3 -m http.server 5173
+     boss kanban [项目路径] [--port 5173]
      ```
-   - **Windows (PowerShell)**：
-     ```powershell
-     & "$HOME\.agents\skills\.runtime\bin\python.exe" -m http.server 5173
-     ```
-   - **Windows (cmd.exe)**：
-     ```cmd
-     "%USERPROFILE%\.agents\skills\.runtime\bin\python.exe" -m http.server 5173
+   - **停止看板**：
+     ```bash
+     boss kanban stop [项目路径] [--port 5173]
      ```
 3. 告诉用户：
-   > “项目任务看板已经搭好了！在浏览器打开 `http://localhost:5173/kanban.html` 就能看进度。后续改了任务，画板内置了自动同步，网页会自动实时更新。”
+   > “项目任务看板已经搭好了！在浏览器打开 `http://localhost:5173/kanban.html` 就能看进度。画板由 Vite 原生 HMR 驱动，改了任务网页会毫秒级自动实时更新。”
+
 
 ---
 
 ## 二、 Manage：已有看板的项目如何日常维护
 
-项目里已经有 `kanban.html` 后，AI 平时干活按这几个规矩来：
+项目在 `.agents/kanban/kanban.html` 有看板后，AI 平时干活按这几个规矩来：
 
 ### 1. 核心规矩
 - **做完确认了就删掉**：看板上只留“还没做”和“正在做”的事，**不要在看板上堆一堆已完成卡片**，保持页面干净；
-- **移到历史文件保存**：只要人看过了说确认、没问题，AI 就把任务从看板里**整行删掉**，写进 `history.md` 留档；
+- **移到历史文件保存**：只要人看过了说确认、没问题，AI 就把任务从看板里**整行删掉**，写进 `.agents/kanban/history.md` 留档；
 - **一次只做一件事**：“进行中”这一栏，同时**只能有 1 个任务**。做完一个再领下一个，不能三心二意。
 
 ---
