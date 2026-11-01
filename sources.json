@@ -17,6 +17,11 @@
       "ref": "main",
       "skillsDir": "skills"
     },
+    "millionco": {
+      "repo": "https://github.com/millionco/react-doctor",
+      "ref": "main",
+      "skillsDir": "skills"
+    },
     "larksuite": {
       "repo": "https://github.com/larksuite/cli",
       "ref": "main",
@@ -35,6 +40,7 @@
     { "skill": "vite", "from": "antfu", "to": "dev/frontend/vite" },
     { "skill": "vitepress", "from": "antfu", "to": "dev/frontend/vitepress" },
     { "skill": "vitest", "from": "antfu", "to": "dev/frontend/vitest" },
+    { "skill": "react-doctor", "from": "millionco", "to": "dev/frontend/react-doctor" },
     { "skill": "unocss", "from": "antfu", "to": "dev/frontend/unocss" },
     { "skill": "pnpm", "from": "antfu", "to": "dev/frontend/pnpm" },
     { "skill": "vue-best-practices", "from": "vuejs-ai", "to": "dev/frontend/vue-best-practices" },

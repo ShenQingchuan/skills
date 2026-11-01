@@ -21,6 +21,11 @@
       "from": "antfu",
       "skill": "pnpm"
     },
+    "dev/frontend/react-doctor": {
+      "digest": "d86f9e22b97e99f409e5371b3634f52c17830daf7d7599d5cc41a167beb5d93a",
+      "from": "millionco",
+      "skill": "react-doctor"
+    },
     "dev/frontend/unocss": {
       "digest": "5efb33547c7f5e95b56bfba62f8986609a32950f9788720eb4139ca1161a1bad",
       "from": "antfu",
@@ -264,13 +269,19 @@
       "resolvedRef": "refs/heads/main"
     },
     "mattpocock": {
-      "commit": "a496f5513d4a4cf889bc48e189e579f4b0bdf6aa",
+      "commit": "4ae2317ddb22b046e26455e4f9c9b3aaaf62212d",
       "ref": "main",
       "repo": "https://github.com/mattpocock/skills",
       "resolvedRef": "refs/heads/main"
     },
+    "millionco": {
+      "commit": "8552771f8dea967bce7d347b5b36549f31c37b83",
+      "ref": "main",
+      "repo": "https://github.com/millionco/react-doctor",
+      "resolvedRef": "refs/heads/main"
+    },
     "vercel-labs": {
-      "commit": "28898e4cc2d3ee47c7080ab653b4ad29340cef57",
+      "commit": "5868f7c05020e047c00e68e4abf9253cce864f41",
       "ref": "main",
       "repo": "https://github.com/vercel-labs/agent-browser",
       "resolvedRef": "refs/heads/main"
