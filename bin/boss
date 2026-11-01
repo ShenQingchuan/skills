@@ -21,6 +21,7 @@ from pathlib import Path
 BIN_DIR = Path(__file__).resolve().parent
 ROOT_DIR = BIN_DIR.parent
 ROUTER_SCRIPTS_DIR = ROOT_DIR / "skills-router" / "scripts"
+REGISTRY_DIR = ROOT_DIR / "skills-router" / "registry"
 KANBAN_SKILL_DIR = ROOT_DIR / "skills-router" / "registry" / "workflow" / "manage-project-kanban"
 KANBAN_ASSETS_DIR = KANBAN_SKILL_DIR / "assets" / "kanban-app"
 
@@ -463,6 +464,46 @@ while True:
     return 0
 
 
+def complete_skill_dirs(prefix: str) -> list[str]:
+    """列出与输入前缀匹配的技能分类目录，供 Shell 补全使用。"""
+    if "/" in prefix:
+        parent, name_prefix = prefix.rsplit("/", 1)
+    else:
+        parent, name_prefix = "", prefix
+
+    registry_dir = REGISTRY_DIR.resolve()
+    base_dir = (registry_dir / parent).resolve()
+    try:
+        base_dir.relative_to(registry_dir)
+    except ValueError:
+        return []
+
+    if not base_dir.is_dir():
+        return []
+
+    completions = []
+    parent_prefix = f"{parent}/" if parent else ""
+    for entry in sorted(base_dir.iterdir(), key=lambda path: path.name):
+        if not entry.is_dir() or not entry.name.startswith(name_prefix):
+            continue
+        if entry.name.startswith(".") or entry.name in {"__pycache__", "node_modules", "venv", ".venv"}:
+            continue
+        if (entry / "SKILL.md").is_file():
+            continue
+        completions.append(f"{parent_prefix}{entry.name}/")
+    return completions
+
+
+def cmd_complete(args: list[str]) -> int:
+    """为 Shell 补全脚本提供机器可读的数据。"""
+    if not args or args[0] != "skill-dirs":
+        return 1
+    prefix = args[1] if len(args) > 1 else ""
+    for path in complete_skill_dirs(prefix):
+        print(path)
+    return 0
+
+
 def cmd_list(args: list[str]) -> int:
     """查看技能树（供 Agent 与人类查阅）"""
     list_script = ROUTER_SCRIPTS_DIR / "list_skills.py"
@@ -513,9 +554,9 @@ boss - 个人 Agent 技能治理框架 CLI
                              启动并自动打开浏览器: boss code [路径] [--port 6063]
                              停止: boss code stop [--port 6063]
                              特性: 自动打开浏览器，闲置 2 小时无操作自动关闭守护
-  list, list-skills          查看层级技能树（展示描述与绝对入口路径）
-                             支持传参单独探查子分类，如: boss list dev/
-  sync, sync-skills          依据 sources.json 一键同步第三方技能
+  list-skills                查看层级技能树（展示描述与绝对入口路径）
+                             支持传参单独探查子分类，如: boss list-skills dev/
+  sync-skills                依据 sources.json 一键同步第三方技能
                              支持传参: --check（仅检查是否有更新）
   setup-runtime              为本框架安装/检查独立沙盒运行引擎（Node/Bun/uv/Python/rg）
                              支持传参: -s, --status（查看就绪状态）
@@ -537,11 +578,10 @@ def main() -> int:
     dispatch_map = {
         "kanban": cmd_kanban,
         "code": cmd_code,
-        "list": cmd_list,
         "list-skills": cmd_list,
-        "sync": cmd_sync,
         "sync-skills": cmd_sync,
         "setup-runtime": cmd_setup_runtime,
+        "_complete": cmd_complete,
     }
 
     handler = dispatch_map.get(command)

@@ -85,16 +85,35 @@ cd ~/.agents/skills
 在任意终端敲击（首次安装类似 `npm install`，根据 `sources.lock.json` 拉齐全部技能）：
 
 ```bash
-boss sync
+boss sync-skills
 ```
 
 ### 4. 验证就绪
 
 ```bash
-boss list
+boss list-skills
 ```
 
 你的 Agent 默认**只感知到 `skills-router` 这一个入口技能**；`registry/` 下的所有技能对它保持静默，直到真正需要时由路由器按需展开。
+
+### Shell Tab 自动补全
+
+安装脚本会自动配置 Tab 补全，支持子命令、常用参数和 `boss list-skills` 的技能分类目录：
+
+- macOS / Linux：支持当前使用的 **zsh 或 Bash**
+- Windows：支持 **PowerShell**
+
+重新打开终端后生效，也可以在当前终端重新加载对应的 Shell 配置文件。已有安装需要补全功能时，重新执行对应平台的安装脚本即可：
+
+```bash
+sh install.sh
+```
+
+```powershell
+.\install.ps1
+```
+
+补全脚本安装在用户目录的 `.local/share/boss/completions/`。所有安装脚本都可以重复执行：程序与补全脚本会更新到最新版，PATH 和 Shell 加载配置不会重复写入。
 
 ---
 
@@ -102,15 +121,15 @@ boss list
 
 框架提供自包含的 `boss` 命令，既方便人类日常打理，也是 Agent 调度的绝佳接口：
 
-| 命令 | 别名 | 职责说明 |
-| :--- | :--- | :--- |
-| `boss kanban [路径] [--port 5173]` | - | 启动当前项目的 `.agents/kanban/` 网页看板（Vite 驱动 HMR，无缓存残留，未安装时自动初始化） |
-| `boss kanban stop [--port 5173]` | - | 停止看板服务（按端口释放进程，不留任何临时文件） |
-| `boss code [路径] [--port 6063]` | - | 启动网页版 VS Code（coderaft），自动打开浏览器并预装常用插件；同一目录重复调用只重新激活，不换端口；闲置 2 小时自动关闭 |
-| `boss code stop [--port 6063]` | - | 停止网页编辑器服务 |
-| `boss list` | `list-skills` | 查看当前技能树，输出包含分类、一句话描述与入口路径（支持子路径过滤，如 `boss list dev/`） |
-| `boss sync` | `sync-skills` | 依据 `sources.json` 同步第三方外部技能，对齐指纹锁定（支持传参 `--check` 纯只读检查） |
-| `boss setup-runtime` | - | 一键部署/检查独立绿色沙盒引擎 (Node/Bun/uv/Python/rg，支持 `-s` 查看状态) |
+| 命令 | 职责说明 |
+| :--- | :--- |
+| `boss kanban [路径] [--port 5173]` | 启动当前项目的 `.agents/kanban/` 网页看板（Vite 驱动 HMR，无缓存残留，未安装时自动初始化） |
+| `boss kanban stop [--port 5173]` | 停止看板服务（按端口释放进程，不留任何临时文件） |
+| `boss code [路径] [--port 6063]` | 启动网页版 VS Code（coderaft），自动打开浏览器并预装常用插件；同一目录重复调用只重新激活，不换端口；闲置 2 小时自动关闭 |
+| `boss code stop [--port 6063]` | 停止网页编辑器服务 |
+| `boss list-skills` | 查看当前技能树，输出包含分类、一句话描述与入口路径（支持子路径过滤，如 `boss list-skills dev/`） |
+| `boss sync-skills` | 依据 `sources.json` 同步第三方外部技能，对齐指纹锁定（支持传参 `--check` 纯只读检查） |
+| `boss setup-runtime` | 一键部署/检查独立绿色沙盒引擎 (Node/Bun/uv/Python/rg，支持 `-s` 查看状态) |
 
 ---
 
@@ -124,7 +143,7 @@ boss list
 ├── install.ps1                    ← Windows PowerShell 一键安装脚本
 ├── install.cmd                    ← Windows 双击即装批处理脚本
 ├── bin/
-│   ├── boss                       ← 框架统一 CLI 入口（分发 kanban/code/list/sync/runtime）
+│   ├── boss                       ← 框架统一 CLI 入口（分发 kanban/code/list-skills/sync-skills/runtime）
 │   ├── sync_skills.py             ← 依赖同步引擎（由 boss 调度）
 │   ├── setup-runtime.sh           ← Unix 运行环境部署引擎
 │   └── setup-runtime.ps1          ← Windows 运行环境部署引擎
@@ -156,8 +175,8 @@ Agent 的技能发现只认**仓库根目录下的第一层**。`bin/` 里没有
 ### 同步上游更新
 
 ```bash
-boss sync          # 拉取并更新 registry/
-boss sync --check  # 只看有没有更新（有则退出码 1，不写任何文件）
+boss sync-skills          # 拉取并更新 registry/
+boss sync-skills --check  # 只看有没有更新（有则退出码 1，不写任何文件）
 ```
 
 也可以完全交给 CI：`.github/workflows/sync-skills.yml` 每天自动跑一次，有变化就自动提交回 `main`，没变化就什么也不做。你只需要 `git pull`。
@@ -183,7 +202,7 @@ boss sync --check  # 只看有没有更新（有则退出码 1，不写任何文
    ```json
    { "skill": "*", "from": "larksuite", "to": "office/lark" }
    ```
-3. 跑一次 `boss sync`，上游全部技能会自动同步到 `registry/office/lark/` 下。未来上游无论新增、更名还是废弃子技能，同步脚本都会自动对齐，零人工维护成本。
+3. 跑一次 `boss sync-skills`，上游全部技能会自动同步到 `registry/office/lark/` 下。未来上游无论新增、更名还是废弃子技能，同步脚本都会自动对齐，零人工维护成本。
 
 ### 移除一个技能或套件
 
@@ -195,7 +214,7 @@ boss sync --check  # 只看有没有更新（有则退出码 1，不写任何文
 
 ### 运行时：需要技能时
 
-1. 跑 `boss list`（或 `python3 skills-router/scripts/list_skills.py`）。
+1. 跑 `boss list-skills`（或 `python3 skills-router/scripts/list_skills.py`）。
 2. 按描述挑最匹配的 **1 个**；确有互补需要时最多再加 1 个（例如「架构规约」配「API 参考」）。
 3. **只**读选中技能目录下的 `SKILL.md`；其中若指向 `references/`、`reference/` 或 `scripts/`，再按需下钻。
 
@@ -209,8 +228,8 @@ boss sync --check  # 只看有没有更新（有则退出码 1，不写任何文
 
 | 你想做的事 | 推荐做法 |
 | --- | --- |
-| 新增 / 移除第三方技能 | 改 `sources.json` 后执行 `boss sync` |
-| 升级上游技能 | 跑 `boss sync` |
+| 新增 / 移除第三方技能 | 改 `sources.json` 后执行 `boss sync-skills` |
+| 升级上游技能 | 跑 `boss sync-skills` |
 | 本地新建原创技能 | 在 `registry/` 对应分类下新建即可，受 Git 自动跟踪保护 |
 | 调整路由规则 | `skills-router/SKILL.md` |
 | 调整技能树展示 | `skills-router/scripts/list_skills.py` |

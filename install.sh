@@ -12,6 +12,9 @@ set -e
 REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
 TARGET_DIR="$HOME/.local/bin"
 TARGET_CMD="$TARGET_DIR/boss"
+COMPLETION_DIR="$HOME/.local/share/boss/completions"
+ZSH_COMPLETION="$COMPLETION_DIR/boss.zsh"
+BASH_COMPLETION="$COMPLETION_DIR/boss.bash"
 
 echo "=================================================="
 echo "🚀 [boss] 正在安装个人 Skill 治理框架..."
@@ -43,6 +46,11 @@ EOF
 sed -i.bak "s|__REPO_ROOT__|$REPO_ROOT|g" "$TARGET_CMD" && rm -f "$TARGET_CMD.bak"
 chmod 755 "$TARGET_CMD"
 
+# 安装 zsh / Bash 补全脚本，Shell 配置只负责加载这里的副本
+mkdir -p "$COMPLETION_DIR"
+cp "$REPO_ROOT/completions/boss.zsh" "$ZSH_COMPLETION"
+cp "$REPO_ROOT/completions/boss.bash" "$BASH_COMPLETION"
+
 # 清理旧版 skill-boss 命令（如果存在）
 rm -f "$TARGET_DIR/skill-boss"
 
@@ -50,7 +58,16 @@ echo "✓ 已成功部署可执行命令: $TARGET_CMD"
 
 # 4. 自动检测并配置 Shell 环境变量（免除手动编辑 ~/.zshrc / ~/.bashrc）
 DETECTED_RC=""
-if [ -n "$ZSH_VERSION" ] || [ "$SHELL" = "*/zsh" ] || [ -f "$HOME/.zshrc" ]; then
+SHELL_NAME="${SHELL##*/}"
+if [ -n "$ZSH_VERSION" ] || [ "$SHELL_NAME" = "zsh" ]; then
+    DETECTED_RC="$HOME/.zshrc"
+elif [ "$SHELL_NAME" = "bash" ]; then
+    if [ -f "$HOME/.bashrc" ] || [ ! -f "$HOME/.bash_profile" ]; then
+        DETECTED_RC="$HOME/.bashrc"
+    else
+        DETECTED_RC="$HOME/.bash_profile"
+    fi
+elif [ -f "$HOME/.zshrc" ]; then
     DETECTED_RC="$HOME/.zshrc"
 elif [ -f "$HOME/.bashrc" ]; then
     DETECTED_RC="$HOME/.bashrc"
@@ -70,6 +87,28 @@ if [ -n "$DETECTED_RC" ]; then
         echo "✓ 已自动将 PATH 配置写入: $DETECTED_RC"
     fi
 fi
+
+# 只为安装时检测到的 Shell 写入配置，重复执行不会重复添加
+configure_completion() {
+    local rc_file="$1"
+    local completion_file="$2"
+    local shell_label="$3"
+    local source_line="[ -r \"$completion_file\" ] && source \"$completion_file\""
+
+    if ! grep -qsF "$source_line" "$rc_file" 2>/dev/null; then
+        printf '\n# boss CLI %s Tab 自动补全\n%s\n' "$shell_label" "$source_line" >> "$rc_file"
+    fi
+    echo "✓ 已配置 $shell_label Tab 自动补全: $rc_file"
+}
+
+case "$DETECTED_RC" in
+    */.zshrc)
+        configure_completion "$DETECTED_RC" "$ZSH_COMPLETION" "zsh"
+        ;;
+    */.bashrc|*/.bash_profile)
+        configure_completion "$DETECTED_RC" "$BASH_COMPLETION" "Bash"
+        ;;
+esac
 
 echo "=================================================="
 echo "🎉 安装完成！"

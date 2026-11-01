@@ -324,7 +324,7 @@ def main() -> int:
 
     if args.check:
         if needs_update:
-            log("\n发现上游更新或本地改动。运行 boss sync 进行同步。")
+            log("\n发现上游更新或本地改动。运行 boss sync-skills 进行同步。")
             return 1
         log("\n全部已是最新。")
         return 0
