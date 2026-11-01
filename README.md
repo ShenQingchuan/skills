@@ -56,7 +56,7 @@
 
 ## 一键安装与快速开始
 
-本框架提供了一键安装脚本，**自动配置环境变量、自动管理脚本权限，全程零手动 `chmod`**：
+本框架提供了一键安装脚本，**自动配置环境变量、自动管理脚本权限、自动同步完整技能库，全程零手动 `chmod`**：
 
 ### 1. 克隆仓库
 
@@ -71,24 +71,16 @@ cd ~/.agents/skills
   ```bash
   sh install.sh
   ```
-  *(脚本会自动配置 `~/.local/bin` 软包装器并智能写入你的 shell profile，全程无需 sudo)*
+  *(脚本会自动配置 `~/.local/bin` 软包装器、写入 shell profile 并同步技能库，全程无需 sudo)*
 
 - **Windows**：
   直接双击 `install.cmd`，或在命令行运行：
   ```cmd
   install.cmd
   ```
-  *(自动以 Bypass 策略调用安装，免除 PowerShell 执行策略阻拦，并自动注册用户 PATH)*
+  *(自动以 Bypass 策略调用安装，免除 PowerShell 执行策略阻拦，自动注册用户 PATH 并同步技能库)*
 
-### 3. 一键初始化全部技能
-
-在任意终端敲击（首次安装类似 `npm install`，根据 `sources.lock.json` 拉齐全部技能）：
-
-```bash
-boss sync-skills
-```
-
-### 4. 验证就绪
+### 3. 验证就绪
 
 ```bash
 boss list-skills

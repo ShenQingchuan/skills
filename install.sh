@@ -5,7 +5,8 @@
 # 特性：
 # 1. 零手动 chmod：执行 sh install.sh 即可，脚本自动处理项目所有权限；
 # 2. 免疫权限失效：在 ~/.local/bin 生成 python3 启动包装器，源码即使无执行权限也能跑；
-# 3. 自动配置 PATH：智能检测 zsh/bash 配置文件并自动注入环境变量，无需手动编辑。
+# 3. 自动配置 PATH：智能检测 zsh/bash 配置文件并自动注入环境变量，无需手动编辑；
+# 4. 自动同步技能：安装末尾执行 sync-skills，首次安装即可得到完整技能库。
 # ==============================================================================
 set -e
 
@@ -109,6 +110,14 @@ case "$DETECTED_RC" in
         configure_completion "$DETECTED_RC" "$BASH_COMPLETION" "Bash"
         ;;
 esac
+
+# 首次安装直接拉齐技能库；重复安装时同步脚本会按指纹幂等处理
+echo ""
+echo "🔄 正在同步技能库..."
+if ! "$TARGET_CMD" sync-skills; then
+    echo "❌ 技能同步失败。请检查网络后重新运行 install.sh，或手动执行 boss sync-skills。" >&2
+    exit 1
+fi
 
 echo "=================================================="
 echo "🎉 安装完成！"

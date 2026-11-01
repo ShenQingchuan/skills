@@ -4,7 +4,8 @@
 # 特性：
 # 1. 零手动赋权：自动生成 .cmd 批处理包装器，开箱即用；
 # 2. 自动配置 PATH：自动将 %USERPROFILE%\.local\bin 写入当前用户环境变量，无需手动设置；
-# 3. 免管理员权限：仅配置当前用户环境，不弹 UAC，不污染全局系统。
+# 3. 免管理员权限：仅配置当前用户环境，不弹 UAC，不污染全局系统；
+# 4. 自动同步技能：安装末尾执行 sync-skills，首次安装即可得到完整技能库。
 # ==============================================================================
 $ErrorActionPreference = "Stop"
 
@@ -84,6 +85,14 @@ if ([string]::IsNullOrEmpty($ProfileContent) -or -not $ProfileContent.Contains($
     Add-Content -Path $ProfilePath -Value "`n# boss CLI PowerShell Tab completion`n$CompletionSourceLine" -Encoding UTF8
 }
 Write-Host "✓ 已配置 PowerShell Tab 自动补全: $ProfilePath" -ForegroundColor Green
+
+# 首次安装直接拉齐技能库；重复安装时同步脚本会按指纹幂等处理
+Write-Host ""
+Write-Host "🔄 正在同步技能库..." -ForegroundColor Cyan
+& $CmdWrapper sync-skills
+if ($LASTEXITCODE -ne 0) {
+    throw "技能同步失败。请检查网络后重新运行 install.ps1，或手动执行 boss sync-skills。"
+}
 
 Write-Host "==================================================" -ForegroundColor Cyan
 Write-Host "🎉 安装完成！你可以在新终端窗口直接输入: boss --help" -ForegroundColor Cyan
