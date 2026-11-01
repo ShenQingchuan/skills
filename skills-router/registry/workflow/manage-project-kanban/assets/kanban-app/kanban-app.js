@@ -10,8 +10,9 @@ import { render, enableZoom } from 'https://esm.sh/pele';
 export const I18N_LOCALES = {
   zh: {
     title: '项目看板',
-    empty: '当前看板尚无任务数据',
-    render_failed: '看板语法解析失败',
+    empty: '当前看板尚无产品成果',
+    render_failed: '看板校验失败',
+    invalid_cards: (ids) => `卡片 ${ids} 缺少有效的产品 spec，应为 spec: ".agents/specs/<name>/README.md" 或 spec.md`,
     btn_lang: '切换语言 (中 / EN)',
     btn_theme: '切换模式 (浅色 / 深色)',
     close: '关闭',
@@ -41,8 +42,9 @@ export const I18N_LOCALES = {
   },
   en: {
     title: 'Project Kanban',
-    empty: 'No tasks on the board yet',
-    render_failed: 'Kanban syntax parse error',
+    empty: 'No product outcomes on the board yet',
+    render_failed: 'Kanban validation failed',
+    invalid_cards: (ids) => `Cards ${ids} need a valid product spec: spec: ".agents/specs/<name>/README.md" or spec.md`,
     btn_lang: 'Switch Language (EN / 中)',
     btn_theme: 'Toggle Theme (Light / Dark)',
     close: 'Close',
@@ -219,7 +221,12 @@ export function applyI18n(lang = getCurrentLang()) {
     if (val !== undefined) el.setAttribute('aria-label', val);
   });
 
-  document.title = t.title;
+  const projectName = document.documentElement.dataset.projectName?.trim();
+  const pageTitle = projectName ? `${projectName} · ${t.title}` : t.title;
+  document.title = pageTitle;
+
+  const brandTitle = document.getElementById('brand-title');
+  if (brandTitle) brandTitle.textContent = pageTitle;
 
   initKanban({ lang });
 
@@ -243,6 +250,26 @@ function localizeMermaid(source, lang) {
   return result;
 }
 
+export function validateProductCards(source, t = I18N_LOCALES.zh) {
+  const laneKeys = new Set(['backlog', 'todo', 'in_progress', 'ready_for_review']);
+  const invalidIds = [];
+
+  for (const line of source.split(/\r?\n/)) {
+    const match = line.match(/^\s*([A-Za-z][\w-]*)\[[^\]]+\](?:\s*@\{([^}]*)\})?\s*$/);
+    if (!match || laneKeys.has(match[1])) continue;
+
+    const specMatch = match[2]?.match(/(?:^|,)\s*spec:\s*"([^"]+)"\s*(?=,|$)/);
+    const specPath = specMatch?.[1] || '';
+    if (!/^\.agents\/specs\/[a-z0-9][a-z0-9-]*\/(?:README|spec)\.md$/.test(specPath)) {
+      invalidIds.push(match[1]);
+    }
+  }
+
+  if (invalidIds.length > 0) {
+    throw new Error(t.invalid_cards(invalidIds.join(', ')));
+  }
+}
+
 export function initKanban(options = {}) {
   const sourceId = options.sourceId || 'kanban-source';
   const mountId = options.mountId || 'kanban-mount';
@@ -260,6 +287,7 @@ export function initKanban(options = {}) {
   }
 
   try {
+    validateProductCards(rawMermaid, t);
     const localizedMermaid = localizeMermaid(rawMermaid, lang);
     const result = render(localizedMermaid, { fontSize: 13, fontFamily: "'Figtree', -apple-system, sans-serif" });
     mountEl.innerHTML = result.svg;
@@ -273,11 +301,10 @@ export function initKanban(options = {}) {
     initScrollbar();
   } catch (error) {
     console.error('[Kanban] 渲染失败:', error);
-    mountEl.innerHTML = `
-      <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#fca5a5;padding:1rem;border-radius:6px;font-size:0.8125rem;">
-        <strong>${t.render_failed}:</strong> ${error.message || error}
-      </div>
-    `;
+    const errorEl = document.createElement('div');
+    errorEl.style.cssText = 'background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#fca5a5;padding:1rem;border-radius:6px;font-size:0.8125rem;';
+    errorEl.textContent = `${t.render_failed}: ${error.message || error}`;
+    mountEl.replaceChildren(errorEl);
   }
 }
 

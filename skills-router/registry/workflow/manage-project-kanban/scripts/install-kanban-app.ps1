@@ -1,6 +1,6 @@
 # ==============================================================================
 # install-kanban-app.ps1
-# 项目任务看板一键安装脚本 (Windows PowerShell)
+# 项目产品成果看板一键安装脚本 (Windows PowerShell)
 # 用法:
 #   powershell -ExecutionPolicy Bypass -File "$HOME\.agents\skills\skills-router\registry\workflow\manage-project-kanban\scripts\install-kanban-app.ps1" [target_dir]
 # ==============================================================================
@@ -47,7 +47,7 @@ Copy-Item -Path "$VendorAppDir\kanban-app.js" -Destination "$ResolvedTarget\" -F
 
 $KanbanHtml = Join-Path $ResolvedTarget "kanban.html"
 if (Test-Path $KanbanHtml) {
-  Write-Host "ℹ️  $KanbanHtml 已存在，已保留现有任务数据并更新配套引擎文件。"
+  Write-Host "ℹ️  $KanbanHtml 已存在，已保留现有产品成果数据并更新配套引擎文件。"
 } else {
   Copy-Item -Path "$VendorAppDir\kanban.html" -Destination "$ResolvedTarget\" -Force
   Write-Host "✓ 已生成看板页面: $KanbanHtml"
@@ -56,9 +56,9 @@ if (Test-Path $KanbanHtml) {
 $HistoryMd = Join-Path $ResolvedTarget "history.md"
 if (-not (Test-Path $HistoryMd)) {
   $Template = @"
-# 项目任务历史归档
+# 项目产品成果历史归档
 
-本项目所有通过人类验收（Accepted）的任务均会从实时看板中移出，按时间顺序沉淀于此。
+本项目所有通过人类验收（Accepted）的产品成果均会从实时看板中移出，按时间顺序沉淀于此。
 
 ---
 "@
@@ -71,7 +71,7 @@ if (-not (Test-Path $HistoryMd)) {
 Write-Host ""
 Write-Host "🎉 看板安装就绪！"
 Write-Host ""
-Write-Host "启动本地任务画板服务:"
+Write-Host "启动本地产品成果画板服务:"
 Write-Host "  & `"`$HOME\.agents\skills\.runtime\bin\python.exe`" -m http.server 5173"
 Write-Host "浏览器访问入口:"
 Write-Host "  http://localhost:5173/kanban.html"

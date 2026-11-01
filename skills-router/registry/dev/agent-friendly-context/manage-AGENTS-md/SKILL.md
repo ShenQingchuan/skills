@@ -29,9 +29,12 @@ description: 创建、更新、审查与精简项目根目录的 AGENTS.md 文�
    - 提取项目专属的**测试命令**（特别是跑单测的针对性命令）；
    - 提取**本地服务启动方式**，并确认 Agent 能否作为使用者发起调用（如 healthcheck 接口、`curl` 样例）并读取日志。
 3. **设置指路牌**：明确指引 Agent 渐进式索取信息：
-   - 需求与方案 👉 查阅 `.agents/specs/`
+   - 稳定需求与系统规约 👉 查阅 `.agents/specs/`
    - 代码风格与规矩 👉 查阅 `.agents/rules/`
+   - 工程实施过程 👉 查阅 `.agents/engineering/`
+   - 产品成果交付状态 👉 查阅 `.agents/kanban/`
    - 专属技能与工作流 👉 查阅 `.agents/skills/`
+   - 内部工程工作不得创建 Kanban 卡片；产品需求下的技术子任务也只进入 engineering
 4. **制定 2~3 条绝对物理红线**：只列破坏性高压电线（如禁止强推分支、禁止未确认删除数据），不把日常规范当死线，为后续排查留出“逃逸窗口”。
 5. **坚决剔除的冗余（反模式）**：
    - ❌ 不写基础命令科普（如 `npm install`、`git clone` 等常识）；
@@ -75,9 +78,12 @@ description: 创建、更新、审查与精简项目根目录的 AGENTS.md 文�
 
 ## 3. 上下文指引（Context Routing）
 深入了解本项目资产，请按需查阅对应抽屉（需要时再读，不要提前全量加载）：
-- 业务需求与技术方案：查阅 \`.agents/specs/\`
+- 稳定需求与系统规约：查阅 \`.agents/specs/\`
 - 项目规则与约束：查阅 \`.agents/rules/\`
+- 工程实施过程：查阅 \`.agents/engineering/\`
+- 产品成果交付状态：查阅 \`.agents/kanban/\`
 - 项目专属操作技能：查阅 \`.agents/skills/\`
+- 内部工程工作不得创建 Kanban 卡片；产品需求下的技术子任务也只进入 engineering
 
 ## 4. 绝对高压红线
 1. 严禁在代码中硬编码任何账号密码、私钥或 API Token。

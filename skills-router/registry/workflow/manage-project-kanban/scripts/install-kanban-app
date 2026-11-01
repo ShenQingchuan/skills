@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # install-kanban-app
-# 项目任务看板一键安装脚本 (macOS / Linux)
+# 项目产品成果看板一键安装脚本 (macOS / Linux)
 # 用法:
 #   ~/.agents/skills/skills-router/registry/workflow/manage-project-kanban/scripts/install-kanban-app [target_dir]
 # ==============================================================================
@@ -42,7 +42,7 @@ cp -f "$VENDOR_APP_DIR/kanban-app.js" "$TARGET_DIR/"
 
 # 检查 kanban.html 是否已存在（保护既有数据不被无端冲刷）
 if [ -f "$TARGET_DIR/kanban.html" ]; then
-  echo "ℹ️  $TARGET_DIR/kanban.html 已存在，已保留现有任务数据并更新配套引擎文件。"
+  echo "ℹ️  $TARGET_DIR/kanban.html 已存在，已保留现有产品成果数据并更新配套引擎文件。"
 else
   cp -f "$VENDOR_APP_DIR/kanban.html" "$TARGET_DIR/"
   echo "✓ 已生成看板页面: $TARGET_DIR/kanban.html"
@@ -52,9 +52,9 @@ fi
 HISTORY_FILE="$TARGET_DIR/history.md"
 if [ ! -f "$HISTORY_FILE" ]; then
   cat > "$HISTORY_FILE" <<'EOF'
-# 项目任务历史归档
+# 项目产品成果历史归档
 
-本项目所有通过人类验收（Accepted）的任务均会从实时看板中移出，按时间顺序沉淀于此。
+本项目所有通过人类验收（Accepted）的产品成果均会从实时看板中移出，按时间顺序沉淀于此。
 
 ---
 EOF
@@ -67,7 +67,7 @@ fi
 echo ""
 echo "🎉 看板安装就绪！"
 echo ""
-echo "启动本地任务画板服务 (推荐直接使用 boss 命令后台启动):"
+echo "启动本地产品成果画板服务 (推荐直接使用 boss 命令后台启动):"
 echo "  boss kanban [目标目录]"
 echo "或者手动启动:"
 echo "  ~/.agents/skills/.runtime/bin/python3 -m http.server 5173"
