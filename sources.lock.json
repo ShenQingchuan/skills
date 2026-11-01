@@ -264,13 +264,13 @@
       "resolvedRef": "refs/heads/main"
     },
     "mattpocock": {
-      "commit": "a496f5513d4a4cf889bc48e189e579f4b0bdf6aa",
+      "commit": "4ae2317ddb22b046e26455e4f9c9b3aaaf62212d",
       "ref": "main",
       "repo": "https://github.com/mattpocock/skills",
       "resolvedRef": "refs/heads/main"
     },
     "vercel-labs": {
-      "commit": "28898e4cc2d3ee47c7080ab653b4ad29340cef57",
+      "commit": "5868f7c05020e047c00e68e4abf9253cce864f41",
       "ref": "main",
       "repo": "https://github.com/vercel-labs/agent-browser",
       "resolvedRef": "refs/heads/main"
