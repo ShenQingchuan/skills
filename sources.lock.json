@@ -11,6 +11,11 @@
       "from": "vuejs-ai",
       "skill": "create-adaptable-composable"
     },
+    "dev/frontend/impeccable": {
+      "digest": "ccd9bad6634b30f16a9921eb9d853d7a52ce3996c9cf8467749a4f9a06396950",
+      "from": "pbakaus",
+      "skill": "impeccable"
+    },
     "dev/frontend/pinia": {
       "digest": "adf8ba25c083c782bf5f05808406cc336a175ab8dd5ddeeb121a6cedf1f87960",
       "from": "antfu",
@@ -278,6 +283,12 @@
       "commit": "8552771f8dea967bce7d347b5b36549f31c37b83",
       "ref": "main",
       "repo": "https://github.com/millionco/react-doctor",
+      "resolvedRef": "refs/heads/main"
+    },
+    "pbakaus": {
+      "commit": "e89e3ada3e875a89ac2c5d33d11e65ebef6fe285",
+      "ref": "main",
+      "repo": "https://github.com/pbakaus/impeccable",
       "resolvedRef": "refs/heads/main"
     },
     "vercel-labs": {

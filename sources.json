@@ -22,6 +22,11 @@
       "ref": "main",
       "skillsDir": "skills"
     },
+    "pbakaus": {
+      "repo": "https://github.com/pbakaus/impeccable",
+      "ref": "main",
+      "skillsDir": ".agents/skills"
+    },
     "larksuite": {
       "repo": "https://github.com/larksuite/cli",
       "ref": "main",
@@ -41,6 +46,7 @@
     { "skill": "vitepress", "from": "antfu", "to": "dev/frontend/vitepress" },
     { "skill": "vitest", "from": "antfu", "to": "dev/frontend/vitest" },
     { "skill": "react-doctor", "from": "millionco", "to": "dev/frontend/react-doctor" },
+    { "skill": "impeccable", "from": "pbakaus", "to": "dev/frontend/impeccable" },
     { "skill": "unocss", "from": "antfu", "to": "dev/frontend/unocss" },
     { "skill": "pnpm", "from": "antfu", "to": "dev/frontend/pnpm" },
     { "skill": "vue-best-practices", "from": "vuejs-ai", "to": "dev/frontend/vue-best-practices" },

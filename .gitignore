@@ -34,6 +34,7 @@ venv/
 # 本地原创技能（如 dev/agent-friendly-context 等）与说明文档不在名单中，正常受 Git 跟踪与保护
 skills-router/registry/dev/agent-browser/
 skills-router/registry/dev/frontend/create-adaptable-composable/
+skills-router/registry/dev/frontend/impeccable/
 skills-router/registry/dev/frontend/pinia/
 skills-router/registry/dev/frontend/pnpm/
 skills-router/registry/dev/frontend/react-doctor/
