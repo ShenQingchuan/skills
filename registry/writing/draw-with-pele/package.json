@@ -1,0 +1,11 @@
+{
+  "name": "draw-with-pele-skill",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "pele": "1.13.0"
+  }
+}
