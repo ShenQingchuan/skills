@@ -1,5 +1,5 @@
 ---
-name: manage-AGENTS-md
+name: manage-agents-md
 description: 创建、更新、审查与精简项目根目录的 AGENTS.md 文件。当用户要求初始化入口导航、更新测试或启动命令、调整项目红线、或对膨胀腐烂的 AGENTS.md 进行修剪瘦身时使用。
 ---
 

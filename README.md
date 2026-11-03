@@ -42,7 +42,7 @@
 一次典型的查阅输出：
 
 ```text
-📦 skills-router（技能路由中心根目录: /Users/admin/.agents/skills/skills-router/registry）
+📦 skills-router（技能路由中心根目录: /Users/admin/.agents/skills/registry）
   ├── 📂 dev/
   │   └── 📂 frontend/
   │       ├── 🎯 vue - Vue 3 Composition API, script setup macros… (入口: dev/frontend/vue/SKILL.md)
@@ -88,6 +88,8 @@ boss list-skills
 
 你的 Agent 默认**只感知到 `skills-router` 这一个入口技能**；`registry/` 下的所有技能对它保持静默，直到真正需要时由路由器按需展开。
 
+安装脚本会从 `config.example.json` 创建本机 `config.json`，并创建 `registry/.synced/` 与 `profiles/`。`config.json` 和私有 Profile 都被 Git 忽略，重复安装不会覆盖已有配置。
+
 ### Shell Tab 自动补全
 
 安装脚本会自动配置 Tab 补全，支持子命令、常用参数和 `boss list-skills` 的技能分类目录：
@@ -120,7 +122,7 @@ sh install.sh
 | `boss code [路径] [--port 6063]` | 启动网页版 VS Code（coderaft），自动打开浏览器并预装常用插件；同一目录重复调用只重新激活，不换端口；闲置 2 小时自动关闭 |
 | `boss code stop [--port 6063]` | 停止网页编辑器服务 |
 | `boss list-skills` | 查看当前技能树，输出包含分类、一句话描述与入口路径（支持子路径过滤，如 `boss list-skills dev/`） |
-| `boss sync-skills` | 依据 `sources.json` 同步第三方外部技能，对齐指纹锁定（支持传参 `--check` 纯只读检查） |
+| `boss sync-skills` | 同步默认 Profile 及 `config.json` 中启用的私有 Profile，对齐指纹锁定（支持 `--check` 纯只读检查） |
 | `boss setup-runtime` | 一键部署/检查独立绿色沙盒引擎 (Node/Bun/uv/Python/rg，支持 `-s` 查看状态) |
 
 ---
@@ -129,31 +131,35 @@ sh install.sh
 
 ```text
 .
-├── sources.json                   ← 上游清单（人写声明，类似 package.json）
-├── sources.lock.json              ← 同步状态（机器写锁，类似 package-lock.json）
+├── config.example.json            ← 本机配置模板（Git 跟踪）
+├── config.json                    ← 当前电脑启用的 Profile（Git 忽略，安装时自动创建）
+├── sources.json                   ← 默认 Profile 的上游清单（Git 跟踪）
+├── sources.lock.json              ← 默认 Profile 的同步锁定状态（Git 跟踪）
+├── registry/
+│   ├── dev/                       ← 共享手写技能，直接按逻辑分类存放（Git 跟踪）
+│   ├── workflow/                  ← 共享手写技能（Git 跟踪）
+│   └── .synced/                   ← 默认 Profile 的下载产物（Git 整体忽略）
+├── profiles/                      ← 本机私有 Profile（Git 整体忽略）
+│   └── company/                   ← 示例：一个公司 Profile
+│       ├── sources.json
+│       ├── sources.lock.json
+│       └── registry/
+│           └── .synced/
 ├── install.sh                     ← macOS / Linux 免 chmod 一键安装脚本
 ├── install.ps1                    ← Windows PowerShell 一键安装脚本
 ├── install.cmd                    ← Windows 双击即装批处理脚本
 ├── bin/
-│   ├── boss                       ← 框架统一 CLI 入口（分发 kanban/code/list-skills/sync-skills/runtime）
-│   ├── sync_skills.py             ← 依赖同步引擎（由 boss 调度）
+│   ├── boss                       ← 框架统一 CLI 入口
+│   ├── skill_boss_profiles.py     ← Profile 路径与本机配置的统一约定
+│   ├── sync_skills.py             ← 依赖同步引擎
 │   ├── setup-runtime.sh           ← Unix 运行环境部署引擎
 │   └── setup-runtime.ps1          ← Windows 运行环境部署引擎
 ├── skills-router/                 ← 唯一被 Agent 默认感知的入口技能
 │   ├── SKILL.md                   ← 路由规则（刻意写得极短）
-│   ├── scripts/
-│   │   └── list_skills.py         ← 技能树探测：Agent 靠它「看目录」
-│   └── registry/                  ← 技能库本体（类似 node_modules，第三方技能不入库）
-│       ├── .gitignore             ← 自动精准忽略第三方下载产物，绝不误伤本地自建技能
-│       ├── dev/
-│       │   ├── agent-friendly-context/ ← 本地自建原创技能（受 Git 跟踪与保护）
-│       │   └── ...                ← 第三方安装产物（本地存在但 Git 忽略）
-│       ├── office/lark/           ← 飞书套件安装产物（Git 忽略）
-│       ├── workflow/              ← 工作流技能（Git 忽略）
-│       └── …
-│
+│   └── scripts/
+│       └── list_skills.py         ← 合并默认与已启用 Profile 的技能树
 └── .github/workflows/
-    └── sync-skills.yml            ← 每日自动同步
+    └── sync-skills.yml            ← 每日自动同步默认 Profile
 ```
 
 **`registry/` 下怎么分类随你，多少层都行。** 唯一的硬约束来自 [Agent Skills 规范](https://agentskills.io/specification)：**一个 skill 的最小单元是一个目录**，目录里至少有一个 `SKILL.md`。
@@ -162,13 +168,37 @@ sh install.sh
 
 Agent 的技能发现只认**仓库根目录下的第一层**。`bin/` 里没有 `SKILL.md`，`registry/` 也不是技能（它只是技能的上级分类），所以两者都不会被自动发现——这正是整个结构成立的原因。
 
+手写技能和下载产物共享同一套逻辑分类。例如 `registry/dev/frontend/my-skill/` 与 `registry/.synced/dev/frontend/vue/` 会合并显示在 `dev/frontend/` 下；`.synced/` 只是存储细节，不出现在技能树中。同一逻辑技能路径出现冲突时，路由会直接报错。
+
+### 本机配置与私有 Profile
+
+顶层就是默认 Profile；`profiles/<name>/` 则使用完全相同的清单、锁文件和 `registry/` 结构。默认 Profile 始终加载，额外 Profile 由本机 `config.json` 启用。在技能树中，私有 Profile 以自身名称作为顶层命名空间，例如 `profiles/company/registry/dev/demo/` 显示为 `company/dev/demo/`，不会把内部分类提升到共享根目录。`registry/skills/` 用于存放未分类技能，其中技能直接显示在所属 Profile 名称下，不额外增加 `skills/` 分类；如果需要更细的分类，可以使用 `dev/`、`workflow/` 等其他目录：
+
+```json
+{
+  "activeProfiles": ["company"]
+}
+```
+
+公司技能清单只需放在 `profiles/company/sources.json`，其锁文件和下载目录由同步程序维护。家里电脑没有该目录且未启用该 Profile，就只同步和展示共享技能。
+
+根目录 `.gitignore` 是人工维护的固定规则，程序不会改写：
+
+```gitignore
+/config.json
+/profiles/
+/registry/.synced/
+```
+
+因此 GitHub 只展示共享清单、共享锁文件和手写技能；本机配置、私有 Profile 与下载产物都不会进入远端。
+
 ## 日常使用
 
 ### 同步上游更新
 
 ```bash
-boss sync-skills          # 拉取并更新 registry/
-boss sync-skills --check  # 只看有没有更新（有则退出码 1，不写任何文件）
+boss sync-skills          # 更新默认与已启用 Profile 的 registry/.synced/
+boss sync-skills --check  # 只检查全部已加载 Profile（有更新则退出码 1，不写文件）
 ```
 
 也可以完全交给 CI：`.github/workflows/sync-skills.yml` 每天自动跑一次，有变化就自动提交回 `main`，没变化就什么也不做。你只需要 `git pull`。
@@ -194,11 +224,11 @@ boss sync-skills --check  # 只看有没有更新（有则退出码 1，不写�
    ```json
    { "skill": "*", "from": "larksuite", "to": "office/lark" }
    ```
-3. 跑一次 `boss sync-skills`，上游全部技能会自动同步到 `registry/office/lark/` 下。未来上游无论新增、更名还是废弃子技能，同步脚本都会自动对齐，零人工维护成本。
+3. 跑一次 `boss sync-skills`，上游全部技能会自动同步到 `registry/.synced/office/lark/` 下。未来上游无论新增、更名还是废弃子技能，同步脚本都会自动对齐，零人工维护成本。
 
 ### 移除一个技能或套件
 
-把 `install` 里对应的那一行删掉，再跑一次同步脚本。脚本会连目录一起清理，让 `registry/` 始终等于清单。
+把 `install` 里对应的那一行删掉，再跑一次同步脚本。脚本会连目录一起清理，让对应 Profile 的 `registry/.synced/` 始终等于清单。
 
 ## Agent 使用指引
 
@@ -214,7 +244,7 @@ boss sync-skills --check  # 只看有没有更新（有则退出码 1，不写�
 
 - 不要一次性读完 `registry/` 下所有 `SKILL.md`。
 - 不要把 `registry/` 下的技能批量加载进上下文——这会直接毁掉这个仓库存在的意义。
-- `registry/` 中由 `sources.json` 管理的目录是**产物**，不要手改；下次同步会原样覆盖。
+- `registry/.synced/` 中由 `sources.json` 管理的目录是**产物**，不要手改；下次同步会原样覆盖。
 
 ### 修改时：要动这个仓库
 
@@ -231,6 +261,12 @@ boss sync-skills --check  # 只看有没有更新（有则退出码 1，不写�
 | 调整自动同步节奏 | `.github/workflows/sync-skills.yml` |
 
 `sources.lock.json` 由脚本自动生成，不要手改。它记录上游 commit 与每个技能目录的内容指纹，同步脚本靠它判断「有没有变」。
+
+运行自动化测试：
+
+```bash
+python3 -m unittest discover -s tests -v
+```
 
 ### 提交信息
 
@@ -258,9 +294,10 @@ chore(registry): 同步上游技能
 
 1. **单一入口** —— 路由器是唯一常驻上下文的技能。它的 `SKILL.md` 必须保持极短，任何一句多余的叮嘱都在收全体技能的税。
 2. **渐进式披露** —— 描述 → `SKILL.md` → `references/`，三级递进。每一级只在上一级明确指向时才展开。
-3. **产物与源头分离（依赖不入库 No-Vendoring）** —— `registry/` 下的第三方技能是安装产物（就像前端项目的 `node_modules`），源头永远是上游仓库。Git 仓库只维护声明（`sources.json`）、事实与指纹（`sources.lock.json`）以及本地自创技能，其余第三方代码全部由脚本拉取并被 Git 忽略，保持仓库极致轻量纯粹。
-4. **幂等优先** —— 同步跑一百遍和跑一遍结果相同。CI 才可以放心每天跑，你也才敢随时手动跑。
-5. **冲突先在安装前解决** —— 装之前先比对同一话题的几个上游，明确各自分工；装进来之后靠「最多 1+1」的规则避免同时加载。
+3. **产物与源头分离（依赖不入库 No-Vendoring）** —— 第三方技能统一下载到 `registry/.synced/`，就像前端项目的 `node_modules`。Git 仓库只维护声明（`sources.json`）、事实与指纹（`sources.lock.json`）以及 `registry/` 下的原创技能；忽略规则固定在目录边界上，不需要程序维护。
+4. **共享与私有隔离** —— 顶层默认 Profile 对大家一致，`profiles/` 和 `config.json` 只保留在本机，公司能力不会进入公开仓库。
+5. **幂等优先** —— 同步跑一百遍和跑一遍结果相同。CI 才可以放心每天跑，你也才敢随时手动跑。
+6. **冲突先在安装前解决** —— 装之前先比对同一话题的几个上游，明确各自分工；装进来之后靠「最多 1+1」的规则避免同时加载。
 
 ## 参与贡献
 
@@ -283,7 +320,7 @@ chore(registry): 同步上游技能
 ## 许可
 
 本仓库自身的代码（`skills-router/` 与 `bin/`）以 [MIT](./LICENSE) 授权。
-`registry/` 下的第三方技能保留其上游许可证，详见各技能目录。
+`registry/.synced/` 下的第三方技能保留其上游许可证，详见各技能目录。
 
 <div align="center">
 

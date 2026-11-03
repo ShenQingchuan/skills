@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "$comment": "skill = 上游 skills/ 下的相对路径，可含子目录（如 productivity/grilling）；to = registry/ 下的相对目录。",
+  "$comment": "skill = 上游 skills/ 下的相对路径，可含子目录；to = registry/.synced/ 下的逻辑分类目录。",
   "sources": {
     "antfu": {
       "repo": "https://github.com/antfu/skills",

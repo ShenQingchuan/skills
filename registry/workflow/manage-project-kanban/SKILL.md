@@ -67,7 +67,7 @@ boss kanban [项目路径，默认当前项目 .]
 
 - **macOS / Linux**：
   ```bash
-  ~/.agents/skills/skills-router/registry/workflow/manage-project-kanban/scripts/install-kanban-app [目标项目路径，默认当前目录 .]
+  ~/.agents/skills/registry/workflow/manage-project-kanban/scripts/install-kanban-app [目标项目路径，默认当前目录 .]
   ```
 - **Windows (PowerShell)**：
   ```powershell

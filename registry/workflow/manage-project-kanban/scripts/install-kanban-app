@@ -3,7 +3,7 @@
 # install-kanban-app
 # 项目产品成果看板一键安装脚本 (macOS / Linux)
 # 用法:
-#   ~/.agents/skills/skills-router/registry/workflow/manage-project-kanban/scripts/install-kanban-app [target_dir]
+#   ~/.agents/skills/registry/workflow/manage-project-kanban/scripts/install-kanban-app [target_dir]
 # ==============================================================================
 
 set -euo pipefail

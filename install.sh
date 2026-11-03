@@ -21,6 +21,13 @@ echo "=================================================="
 echo "🚀 [boss] 正在安装个人 Skill 治理框架..."
 echo "=================================================="
 
+# 初始化本机配置与目录；重装时绝不覆盖已有配置
+mkdir -p "$REPO_ROOT/registry/.synced" "$REPO_ROOT/profiles"
+if [ ! -f "$REPO_ROOT/config.json" ]; then
+    cp "$REPO_ROOT/config.example.json" "$REPO_ROOT/config.json"
+    echo "✓ 已创建本机配置: $REPO_ROOT/config.json"
+fi
+
 # 1. 自动为项目内部所有脚本赋予执行权限（静默自动完成，无需用户介入）
 chmod +x "$REPO_ROOT/bin/boss" 2>/dev/null || true
 chmod +x "$REPO_ROOT/install.sh" 2>/dev/null || true

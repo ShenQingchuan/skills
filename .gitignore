@@ -7,19 +7,23 @@ Thumbs.db
 .env.*
 !.env.example
 
+# 本机配置与私有 Profile
+/config.json
+/profiles/
+
+# 同步下载产物；手写技能直接放在 registry/ 的分类目录中
+/registry/.synced/
+
 # 编辑器与开发工具
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# 编程语言依赖与缓存（后续如果技能写了脚本）
+# 独立运行时与语言依赖缓存
 .runtime/
-# Node.js
 node_modules/
 npm-debug.log*
-
-# Python
 __pycache__/
 *.py[cod]
 .venv/
@@ -28,54 +32,3 @@ venv/
 # 日志与临时文件
 *.log
 *.tmp
-
-# >>> skills-sync:managed-start <<<
-# 由 boss (bin/sync_skills.py) 自动管理：精准黑名单排除所有已安装的第三方技能产物
-# 本地原创技能（如 dev/agent-friendly-context 等）与说明文档不在名单中，正常受 Git 跟踪与保护
-skills-router/registry/dev/agent-browser/
-skills-router/registry/dev/frontend/create-adaptable-composable/
-skills-router/registry/dev/frontend/impeccable/
-skills-router/registry/dev/frontend/pinia/
-skills-router/registry/dev/frontend/pnpm/
-skills-router/registry/dev/frontend/react-doctor/
-skills-router/registry/dev/frontend/unocss/
-skills-router/registry/dev/frontend/vite/
-skills-router/registry/dev/frontend/vitepress/
-skills-router/registry/dev/frontend/vitest/
-skills-router/registry/dev/frontend/vue/
-skills-router/registry/dev/frontend/vue-best-practices/
-skills-router/registry/dev/frontend/vue-debug-guides/
-skills-router/registry/dev/frontend/vue-pinia-best-practices/
-skills-router/registry/dev/frontend/vue-router-best-practices/
-skills-router/registry/dev/frontend/vue-testing-best-practices/
-skills-router/registry/office/lark/lark-approval/
-skills-router/registry/office/lark/lark-apps/
-skills-router/registry/office/lark/lark-attendance/
-skills-router/registry/office/lark/lark-base/
-skills-router/registry/office/lark/lark-calendar/
-skills-router/registry/office/lark/lark-contact/
-skills-router/registry/office/lark/lark-doc/
-skills-router/registry/office/lark/lark-drive/
-skills-router/registry/office/lark/lark-event/
-skills-router/registry/office/lark/lark-im/
-skills-router/registry/office/lark/lark-mail/
-skills-router/registry/office/lark/lark-markdown/
-skills-router/registry/office/lark/lark-meeting/
-skills-router/registry/office/lark/lark-minutes/
-skills-router/registry/office/lark/lark-note/
-skills-router/registry/office/lark/lark-okr/
-skills-router/registry/office/lark/lark-openapi-explorer/
-skills-router/registry/office/lark/lark-shared/
-skills-router/registry/office/lark/lark-sheets/
-skills-router/registry/office/lark/lark-skill-maker/
-skills-router/registry/office/lark/lark-slides/
-skills-router/registry/office/lark/lark-task/
-skills-router/registry/office/lark/lark-vc/
-skills-router/registry/office/lark/lark-vc-agent/
-skills-router/registry/office/lark/lark-whiteboard/
-skills-router/registry/office/lark/lark-wiki/
-skills-router/registry/office/lark/lark-workflow-meeting-summary/
-skills-router/registry/office/lark/lark-workflow-standup-report/
-skills-router/registry/workflow/grilling/
-skills-router/registry/writing/writing-for-agents/
-# >>> skills-sync:managed-end <<<

@@ -20,6 +20,18 @@ Write-Host "==================================================" -ForegroundColor
 Write-Host "🚀 [boss] 正在安装个人 Skill 治理框架..." -ForegroundColor Cyan
 Write-Host "=================================================="
 
+# 初始化本机配置与目录；重装时绝不覆盖已有配置
+$ConfigFile = Join-Path $RepoRoot "config.json"
+$ConfigExample = Join-Path $RepoRoot "config.example.json"
+$SyncedDir = Join-Path $RepoRoot "registry\.synced"
+$ProfilesDir = Join-Path $RepoRoot "profiles"
+New-Item -ItemType Directory -Path $SyncedDir -Force | Out-Null
+New-Item -ItemType Directory -Path $ProfilesDir -Force | Out-Null
+if (-not (Test-Path $ConfigFile)) {
+    Copy-Item -Path $ConfigExample -Destination $ConfigFile
+    Write-Host "✓ 已创建本机配置: $ConfigFile" -ForegroundColor Green
+}
+
 # 1. 创建用户级 bin 目录
 if (-not (Test-Path $UserBinDir)) {
     New-Item -ItemType Directory -Path $UserBinDir | Out-Null
