@@ -110,21 +110,24 @@ def merge_trees(target: dict, incoming: dict) -> None:
         merge_trees(current["children"], node["children"])
 
 
+def scan_storage(storage_dir: Path, logical_prefix: Path) -> dict:
+    """扫描一种存储来源，并将 skills/ 中的未分类技能提升到逻辑根目录。"""
+    tree = scan_registry(storage_dir, logical_prefix)
+    uncategorized = tree.get("skills")
+    if uncategorized and not uncategorized["is_skill"]:
+        del tree["skills"]
+        merge_trees(tree, scan_registry(storage_dir / "skills", logical_prefix))
+    return tree
+
+
 def collect_tree(profiles: list[Profile]) -> dict:
-    """默认 Profile 位于根目录；私有 Profile 以名称作为顶层命名空间。"""
+    """手写与下载存储分离，逻辑分类合并；私有 Profile 使用顶层命名空间。"""
     tree: dict = {}
     for profile in profiles:
         prefix = Path() if profile.name == "default" else Path(profile.name)
         profile_tree: dict = {}
-
-        unmanaged_tree = scan_registry(profile.registry_dir, prefix)
-        native_skills = unmanaged_tree.get("skills")
-        if native_skills and not native_skills["is_skill"]:
-            # skills/ 用于存放未分类技能，不参与逻辑分类。
-            del unmanaged_tree["skills"]
-            merge_trees(profile_tree, scan_registry(profile.registry_dir / "skills", prefix))
-        merge_trees(profile_tree, unmanaged_tree)
-        merge_trees(profile_tree, scan_registry(profile.synced_dir, prefix))
+        merge_trees(profile_tree, scan_storage(profile.registry_dir, prefix))
+        merge_trees(profile_tree, scan_storage(profile.synced_dir, prefix))
 
         if profile.name == "default":
             merge_trees(tree, profile_tree)
@@ -164,7 +167,7 @@ def select_category(tree: dict, raw_path: str) -> tuple[dict, Path]:
     return current, Path(*parts)
 
 
-def render_tree(node_dict: dict, prefix: str = "", strip_prefix: Path = Path()) -> list[str]:
+def render_tree(node_dict: dict, prefix: str = "") -> list[str]:
     lines = []
     keys = sorted(node_dict)
     for index, key in enumerate(keys):
@@ -174,12 +177,10 @@ def render_tree(node_dict: dict, prefix: str = "", strip_prefix: Path = Path()) 
         node = node_dict[key]
 
         if node["is_skill"]:
-            rel_path = node["rel_path"]
-            if strip_prefix.parts:
-                rel_path = rel_path.relative_to(strip_prefix)
             meta = node["meta"]
+            skill_file = node["path"] / "SKILL.md"
             line = f"{prefix}{connector}🎯 {meta['name']} - {shorten(meta['desc'])}"
-            lines.append(f"{line} (入口: {rel_path}/SKILL.md)")
+            lines.append(f"{line} (入口: {skill_file})")
             continue
 
         children = node["children"]
@@ -192,7 +193,7 @@ def render_tree(node_dict: dict, prefix: str = "", strip_prefix: Path = Path()) 
             )
         else:
             lines.append(f"{prefix}{connector}📂 {key}/")
-            lines.extend(render_tree(children, child_prefix, strip_prefix))
+            lines.extend(render_tree(children, child_prefix))
     return lines
 
 
@@ -228,7 +229,7 @@ def main() -> int:
         print("  └── （当前未安装任何技能）")
         return 0
 
-    for line in render_tree(tree, prefix="  ", strip_prefix=selected_path):
+    for line in render_tree(tree, prefix="  "):
         print(line)
     return 0
 

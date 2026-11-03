@@ -37,7 +37,7 @@
 
 - **① 常驻** —— Agent 默认只认识一个技能：`skills-router`。它自己只说一句话：「有技能树，先查再读」。成本恒定，约 40 tokens。
 - **② 查阅** —— 它跑 `list_skills.py`，拿到一棵带分类和一句话描述的技能树。
-- **③ 装载** —— 它只读命中的那个技能目录下的 `SKILL.md`；文件里指向 `references/` 时再往下钻。
+- **③ 装载** —— 它按技能树输出的真实绝对路径读取 `SKILL.md`；文件里指向 `references/` 时再往下钻。
 
 一次典型的查阅输出：
 
@@ -45,10 +45,10 @@
 📦 skills-router（技能路由中心根目录: /Users/admin/.agents/skills/registry）
   ├── 📂 dev/
   │   └── 📂 frontend/
-  │       ├── 🎯 vue - Vue 3 Composition API, script setup macros… (入口: dev/frontend/vue/SKILL.md)
+  │       ├── 🎯 vue - Vue 3 Composition API, script setup macros… (入口: /Users/admin/.agents/skills/registry/.synced/dev/frontend/vue/SKILL.md)
   │       └── …
   └── 📂 workflow/
-      ├── 🎯 grilling - Grill the user relentlessly about a plan, decision… (入口: workflow/grilling/SKILL.md)
+      ├── 🎯 grilling - Grill the user relentlessly about a plan, decision… (入口: /Users/admin/.agents/skills/registry/.synced/workflow/grilling/SKILL.md)
       └── …
 ```
 
@@ -144,7 +144,8 @@ sh install.sh
 │       ├── sources.json
 │       ├── sources.lock.json
 │       └── registry/
-│           └── .synced/
+│           ├── skills/                ← 手写、未分类技能
+│           └── .synced/skills/        ← 下载、未分类技能
 ├── install.sh                     ← macOS / Linux 免 chmod 一键安装脚本
 ├── install.ps1                    ← Windows PowerShell 一键安装脚本
 ├── install.cmd                    ← Windows 双击即装批处理脚本
@@ -168,11 +169,11 @@ sh install.sh
 
 Agent 的技能发现只认**仓库根目录下的第一层**。`bin/` 里没有 `SKILL.md`，`registry/` 也不是技能（它只是技能的上级分类），所以两者都不会被自动发现——这正是整个结构成立的原因。
 
-手写技能和下载产物共享同一套逻辑分类。例如 `registry/dev/frontend/my-skill/` 与 `registry/.synced/dev/frontend/vue/` 会合并显示在 `dev/frontend/` 下；`.synced/` 只是存储细节，不出现在技能树中。同一逻辑技能路径出现冲突时，路由会直接报错。
+手写技能和下载产物共享同一套逻辑分类。例如 `registry/dev/frontend/my-skill/` 与 `registry/.synced/dev/frontend/vue/` 会合并显示在 `dev/frontend/` 下；`.synced/` 只是存储细节，不会成为逻辑分类。同一逻辑技能路径出现冲突时，路由会直接报错。每个技能条目都会输出可直接读取的真实绝对路径，因此 router 主技能不需要理解这些存储映射。
 
 ### 本机配置与私有 Profile
 
-顶层就是默认 Profile；`profiles/<name>/` 则使用完全相同的清单、锁文件和 `registry/` 结构。默认 Profile 始终加载，额外 Profile 由本机 `config.json` 启用。在技能树中，私有 Profile 以自身名称作为顶层命名空间，例如 `profiles/company/registry/dev/demo/` 显示为 `company/dev/demo/`，不会把内部分类提升到共享根目录。`registry/skills/` 用于存放未分类技能，其中技能直接显示在所属 Profile 名称下，不额外增加 `skills/` 分类；如果需要更细的分类，可以使用 `dev/`、`workflow/` 等其他目录：
+顶层就是默认 Profile；`profiles/<name>/` 则使用完全相同的清单、锁文件和 `registry/` 结构。默认 Profile 始终加载，额外 Profile 由本机 `config.json` 启用。在技能树中，私有 Profile 以自身名称作为顶层命名空间，例如 `profiles/company/registry/dev/demo/` 显示为 `company/dev/demo/`，不会把内部分类提升到共享根目录。`registry/skills/` 和 `registry/.synced/skills/` 分别存放手写与下载的未分类技能；它们直接显示在所属 Profile 名称下，不额外增加 `skills/` 分类。如果需要更细的分类，可以使用 `dev/`、`workflow/` 等其他目录，手写与下载仍然分开放置：
 
 ```json
 {
@@ -245,6 +246,7 @@ boss sync-skills --check  # 只检查全部已加载 Profile（有更新则退�
 - 不要一次性读完 `registry/` 下所有 `SKILL.md`。
 - 不要把 `registry/` 下的技能批量加载进上下文——这会直接毁掉这个仓库存在的意义。
 - `registry/.synced/` 中由 `sources.json` 管理的目录是**产物**，不要手改；下次同步会原样覆盖。
+- 本仓库原创技能的 Node.js 脚本、文档示例与验证命令统一使用 `.runtime/bin/node`，npm/npx 同样使用 `.runtime/bin/` 内的垫片；未就绪先执行 `boss setup-runtime`，不调用系统 Node。
 
 ### 修改时：要动这个仓库
 

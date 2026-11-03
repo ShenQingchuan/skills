@@ -86,6 +86,7 @@ class RegistryTreeTests(unittest.TestCase):
             write_skill(default.registry_dir / "dev" / "frontend" / "manual", "manual")
             write_skill(default.synced_dir / "dev" / "frontend" / "remote", "remote")
             write_skill(company.registry_dir / "skills" / "private", "private")
+            write_skill(company.synced_dir / "skills" / "downloaded", "downloaded")
 
             tree = list_skills.collect_tree([default, company])
             output = "\n".join(list_skills.render_tree(tree))
@@ -93,10 +94,19 @@ class RegistryTreeTests(unittest.TestCase):
             self.assertIn("🎯 manual", output)
             self.assertIn("🎯 remote", output)
             self.assertIn("🎯 private", output)
+            self.assertIn("🎯 downloaded", output)
             self.assertIn("📂 company/", output)
-            self.assertIn("入口: dev/frontend/remote/SKILL.md", output)
-            self.assertIn("入口: company/private/SKILL.md", output)
-            self.assertNotIn(".synced", output)
+            self.assertIn(
+                f"入口: {default.synced_dir / 'dev/frontend/remote/SKILL.md'}", output
+            )
+            self.assertIn(
+                f"入口: {company.registry_dir / 'skills/private/SKILL.md'}", output
+            )
+            self.assertIn(
+                f"入口: {company.synced_dir / 'skills/downloaded/SKILL.md'}", output
+            )
+            self.assertNotIn("📂 .synced/", output)
+            self.assertNotIn("📂 skills/", output)
 
     def test_rejects_duplicate_logical_skill_paths(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
