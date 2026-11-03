@@ -6,77 +6,44 @@
 
 Pele 支持 Mermaid 12.1.0 内置的图型，但使用自己的布局与视觉风格。
 
-| 表达目的 | Mermaid 起始关键字 |
-| --- | --- |
-| 流程、决策、依赖 | `flowchart` 或 `graph` |
-| 泳道流程 | `swimlane-beta` |
-| 消息调用顺序 | `sequenceDiagram` |
-| 类与继承 | `classDiagram` |
-| 状态迁移 | `stateDiagram-v2` |
-| 实体与数据关系 | `erDiagram` |
-| 日程与工期 | `gantt` |
-| Git 分支历史 | `gitGraph` |
-| 占比 | `pie` |
-| 层级想法 | `mindmap` |
-| 任务看板 | `kanban` |
-| 事件时间线 | `timeline` |
-| 用户体验过程 | `journey` |
-| 象限分析 | `quadrantChart` |
-| 柱状图、折线图 | `xychart` |
-| 需求追踪 | `requirementDiagram` |
-| 流量分配 | `sankey-beta` |
-| 系统架构 | `architecture-beta` |
-| C4 架构 | `C4Context`、`C4Container`、`C4Component`、`C4Dynamic`、`C4Deployment` |
-| 块状布局 | `block-beta` |
-| Agent 工作流 | `agentflow-beta` |
-| 树状文件结构 | `treeView-beta` |
-| 数据包结构 | `packet-beta` |
-| 雷达图 | `radar-beta` |
-| 矩形树图 | `treemap-beta` |
-| 韦恩图 | `venn-beta` |
-| 鱼骨图 | `ishikawa-beta` |
+| 表达目的 | Mermaid 起始关键字 | 官方精选示例 |
+| --- | --- | --- |
+| 流程、决策、依赖 | `flowchart` 或 `graph` | [flowchart](references/examples/flowchart.md) |
+| 泳道流程 | `swimlane-beta` | [swimlane](references/examples/swimlane.md) |
+| 消息调用顺序 | `sequenceDiagram` | [sequence](references/examples/sequence.md) |
+| 类与继承 | `classDiagram` | [class](references/examples/class.md) |
+| 状态迁移 | `stateDiagram-v2` | [state](references/examples/state.md) |
+| 实体与数据关系 | `erDiagram` | [er](references/examples/er.md) |
+| 日程与工期 | `gantt` | [gantt](references/examples/gantt.md) |
+| Git 分支历史 | `gitGraph` | [git](references/examples/git.md) |
+| 占比 | `pie` | [pie](references/examples/pie.md) |
+| 层级想法 | `mindmap` | [mindmap](references/examples/mindmap.md) |
+| 任务看板 | `kanban` | [kanban](references/examples/kanban.md) |
+| 事件时间线 | `timeline` | [timeline](references/examples/timeline.md) |
+| 用户体验过程 | `journey` | [journey](references/examples/journey.md) |
+| 象限分析 | `quadrantChart` | [quadrant](references/examples/quadrant.md) |
+| 柱状图、折线图 | `xychart` | [xychart](references/examples/xychart.md) |
+| 需求追踪 | `requirementDiagram` | [requirement](references/examples/requirement.md) |
+| 流量分配 | `sankey-beta` | [sankey](references/examples/sankey.md) |
+| 系统架构 | `architecture-beta` | [architecture](references/examples/architecture.md) |
+| C4 架构 | `C4Context`、`C4Container`、`C4Component`、`C4Dynamic`、`C4Deployment` | [c4](references/examples/c4.md) |
+| 块状布局 | `block-beta` | [block](references/examples/block.md) |
+| Agent 工作流 | `agentflow-beta` | [agentflow](references/examples/agentflow.md) |
+| 语法铁路图 | `railroad-beta` | [railroad](references/examples/railroad.md) |
+| 树状文件结构 | `treeView-beta` | [treeview](references/examples/treeview.md) |
+| Cynefin 决策分析 | `cynefin-beta` | [cynefin](references/examples/cynefin.md) |
+| Wardley 战略地图 | `wardley-beta` | [wardley](references/examples/wardley.md) |
+| 事件建模 | `eventmodeling` | [eventmodeling](references/examples/eventmodeling.md) |
+| 用例关系 | `usecase-beta` | [usecase](references/examples/usecase.md) |
+| 韦恩图 | `venn-beta` | [venn](references/examples/venn.md) |
+| 鱼骨图 | `ishikawa-beta` | [ishikawa](references/examples/ishikawa.md) |
+| 数据包结构 | `packet-beta` | [packet](references/examples/packet.md) |
+| 雷达图 | `radar-beta` | [radar](references/examples/radar.md) |
+| 矩形树图 | `treemap-beta` | [treemap](references/examples/treemap.md) |
 
-完整示例见 <https://pele.run/examples>。遇到这里没有覆盖的图型时，查官方示例后再写源码。
+## 示例的使用
 
-## 常用骨架
-
-### 流程图
-
-```mermaid
-flowchart TD
-  Start["开始"] --> Check{"信息完整？"}
-  Check -->|是| Done["生成结果"]
-  Check -->|否| Fill["补充信息"]
-  Fill --> Check
-```
-
-### 时序图
-
-```mermaid
-sequenceDiagram
-  actor User as 用户
-  participant App as 应用
-  participant API as 服务
-  User->>App: 提交请求
-  App->>API: 处理请求
-  API-->>App: 返回结果
-  App-->>User: 展示结果
-```
-
-### 架构关系
-
-```mermaid
-flowchart LR
-  subgraph Client["客户端"]
-    UI["Web 应用"]
-  end
-  subgraph Service["服务端"]
-    API["API 服务"]
-    DB[("数据库")]
-  end
-  UI -->|HTTPS| API
-  API --> DB
-```
+确定图型后，只读取上表对应的示例文件。文件收录 Pele 官方 Examples 首页的精选示例；需要更多变体或边界语法时，沿文件顶部的链接查阅该图型的完整官方示例。
 
 ## Pele 与 Mermaid 的关键差异
 
