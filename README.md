@@ -156,7 +156,7 @@ boss python -m unittest discover -s tests -v
 │   ├── workflow/                  ← 共享手写技能（Git 跟踪）
 │   └── .synced/                   ← 默认 Profile 的下载产物（Git 整体忽略）
 ├── profiles/                      ← 本机私有 Profile（Git 整体忽略）
-│   └── company/                   ← 示例：一个公司 Profile
+│   └── private/                   ← 示例：一个本机私有 Profile
 │       ├── sources.json
 │       ├── sources.lock.json
 │       └── registry/
@@ -173,7 +173,6 @@ boss python -m unittest discover -s tests -v
 │   ├── install-python.ps1         ← Windows Python 检测与自动安装引导
 │   ├── sync_skills.py             ← 依赖同步与下载方法分派
 │   ├── sync_common.py             ← 各下载方法共用的指纹与文件工具
-│   ├── sync_fskillhub.py          ← 公司技能中心下载器
 │   ├── setup-runtime.sh           ← Unix 运行环境部署引擎
 │   └── setup-runtime.ps1          ← Windows 运行环境部署引擎
 ├── skills-router/                 ← 唯一被 Agent 默认感知的入口技能
@@ -194,15 +193,15 @@ Agent 的技能发现只认**仓库根目录下的第一层**。`bin/` 里没有
 
 ### 本机配置与私有 Profile
 
-顶层就是默认 Profile；`profiles/<name>/` 则使用完全相同的清单、锁文件和 `registry/` 结构。默认 Profile 始终加载，额外 Profile 由本机 `config.json` 启用。在技能树中，私有 Profile 以自身名称作为顶层命名空间，例如 `profiles/company/registry/dev/demo/` 显示为 `company/dev/demo/`，不会把内部分类提升到共享根目录。`registry/skills/` 和 `registry/.synced/skills/` 分别存放手写与下载的未分类技能；它们直接显示在所属 Profile 名称下，不额外增加 `skills/` 分类。如果需要更细的分类，可以使用 `dev/`、`workflow/` 等其他目录，手写与下载仍然分开放置：
+顶层就是默认 Profile；`profiles/<name>/` 则使用完全相同的清单、锁文件和 `registry/` 结构。默认 Profile 始终加载，额外 Profile 由本机 `config.json` 启用。在技能树中，私有 Profile 以自身名称作为顶层命名空间，例如 `profiles/private/registry/dev/demo/` 显示为 `private/dev/demo/`，不会把内部分类提升到共享根目录。`registry/skills/` 和 `registry/.synced/skills/` 分别存放手写与下载的未分类技能；它们直接显示在所属 Profile 名称下，不额外增加 `skills/` 分类。如果需要更细的分类，可以使用 `dev/`、`workflow/` 等其他目录，手写与下载仍然分开放置：
 
 ```json
 {
-  "activeProfiles": ["company"]
+  "activeProfiles": ["private"]
 }
 ```
 
-公司技能清单只需放在 `profiles/company/sources.json`，其锁文件和下载目录由同步程序维护。家里电脑没有该目录且未启用该 Profile，就只同步和展示共享技能。
+私有技能清单只需放在 `profiles/private/sources.json`，其锁文件和下载目录由同步程序维护。其他电脑没有该目录且未启用该 Profile，就只同步和展示共享技能。
 
 根目录 `.gitignore` 是人工维护的固定规则，程序不会改写：
 
@@ -229,7 +228,7 @@ boss sync-skills --check  # 只检查全部已加载 Profile（有更新则退�
 
 ### 新增一个技能或技能套件
 
-Git 来源支持「单品挑选」与「整套镜像」，公司技能中心则通过 Fskillhub 下载器接入：
+Git 来源支持「单品挑选」与「整套镜像」两种引入方式：
 
 #### 方式一：单点选品（Pick 模式，适合散装仓库）
 上游仓库是个大杂烩，你只想要其中一两个技能时：
@@ -247,39 +246,6 @@ Git 来源支持「单品挑选」与「整套镜像」，公司技能中心则�
    { "skill": "*", "from": "larksuite", "to": "office/lark" }
    ```
 3. 跑一次 `boss sync-skills`，上游全部技能会自动同步到 `registry/.synced/office/lark/` 下。未来上游无论新增、更名还是废弃子技能，同步脚本都会自动对齐，零人工维护成本。
-
-#### 方式三：公司技能中心（Fskillhub）
-
-在 `sources` 中用 `method: "fskillhub"` 声明下载方法。`tool` 是 npx 执行的工具包，`npmRegistry` 用于下载工具本身，`registry` 是技能中心 API：
-
-```json
-{
-  "sources": {
-    "futu-hub": {
-      "method": "fskillhub",
-      "tool": "@futu/fskillhub@latest",
-      "npmRegistry": "http://registry.npm.oa.com/",
-      "registry": "https://api-mcp.futuoa.com"
-    }
-  },
-  "install": [
-    {
-      "skill": "team-infra@fservice-cli",
-      "from": "futu-hub",
-      "to": "skills/fservice-cli"
-    }
-  ]
-}
-```
-
-`install` 中可以增加 `"version": "3.14.0"` 固定技能版本；不写时跟踪技能中心最新版本。所有来源都只需要执行：
-
-```bash
-boss setup-runtime  # 首次使用 Fskillhub 时准备独立 Node/npx 运行时
-boss sync-skills
-```
-
-同步器会在临时目录调用 Fskillhub，验证技能和版本后再写入目标目录，并把实际版本与内容指纹记录到 `sources.lock.json`。`.fskillhub/` 不再承担 Profile 依赖清单的职责，带安装时间的工具元数据也不会影响内容指纹。`--check` 同样在临时目录检查远端版本，不修改 Profile；工具不可用时会保留已安装技能和旧锁记录。
 
 ### 移除一个技能或套件
 
@@ -312,12 +278,11 @@ boss sync-skills
 | 调整路由规则 | `skills-router/SKILL.md` |
 | 调整技能树展示 | `skills-router/scripts/list_skills.py` |
 | 调整同步分派或 Git 下载 | `bin/sync_skills.py` |
-| 调整 Fskillhub 下载 | `bin/sync_fskillhub.py` |
 | 部署绿色运行时沙盒 | 跑 `boss setup-runtime` |
 | 启动项目任务看板 | 跑 `boss kanban [项目路径]` |
 | 调整自动同步节奏 | `.github/workflows/sync-skills.yml` |
 
-`sources.lock.json` 由脚本自动生成，不要手改。它记录 Git commit 或 Fskillhub 技能版本，以及每个技能目录的内容指纹，同步脚本靠它判断「有没有变」。
+`sources.lock.json` 由脚本自动生成，不要手改。它记录上游版本与每个技能目录的内容指纹，同步脚本靠它判断「有没有变」。
 
 运行自动化测试：
 
@@ -352,7 +317,7 @@ chore(registry): 同步上游技能
 1. **单一入口** —— 路由器是唯一常驻上下文的技能。它的 `SKILL.md` 必须保持极短，任何一句多余的叮嘱都在收全体技能的税。
 2. **渐进式披露** —— 描述 → `SKILL.md` → `references/`，三级递进。每一级只在上一级明确指向时才展开。
 3. **产物与源头分离（依赖不入库 No-Vendoring）** —— 第三方技能统一下载到 `registry/.synced/`，就像前端项目的 `node_modules`。Git 仓库只维护声明（`sources.json`）、事实与指纹（`sources.lock.json`）以及 `registry/` 下的原创技能；忽略规则固定在目录边界上，不需要程序维护。
-4. **共享与私有隔离** —— 顶层默认 Profile 对大家一致，`profiles/` 和 `config.json` 只保留在本机，公司能力不会进入公开仓库。
+4. **共享与私有隔离** —— 顶层默认 Profile 对大家一致，`profiles/` 和 `config.json` 只保留在本机，私有能力不会进入公开仓库。
 5. **幂等优先** —— 同步跑一百遍和跑一遍结果相同。CI 才可以放心每天跑，你也才敢随时手动跑。
 6. **冲突先在安装前解决** —— 装之前先比对同一话题的几个上游，明确各自分工；装进来之后靠「最多 1+1」的规则避免同时加载。
 
