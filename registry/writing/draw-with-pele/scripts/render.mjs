@@ -3,7 +3,7 @@ import path from 'node:path';
 import process from 'node:process';
 
 const HELP = `Usage:
-  <skills>/.runtime/bin/node <skill>/scripts/render.mjs <input.mmd> [options]
+  boss node <skill>/scripts/render.mjs <input.mmd> [options]
 
 Render Mermaid source as a standalone SVG with Pele.
 
@@ -110,7 +110,7 @@ async function main() {
     pele = await import('pele');
   } catch (error) {
     if (error?.code !== 'ERR_MODULE_NOT_FOUND') throw error;
-    fail('Missing Pele dependency. Run: "$HOME/.agents/skills/.runtime/bin/npm" ci --prefix "$HOME/.agents/skills/registry/writing/draw-with-pele"');
+    fail('Missing Pele dependency. Run: boss npm ci --prefix "$HOME/.agents/skills/registry/writing/draw-with-pele"');
   }
 
   const source = await readFile(input, 'utf8');

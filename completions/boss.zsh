@@ -19,6 +19,11 @@ _boss_completion() {
         'list-skills:查看技能树'
         'sync-skills:同步第三方技能'
         'setup-runtime:安装或检查独立运行环境'
+        'bun:使用沙盒 Bun'
+        'uv:使用沙盒 uv'
+        'python:使用沙盒 Python'
+        'node:使用沙盒 Node.js'
+        'npm:使用沙盒 npm'
       )
       _describe 'boss command' commands
     fi
@@ -51,6 +56,10 @@ _boss_completion() {
       options=('-s:查看运行环境状态' '--status:查看运行环境状态' '-h:查看帮助' '--help:查看帮助')
       _describe 'command option' options
       ;;
+    bun|python|node)
+      _files
+      ;;
+
   esac
 }
 

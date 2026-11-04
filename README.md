@@ -56,7 +56,7 @@
 
 ## 一键安装与快速开始
 
-本框架提供了一键安装脚本，**自动配置环境变量、自动管理脚本权限、自动同步完整技能库，全程零手动 `chmod`**：
+本框架提供了一键安装脚本，**自动配置环境变量、自动管理脚本权限、自动准备独立运行时并同步完整技能库，全程零手动 `chmod`**：
 
 ### 1. 克隆仓库
 
@@ -124,6 +124,22 @@ sh install.sh
 | `boss list-skills` | 查看当前技能树，输出包含分类、一句话描述与入口路径（支持子路径过滤，如 `boss list-skills dev/`） |
 | `boss sync-skills` | 同步默认 Profile 及 `config.json` 中启用的私有 Profile，对齐指纹锁定（支持 `--check` 纯只读检查） |
 | `boss setup-runtime` | 一键部署/检查独立绿色沙盒引擎 (Node/Bun/uv/Python/rg，支持 `-s` 查看状态) |
+| `boss bun [参数...]` | 使用沙盒 Bun，后续参数原样交给 Bun |
+| `boss uv [参数...]` | 使用沙盒 uv，后续参数原样交给 uv |
+| `boss python [参数...]` | 使用沙盒 Python，后续参数原样交给 Python |
+| `boss node [参数...]` | 使用沙盒 Node.js，后续参数原样交给 Node.js |
+| `boss npm [参数...]` | 使用沙盒 npm，后续参数原样交给 npm |
+
+Skill 调用工具时统一使用以上命令，不需要关心 `.runtime` 的跨平台路径。例如：
+
+```bash
+boss node scripts/render.mjs input.mmd -o output.svg
+boss npm ci --prefix registry/writing/draw-with-pele
+boss uv run python main.py
+boss python -m unittest discover -s tests -v
+```
+
+这些命令只使用仓库内的 `.runtime`，不会回退到系统工具。运行时目录缺失、目标工具未安装或没有执行权限时会直接报错，并提示运行 `boss setup-runtime` 修复；工具自身的退出码会原样保留。
 
 ---
 
@@ -151,6 +167,8 @@ sh install.sh
 ├── install.cmd                    ← Windows 双击即装批处理脚本
 ├── bin/
 │   ├── boss                       ← 框架统一 CLI 入口
+│   ├── boss_runtime.py            ← 沙盒工具定位、检查与参数透传
+│   ├── boss_services.py           ← 看板与网页编辑器服务
 │   ├── skill_boss_profiles.py     ← Profile 路径与本机配置的统一约定
 │   ├── install-python.ps1         ← Windows Python 检测与自动安装引导
 │   ├── sync_skills.py             ← 依赖同步引擎
@@ -247,7 +265,7 @@ boss sync-skills --check  # 只检查全部已加载 Profile（有更新则退�
 - 不要一次性读完 `registry/` 下所有 `SKILL.md`。
 - 不要把 `registry/` 下的技能批量加载进上下文——这会直接毁掉这个仓库存在的意义。
 - `registry/.synced/` 中由 `sources.json` 管理的目录是**产物**，不要手改；下次同步会原样覆盖。
-- 本仓库原创技能的 Node.js 脚本、文档示例与验证命令统一使用 `.runtime/bin/node`，npm/npx 同样使用 `.runtime/bin/` 内的垫片；未就绪先执行 `boss setup-runtime`，不调用系统 Node。
+- 本仓库原创技能需要 Bun、uv、Python、Node.js 或 npm 时，统一使用 `boss bun`、`boss uv`、`boss python`、`boss node`、`boss npm`；不要拼写 `.runtime` 路径，也不要回退到系统工具。未就绪先执行 `boss setup-runtime`。
 
 ### 修改时：要动这个仓库
 

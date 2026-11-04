@@ -6,7 +6,7 @@
 # 2. 自动配置 PATH：自动将 %USERPROFILE%\.local\bin 写入当前用户环境变量，无需手动设置；
 # 3. 免管理员权限：仅配置当前用户环境，不弹 UAC，不污染全局系统；
 # 4. 自动准备 Python：优先使用系统 Python 3，没有时通过 uv 安装独立 Python 3.12；
-# 5. 自动同步技能：安装末尾执行 sync-skills，首次安装即可得到完整技能库。
+# 5. 自动准备运行时并同步技能：首次安装即可使用全部内置工具与技能库。
 # ==============================================================================
 $ErrorActionPreference = "Stop"
 
@@ -100,6 +100,14 @@ if ([string]::IsNullOrEmpty($ProfileContent) -or -not $ProfileContent.Contains($
     Add-Content -Path $ProfilePath -Value "`n# boss CLI PowerShell Tab completion`n$CompletionSourceLine" -Encoding UTF8
 }
 Write-Host "✓ 已配置 PowerShell Tab 自动补全: $ProfilePath" -ForegroundColor Green
+
+# 先准备独立运行时，保证 Skill 不依赖宿主机器上的工具版本
+Write-Host ""
+Write-Host "🔄 正在准备独立运行时..." -ForegroundColor Cyan
+& $CmdWrapper setup-runtime
+if ($LASTEXITCODE -ne 0) {
+    throw "独立运行时准备失败。请检查网络后重新运行 install.ps1，或手动执行 boss setup-runtime。"
+}
 
 # 首次安装直接拉齐技能库；重复安装时同步脚本会按指纹幂等处理
 Write-Host ""

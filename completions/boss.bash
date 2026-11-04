@@ -1,7 +1,7 @@
 # boss CLI 的 Bash 补全：子命令、选项和技能分类目录。
 _boss_completion() {
   local cur prev command line
-  local commands="kanban code list-skills sync-skills setup-runtime"
+  local commands="kanban code list-skills sync-skills setup-runtime bun uv python node npm"
   COMPREPLY=()
   cur="${COMP_WORDS[COMP_CWORD]}"
   prev="${COMP_WORDS[COMP_CWORD - 1]}"
@@ -41,6 +41,10 @@ _boss_completion() {
     setup-runtime)
       COMPREPLY=( $(compgen -W "-s --status -h --help" -- "$cur") )
       ;;
+    bun|uv|python|node|npm)
+      # 无候选时使用 Bash 默认补全，仍可方便地补全脚本路径。
+      ;;
+
   esac
 }
 

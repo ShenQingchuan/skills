@@ -36,23 +36,20 @@ description: 使用 Pele 将 Mermaid 文本渲染为可定制主题的 SVG。当
 使用仓库自带的 Node.js runtime 执行：
 
 ```bash
-"$HOME/.agents/skills/.runtime/bin/node" \
-  "$HOME/.agents/skills/registry/writing/draw-with-pele/scripts/render.mjs" \
+boss node "$HOME/.agents/skills/registry/writing/draw-with-pele/scripts/render.mjs" \
   "<名称>.mmd" -o "<名称>.svg"
 ```
 
 runtime 未就绪时先执行 `boss setup-runtime`。如果提示缺少 `pele` 依赖，使用自带 npm 安装后重新执行：
 
 ```bash
-"$HOME/.agents/skills/.runtime/bin/npm" ci \
-  --prefix "$HOME/.agents/skills/registry/writing/draw-with-pele"
+boss npm ci --prefix "$HOME/.agents/skills/registry/writing/draw-with-pele"
 ```
 
 尺寸、字体、主题 CSS 等可选参数通过 `--help` 查看：
 
 ```bash
-"$HOME/.agents/skills/.runtime/bin/node" \
-  "$HOME/.agents/skills/registry/writing/draw-with-pele/scripts/render.mjs" --help
+boss node "$HOME/.agents/skills/registry/writing/draw-with-pele/scripts/render.mjs" --help
 ```
 
 ### 4. 修复并复验

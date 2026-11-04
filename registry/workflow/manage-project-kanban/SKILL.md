@@ -36,18 +36,15 @@ description: 管理可独立验收的产品需求、功能和用户可感知缺�
 
 ## 一、跨平台独立运行时调用规范
 
-本技能配套工具执行时，使用本仓库内置的运行环境：
+需要 Python、Node.js、Bun、uv 或 npm 时，统一使用 `boss python`、`boss node`、`boss bun`、`boss uv`、`boss npm`，后续参数与原生工具一致。不要直接拼写 `.runtime` 路径，也不要改用系统工具。
 
-- **标准基准路径**：`~/.agents/skills/.runtime/`
-- **各操作系统与 Shell 执行对照**：
+例如启动静态文件服务：
 
-| 平台 / 环境 | 路径写法示例 | 说明 |
-| :--- | :--- | :--- |
-| **macOS / Linux (Bash/Zsh)** | `~/.agents/skills/.runtime/bin/python3` | Shell 会自动将 `~` 展开为当前用户主目录 |
-| **Windows (PowerShell)** | `$HOME\.agents\skills\.runtime\bin\python.exe` | PowerShell 中 `$HOME` 会自动展开 |
-| **Windows (cmd.exe)** | `%USERPROFILE%\.agents\skills\.runtime\bin\python.exe` | cmd 不支持 `~` 展开，必须使用 `%USERPROFILE%` |
+```bash
+boss python -m http.server 5173
+```
 
-> AI 应根据当前宿主操作系统选取对应的执行路径。
+命令提示运行时缺失或损坏时，先执行 `boss setup-runtime` 修复，再重试原命令。
 
 ---
 
