@@ -292,7 +292,7 @@
       "resolvedRef": "refs/heads/main"
     },
     "vercel-labs": {
-      "commit": "2d1271baefa026161de333a0da55c0f9e118a07f",
+      "commit": "32a2b0b2f96217867846d80083fd12980d783d26",
       "ref": "main",
       "repo": "https://github.com/vercel-labs/agent-browser",
       "resolvedRef": "refs/heads/main"
