@@ -5,7 +5,8 @@
 # 1. 零手动赋权：自动生成 .cmd 批处理包装器，开箱即用；
 # 2. 自动配置 PATH：自动将 %USERPROFILE%\.local\bin 写入当前用户环境变量，无需手动设置；
 # 3. 免管理员权限：仅配置当前用户环境，不弹 UAC，不污染全局系统；
-# 4. 自动同步技能：安装末尾执行 sync-skills，首次安装即可得到完整技能库。
+# 4. 自动准备 Python：优先使用系统 Python 3，没有时通过 uv 安装独立 Python 3.12；
+# 5. 自动同步技能：安装末尾执行 sync-skills，首次安装即可得到完整技能库。
 # ==============================================================================
 $ErrorActionPreference = "Stop"
 
@@ -37,15 +38,17 @@ if (-not (Test-Path $UserBinDir)) {
     New-Item -ItemType Directory -Path $UserBinDir | Out-Null
 }
 
-# 2. 生成批处理包装器（显式调用 python 执行，免疫文件属性问题）
+# 2. 准备 Python 并生成批处理包装器，重装时复用已有运行时
+$PythonInstaller = Join-Path $RepoRoot "bin\install-python.ps1"
+$PythonExecutable = & $PythonInstaller -RootDir $RepoRoot
+if ([string]::IsNullOrWhiteSpace($PythonExecutable) -or -not (Test-Path "$PythonExecutable")) {
+    throw "未能准备 Python 运行环境。"
+}
+
 $WrapperContent = @"
 @echo off
-where python >nul 2>&1
-if %ERRORLEVEL% equ 0 (
-    python "$PythonScript" %*
-) else (
-    py "$PythonScript" %*
-)
+"$PythonExecutable" "$PythonScript" %*
+exit /b %ERRORLEVEL%
 "@
 
 Set-Content -Path $CmdWrapper -Value $WrapperContent -Encoding ASCII

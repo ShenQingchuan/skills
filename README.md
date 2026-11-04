@@ -78,7 +78,7 @@ cd ~/.agents/skills
   ```cmd
   install.cmd
   ```
-  *(自动以 Bypass 策略调用安装，免除 PowerShell 执行策略阻拦，自动注册用户 PATH 并同步技能库)*
+  *(自动以 Bypass 策略调用安装，免除 PowerShell 执行策略阻拦，自动注册用户 PATH 并同步技能库。没有 Python 时会通过 uv 自动安装独立的 Python 3.12，无需管理员权限)*
 
 ### 3. 验证就绪
 
@@ -152,6 +152,7 @@ sh install.sh
 ├── bin/
 │   ├── boss                       ← 框架统一 CLI 入口
 │   ├── skill_boss_profiles.py     ← Profile 路径与本机配置的统一约定
+│   ├── install-python.ps1         ← Windows Python 检测与自动安装引导
 │   ├── sync_skills.py             ← 依赖同步引擎
 │   ├── setup-runtime.sh           ← Unix 运行环境部署引擎
 │   └── setup-runtime.ps1          ← Windows 运行环境部署引擎

@@ -140,6 +140,10 @@ if (-not (Test-Path $UvExe)) {
 # 5. 注入 Python 3.12 独立运行时
 # ==============================================================================
 Write-Host "📦 [3/5] 正在确认独立 Python 3 运行时..." -ForegroundColor Yellow
+$env:UV_PYTHON_INSTALL_DIR = Join-Path $RuntimeDir "python"
+$env:UV_CACHE_DIR = Join-Path $RuntimeDir ".uv-cache"
+New-Item -ItemType Directory -Force -Path $env:UV_PYTHON_INSTALL_DIR | Out-Null
+New-Item -ItemType Directory -Force -Path $env:UV_CACHE_DIR | Out-Null
 $PythonExec = ""
 try {
     $PythonExec = & $UvExe python find 3.12 2>$null
