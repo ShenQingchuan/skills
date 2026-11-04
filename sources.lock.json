@@ -88,7 +88,7 @@
       "suite": "office/lark"
     },
     "office/lark/lark-apps": {
-      "digest": "a36096c058eb73efa11126330f5bc924d0c547f63edc6d5e97b8c7c7cad56251",
+      "digest": "a40860c863c3acc8c54f26121d02dcf77aa1dc8a28f44ec08bd3c6f1f3667593",
       "from": "larksuite",
       "skill": "lark-apps",
       "suite": "office/lark"
@@ -268,7 +268,7 @@
       "resolvedRef": "refs/heads/main"
     },
     "larksuite": {
-      "commit": "46c434f5a43f24997019e3c7f4062404c3a4ad09",
+      "commit": "76f7e7eb92a511470b7a261ce8b82f9f4579d8c1",
       "ref": "main",
       "repo": "https://github.com/larksuite/cli",
       "resolvedRef": "refs/heads/main"
@@ -292,7 +292,7 @@
       "resolvedRef": "refs/heads/main"
     },
     "vercel-labs": {
-      "commit": "2e12e306274b01104f3483418bd882214af2b9c5",
+      "commit": "6682da310c75bed8af340b39cc10b7f71bded155",
       "ref": "main",
       "repo": "https://github.com/vercel-labs/agent-browser",
       "resolvedRef": "refs/heads/main"

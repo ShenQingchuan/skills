@@ -9,33 +9,27 @@ config.json 中启用的 Profile 使用 profiles/<name>/ 下的同一组路径�
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import re
 import shutil
-import subprocess
 import sys
 import tempfile
 from pathlib import Path
 
 from skill_boss_profiles import Profile, load_profiles
+from sync_common import (
+    copy_skill,
+    digest_dir,
+    local_sync_status,
+    log,
+    preserve_entries,
+    run,
+    target_dir,
+)
+from sync_fskillhub import sync_source as sync_fskillhub_source
 
 BIN_DIR = Path(__file__).resolve().parent
 REPO_ROOT = BIN_DIR.parent
-
-# 复制技能包时跳过版本控制、缓存和系统垃圾。
-IGNORE = shutil.ignore_patterns(".git", "__pycache__", ".DS_Store", "node_modules")
-
-
-def log(message: str) -> None:
-    print(message, flush=True)
-
-
-def run(cmd: list[str]) -> str:
-    proc = subprocess.run(cmd, capture_output=True, text=True)
-    if proc.returncode != 0:
-        raise RuntimeError(f"命令失败：{' '.join(cmd)}\n{proc.stderr.strip()}")
-    return proc.stdout
 
 
 def resolve_ref(repo: str, ref: str) -> tuple[str, str]:
@@ -53,17 +47,6 @@ def resolve_ref(repo: str, ref: str) -> tuple[str, str]:
     if re.fullmatch(r"[0-9a-f]{7,40}", ref):
         return ref, ref
     raise RuntimeError(f"{repo} 上找不到 ref：{ref}")
-
-
-def digest_dir(path: Path) -> str:
-    """目录内容指纹只取决于相对路径和文件字节。"""
-    digest = hashlib.sha256()
-    for file in sorted(p for p in path.rglob("*") if p.is_file()):
-        digest.update(file.relative_to(path).as_posix().encode("utf-8"))
-        digest.update(b"\0")
-        digest.update(file.read_bytes())
-        digest.update(b"\0")
-    return digest.hexdigest()
 
 
 def clone_sparse(repo: str, ref: str, subdirs: list[str], dest: Path) -> None:
@@ -89,42 +72,6 @@ def load_lock(lock_file: Path) -> dict:
         except json.JSONDecodeError:
             log(f"⚠ {lock_file} 内容损坏，将重建。")
     return {}
-
-
-def target_dir(registry_dir: Path, relative_path: str) -> Path:
-    """确保清单或旧锁文件不能把同步内容写到 registry/.synced/ 之外。"""
-    target = (registry_dir / relative_path).resolve()
-    try:
-        target.relative_to(registry_dir.resolve())
-    except ValueError as exc:
-        raise ValueError(f"技能安装路径越界：{relative_path}") from exc
-    return target
-
-
-def suite_paths(lock_installed: dict, source_id: str, suite: str) -> list[str]:
-    return [
-        path
-        for path, value in lock_installed.items()
-        if value.get("from") == source_id
-        and (value.get("suite") == suite or path.startswith(f"{suite}/"))
-    ]
-
-
-def preserve_entries(entries: list[dict], source_id: str, lock_installed: dict, new_installed: dict) -> None:
-    """无需重新下载时，完整保留单项技能或套件的旧锁定记录。"""
-    for entry in entries:
-        if entry.get("skill") == "*":
-            for path in suite_paths(lock_installed, source_id, entry["to"]):
-                new_installed[path] = lock_installed[path]
-        elif entry["to"] in lock_installed:
-            new_installed[entry["to"]] = lock_installed[entry["to"]]
-
-
-def copy_skill(source_dir: Path, target: Path) -> None:
-    target.parent.mkdir(parents=True, exist_ok=True)
-    if target.exists():
-        shutil.rmtree(target)
-    shutil.copytree(source_dir, target, ignore=IGNORE)
 
 
 def sync_profile(profile: Profile, check: bool = False) -> bool:
@@ -155,6 +102,26 @@ def sync_profile(profile: Profile, check: bool = False) -> bool:
     try:
         for source_id, entries in grouped.items():
             spec = sources[source_id]
+            method = spec.get("method", "git")
+            if method == "fskillhub":
+                result = sync_fskillhub_source(
+                    REPO_ROOT,
+                    source_id,
+                    spec,
+                    entries,
+                    lock_installed,
+                    registry_dir,
+                    workdir / f"fskillhub-{len(new_sources)}",
+                    check,
+                )
+                new_sources[source_id] = result.source
+                new_installed.update(result.installed)
+                needs_update = result.needs_update or needs_update
+                touched.extend(result.touched)
+                continue
+            if method != "git":
+                raise ValueError(f"{source_id} 使用了不支持的下载方法：{method}")
+
             repo, ref, skills_dir = spec["repo"], spec["ref"], spec["skillsDir"]
 
             try:
@@ -176,36 +143,20 @@ def sync_profile(profile: Profile, check: bool = False) -> bool:
             previous_commit = lock_sources.get(source_id, {}).get("commit")
             commit_changed = previous_commit != commit
 
-            current_ok = True
-            for entry in entries:
-                if entry.get("skill") == "*":
-                    installed_suite = suite_paths(lock_installed, source_id, entry["to"])
-                    if not installed_suite:
-                        current_ok = False
-                        break
-                    for path in installed_suite:
-                        target = target_dir(registry_dir, path)
-                        if not (target / "SKILL.md").is_file() or digest_dir(target) != lock_installed[path].get("digest"):
-                            current_ok = False
-                            break
-                    if not current_ok:
-                        break
-                else:
-                    target = target_dir(registry_dir, entry["to"])
-                    if not (target / "SKILL.md").is_file() or digest_dir(target) != lock_installed.get(entry["to"], {}).get("digest"):
-                        current_ok = False
-                        break
+            local_status = local_sync_status(entries, source_id, lock_installed, registry_dir)
 
-            if not commit_changed and current_ok:
+            if not commit_changed and local_status is None:
                 log(f"✓ {source_id}: 已是最新 ({commit[:8]})")
                 preserve_entries(entries, source_id, lock_installed, new_installed)
                 continue
 
             reasons = []
-            if commit_changed:
-                reasons.append(f"上游更新 {str(previous_commit)[:8]} → {commit[:8]}")
-            if not current_ok:
-                reasons.append("本地目录缺失或被改动")
+            if previous_commit and commit_changed:
+                reasons.append(f"需要更新（上游版本 {previous_commit[:8]} → {commit[:8]}）")
+            elif not previous_commit and local_status is None:
+                reasons.append(f"需要重新同步（尚无上游版本记录，当前版本 {commit[:8]}）")
+            if local_status is not None:
+                reasons.append(local_status)
             needs_update = True
 
             if check:
@@ -316,7 +267,7 @@ def main() -> int:
 
     if args.check:
         if needs_update:
-            log("\n发现上游更新或本地改动。运行 boss sync-skills 进行同步。")
+            log("\n有技能需要下载、更新或重新同步。运行 boss sync-skills 进行同步。")
             return 1
         log("\n全部已是最新。")
     return 0

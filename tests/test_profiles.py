@@ -12,12 +12,14 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 BIN_DIR = REPO_ROOT / "bin"
 if str(BIN_DIR) not in sys.path:
     sys.path.insert(0, str(BIN_DIR))
 
+import sync_fskillhub
 from skill_boss_profiles import Profile, load_profiles
 from sync_skills import sync_profile
 
@@ -147,10 +149,12 @@ class SyncProfileTests(unittest.TestCase):
             original_gitignore = "/profiles/\n/registry/.synced/\n"
             gitignore.write_text(original_gitignore, encoding="utf-8")
 
-            with contextlib.redirect_stdout(io.StringIO()):
+            initial_output = io.StringIO()
+            with contextlib.redirect_stdout(initial_output):
                 needs_update = sync_profile(profile)
                 self.assertTrue(needs_update)
                 self.assertFalse(sync_profile(profile, check=True))
+            self.assertIn("↓ local: 尚未下载", initial_output.getvalue())
 
             downloaded = profile.synced_dir / "dev" / "demo" / "SKILL.md"
             self.assertTrue(downloaded.is_file())
@@ -159,8 +163,155 @@ class SyncProfileTests(unittest.TestCase):
             self.assertEqual(gitignore.read_text(encoding="utf-8"), original_gitignore)
 
             downloaded.write_text("local change", encoding="utf-8")
-            with contextlib.redirect_stdout(io.StringIO()):
+            modified_output = io.StringIO()
+            with contextlib.redirect_stdout(modified_output):
                 self.assertTrue(sync_profile(profile, check=True))
+            self.assertIn("本地内容被修改，同步会覆盖修改", modified_output.getvalue())
+
+            with contextlib.redirect_stdout(io.StringIO()):
+                sync_profile(profile)
+            downloaded.unlink()
+            missing_output = io.StringIO()
+            with contextlib.redirect_stdout(missing_output):
+                self.assertTrue(sync_profile(profile, check=True))
+            self.assertIn("本地文件缺失，需要重新下载", missing_output.getvalue())
+
+            with contextlib.redirect_stdout(io.StringIO()):
+                sync_profile(profile)
+            (upstream / "skills" / "demo" / "SKILL.md").write_text("upstream update", encoding="utf-8")
+            subprocess.run(["git", "-C", str(upstream), "add", "."], check=True)
+            subprocess.run(["git", "-C", str(upstream), "commit", "--quiet", "-m", "update"], check=True)
+            update_output = io.StringIO()
+            with contextlib.redirect_stdout(update_output):
+                self.assertTrue(sync_profile(profile, check=True))
+            self.assertIn("需要更新（上游版本", update_output.getvalue())
+
+
+class FskillhubSyncTests(unittest.TestCase):
+    def make_profile(self, root: Path, version: str | None = None) -> Profile:
+        profile = Profile("company", root / "profiles" / "company")
+        profile.root_dir.mkdir(parents=True)
+        entry = {"skill": "team-infra@fservice-cli", "from": "futu", "to": "skills/fservice-cli"}
+        if version:
+            entry["version"] = version
+        profile.manifest_file.write_text(
+            json.dumps(
+                {
+                    "sources": {
+                        "futu": {
+                            "method": "fskillhub",
+                            "tool": "@futu/fskillhub@latest",
+                            "npmRegistry": "http://registry.npm.oa.com/",
+                            "registry": "https://api-mcp.futuoa.com",
+                        }
+                    },
+                    "install": [entry],
+                }
+            ),
+            encoding="utf-8",
+        )
+        return profile
+
+    def fake_run(self, commands: list[list[str]], remote: dict):
+        def fake(command: list[str]) -> str:
+            commands.append(command)
+            workdir = Path(command[command.index("--workdir") + 1])
+            slug = command[command.index("install") + 1]
+            skill_dir = workdir / "skills" / slug.rsplit("@", 1)[-1]
+            write_skill(skill_dir, "fservice-cli")
+            (skill_dir / "extra.txt").write_text(remote["content"], encoding="utf-8")
+            origin = skill_dir / ".fskillhub" / "origin.json"
+            origin.parent.mkdir(parents=True)
+            origin.write_text(
+                json.dumps(
+                    {
+                        "version": 1,
+                        "registry": "https://api-mcp.futuoa.com",
+                        "slug": slug,
+                        "installedVersion": remote["version"],
+                        "installedAt": 1000 + len(commands),
+                    }
+                ),
+                encoding="utf-8",
+            )
+            return ""
+
+        return fake
+
+    def run_with_fake_hub(self, profile: Profile, commands: list[list[str]], remote: dict, **kwargs):
+        with (
+            patch.object(sync_fskillhub, "runtime_npx", return_value=Path("/mock/npx")),
+            patch.object(sync_fskillhub, "run", side_effect=self.fake_run(commands, remote)),
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
+            return sync_profile(profile, **kwargs)
+
+    def test_syncs_declared_hub_skill_into_unified_lock(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            profile = self.make_profile(Path(tmp), version="3.14.0")
+            commands: list[list[str]] = []
+            remote = {"version": "3.14.0", "content": "payload"}
+
+            self.assertTrue(self.run_with_fake_hub(profile, commands, remote))
+            target = profile.synced_dir / "skills" / "fservice-cli"
+            self.assertTrue((target / "SKILL.md").is_file())
+            self.assertFalse((target / ".fskillhub").exists())
+            self.assertFalse((profile.synced_dir / ".fskillhub").exists())
+            self.assertIn("--no-input", commands[0])
+            self.assertEqual(commands[0][-2:], ["--version", "3.14.0"])
+
+            lock = json.loads(profile.lock_file.read_text(encoding="utf-8"))
+            record = lock["installed"]["skills/fservice-cli"]
+            self.assertEqual(record["method"], "fskillhub")
+            self.assertEqual(record["version"], "3.14.0")
+            self.assertEqual(lock["sources"]["futu"]["registry"], "https://api-mcp.futuoa.com")
+
+            # 工具生成不同的安装时间，也不会让相同技能内容失去幂等性。
+            self.assertFalse(self.run_with_fake_hub(profile, commands, remote, check=True))
+            remote["version"] = "3.15.0"
+            self.assertTrue(self.run_with_fake_hub(profile, commands, remote, check=True))
+
+    def test_check_downloads_only_to_temporary_directory(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            profile = self.make_profile(Path(tmp))
+            commands: list[list[str]] = []
+            remote = {"version": "3.14.0", "content": "payload"}
+
+            self.assertTrue(self.run_with_fake_hub(profile, commands, remote, check=True))
+            self.assertFalse((profile.synced_dir / "skills" / "fservice-cli").exists())
+            self.assertFalse(profile.lock_file.exists())
+
+    def test_download_failure_preserves_installed_skill_and_lock(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            profile = self.make_profile(Path(tmp))
+            commands: list[list[str]] = []
+            remote = {"version": "3.14.0", "content": "payload"}
+            self.run_with_fake_hub(profile, commands, remote)
+            target = profile.synced_dir / "skills" / "fservice-cli" / "SKILL.md"
+            original_lock = profile.lock_file.read_bytes()
+
+            with (
+                patch.object(sync_fskillhub, "runtime_npx", return_value=Path("/mock/npx")),
+                patch.object(sync_fskillhub, "run", side_effect=RuntimeError("registry unavailable")),
+                contextlib.redirect_stdout(io.StringIO()),
+            ):
+                self.assertTrue(sync_profile(profile))
+
+            self.assertTrue(target.is_file())
+            self.assertEqual(json.loads(profile.lock_file.read_text(encoding="utf-8"))["installed"],
+                             json.loads(original_lock)["installed"])
+
+    def test_rejects_unknown_download_method(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            profile = self.make_profile(Path(tmp))
+            manifest = json.loads(profile.manifest_file.read_text(encoding="utf-8"))
+            manifest["sources"]["futu"]["method"] = "shell"
+            profile.manifest_file.write_text(json.dumps(manifest), encoding="utf-8")
+            with (
+                contextlib.redirect_stdout(io.StringIO()),
+                self.assertRaisesRegex(ValueError, "不支持的下载方法"),
+            ):
+                sync_profile(profile)
 
 
 if __name__ == "__main__":

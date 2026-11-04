@@ -171,7 +171,9 @@ boss python -m unittest discover -s tests -v
 │   ├── boss_services.py           ← 看板与网页编辑器服务
 │   ├── skill_boss_profiles.py     ← Profile 路径与本机配置的统一约定
 │   ├── install-python.ps1         ← Windows Python 检测与自动安装引导
-│   ├── sync_skills.py             ← 依赖同步引擎
+│   ├── sync_skills.py             ← 依赖同步与下载方法分派
+│   ├── sync_common.py             ← 各下载方法共用的指纹与文件工具
+│   ├── sync_fskillhub.py          ← 公司技能中心下载器
 │   ├── setup-runtime.sh           ← Unix 运行环境部署引擎
 │   └── setup-runtime.ps1          ← Windows 运行环境部署引擎
 ├── skills-router/                 ← 唯一被 Agent 默认感知的入口技能
@@ -223,11 +225,11 @@ boss sync-skills --check  # 只检查全部已加载 Profile（有更新则退�
 
 也可以完全交给 CI：`.github/workflows/sync-skills.yml` 每天自动跑一次，有变化就自动提交回 `main`，没变化就什么也不做。你只需要 `git pull`。
 
-同步的可靠性来自三条设计：**幂等**（跑一百遍结果一样）、**可重复**（内容只取决于上游 commit，不取决于时间或机器）、**可无人值守**（CI 里也能跑）。
+同步的可靠性来自三条设计：**幂等**（跑一百遍结果一样）、**可重复**（内容只取决于上游 commit 或技能版本，不取决于时间或机器）、**可无人值守**（CI 里也能跑）。
 
 ### 新增一个技能或技能套件
 
-本仓库支持两种引入方式，分别应对「单品挑选」与「整套镜像」：
+Git 来源支持「单品挑选」与「整套镜像」，公司技能中心则通过 Fskillhub 下载器接入：
 
 #### 方式一：单点选品（Pick 模式，适合散装仓库）
 上游仓库是个大杂烩，你只想要其中一两个技能时：
@@ -245,6 +247,39 @@ boss sync-skills --check  # 只检查全部已加载 Profile（有更新则退�
    { "skill": "*", "from": "larksuite", "to": "office/lark" }
    ```
 3. 跑一次 `boss sync-skills`，上游全部技能会自动同步到 `registry/.synced/office/lark/` 下。未来上游无论新增、更名还是废弃子技能，同步脚本都会自动对齐，零人工维护成本。
+
+#### 方式三：公司技能中心（Fskillhub）
+
+在 `sources` 中用 `method: "fskillhub"` 声明下载方法。`tool` 是 npx 执行的工具包，`npmRegistry` 用于下载工具本身，`registry` 是技能中心 API：
+
+```json
+{
+  "sources": {
+    "futu-hub": {
+      "method": "fskillhub",
+      "tool": "@futu/fskillhub@latest",
+      "npmRegistry": "http://registry.npm.oa.com/",
+      "registry": "https://api-mcp.futuoa.com"
+    }
+  },
+  "install": [
+    {
+      "skill": "team-infra@fservice-cli",
+      "from": "futu-hub",
+      "to": "skills/fservice-cli"
+    }
+  ]
+}
+```
+
+`install` 中可以增加 `"version": "3.14.0"` 固定技能版本；不写时跟踪技能中心最新版本。所有来源都只需要执行：
+
+```bash
+boss setup-runtime  # 首次使用 Fskillhub 时准备独立 Node/npx 运行时
+boss sync-skills
+```
+
+同步器会在临时目录调用 Fskillhub，验证技能和版本后再写入目标目录，并把实际版本与内容指纹记录到 `sources.lock.json`。`.fskillhub/` 不再承担 Profile 依赖清单的职责，带安装时间的工具元数据也不会影响内容指纹。`--check` 同样在临时目录检查远端版本，不修改 Profile；工具不可用时会保留已安装技能和旧锁记录。
 
 ### 移除一个技能或套件
 
@@ -276,12 +311,13 @@ boss sync-skills --check  # 只检查全部已加载 Profile（有更新则退�
 | 本地新建原创技能 | 在 `registry/` 对应分类下新建即可，受 Git 自动跟踪保护 |
 | 调整路由规则 | `skills-router/SKILL.md` |
 | 调整技能树展示 | `skills-router/scripts/list_skills.py` |
-| 调整底层同步逻辑 | `bin/sync_skills.py` |
+| 调整同步分派或 Git 下载 | `bin/sync_skills.py` |
+| 调整 Fskillhub 下载 | `bin/sync_fskillhub.py` |
 | 部署绿色运行时沙盒 | 跑 `boss setup-runtime` |
 | 启动项目任务看板 | 跑 `boss kanban [项目路径]` |
 | 调整自动同步节奏 | `.github/workflows/sync-skills.yml` |
 
-`sources.lock.json` 由脚本自动生成，不要手改。它记录上游 commit 与每个技能目录的内容指纹，同步脚本靠它判断「有没有变」。
+`sources.lock.json` 由脚本自动生成，不要手改。它记录 Git commit 或 Fskillhub 技能版本，以及每个技能目录的内容指纹，同步脚本靠它判断「有没有变」。
 
 运行自动化测试：
 
