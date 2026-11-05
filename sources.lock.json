@@ -1,6 +1,11 @@
 {
   "generatedBy": "boss (bin/sync_skills.py)",
   "installed": {
+    "artwork/design-playful-app-icons": {
+      "digest": "824783ae99b363814a9188e1ca8b158310de5e527d283bb13b5ea473132cc702",
+      "from": "chunkithwang",
+      "skill": "design-playful-app-icons"
+    },
     "dev/agent-browser": {
       "digest": "6c6b0d33259db0427408443cf0cc2e5674538e628ad3fde51e6ae252cf647215",
       "from": "vercel-labs",
@@ -12,7 +17,7 @@
       "skill": "create-adaptable-composable"
     },
     "dev/frontend/impeccable": {
-      "digest": "f003cabb37e9b230f61b53b4cde09d8821ce91cfd852bd877b34ee1f75099037",
+      "digest": "240d761239572795f8f210792779686a56d48d85fc1e42550304d59006dde989",
       "from": "pbakaus",
       "skill": "impeccable"
     },
@@ -22,7 +27,7 @@
       "skill": "pinia"
     },
     "dev/frontend/pnpm": {
-      "digest": "e2afb8b7aa136a7b75a6f68610d686cd4a4440a0c00d72e6fa905fdbec9cc225",
+      "digest": "dc0c099d77fe12b01135a7d43deb466ca182ff55d567e3d680a79a027c4cd6de",
       "from": "antfu",
       "skill": "pnpm"
     },
@@ -37,7 +42,7 @@
       "skill": "unocss"
     },
     "dev/frontend/vite": {
-      "digest": "f68ccd67998839de7886886942650fd90f0f6e5fbc7a6e19a28d6ad3ca9f4062",
+      "digest": "767415d7e81e2abb331d2a0da33e0d563e67a22b70a3faaea4513f58728b1e57",
       "from": "antfu",
       "skill": "vite"
     },
@@ -262,9 +267,15 @@
   },
   "sources": {
     "antfu": {
-      "commit": "7de210b51c8d48cc405a4eac3e17cbb1396c653b",
+      "commit": "f63e9ec7bc85f67364b6596c2d29da87e83ce445",
       "ref": "main",
       "repo": "https://github.com/antfu/skills",
+      "resolvedRef": "refs/heads/main"
+    },
+    "chunkithwang": {
+      "commit": "25999ce51318125524ce4672ed81a6aeafc5539e",
+      "ref": "main",
+      "repo": "https://github.com/chunkithwang/design-playful-app-icons",
       "resolvedRef": "refs/heads/main"
     },
     "larksuite": {
@@ -286,13 +297,13 @@
       "resolvedRef": "refs/heads/main"
     },
     "pbakaus": {
-      "commit": "83dc1bbe4c37636632e72a7752e9cc433e9a9901",
+      "commit": "c8891a9ae865d6ee311836ae5199bfce0fe115b1",
       "ref": "main",
       "repo": "https://github.com/pbakaus/impeccable",
       "resolvedRef": "refs/heads/main"
     },
     "vercel-labs": {
-      "commit": "9455ebbd0d2e0eaf1380dc75443a05350399a82e",
+      "commit": "794de3c037c15c2cd475fc282314953e298fd072",
       "ref": "main",
       "repo": "https://github.com/vercel-labs/agent-browser",
       "resolvedRef": "refs/heads/main"

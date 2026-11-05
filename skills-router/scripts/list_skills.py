@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import json
 import re
 import sys
 from pathlib import Path
@@ -65,6 +66,55 @@ def parse_skill_meta(skill_dir: Path) -> dict:
                 break
 
     return {"name": name, "desc": desc}
+
+
+def category_key(raw_path: str, source: str) -> str:
+    """分类说明使用与 install.to 相同的逻辑目录，不含 Profile 名。"""
+    if not isinstance(raw_path, str):
+        raise ValueError(f"{source} 的 categories 必须是「目录路径 → 一句话」")
+    text = raw_path.strip().replace("\\", "/")
+    normalized = text.strip("/")
+    parts = normalized.split("/") if normalized else []
+    if text.startswith("/") or not normalized or any(part in {"", ".", ".."} for part in parts):
+        raise ValueError(f"{source} 中的分类路径无效：{raw_path}")
+    return normalized
+
+
+def load_category_descriptions(profiles: list[Profile]) -> dict[str, str]:
+    """读取各 Profile 清单里的分类说明。键是技能树上的逻辑路径。"""
+    descriptions: dict[str, str] = {}
+    for profile in profiles:
+        manifest_file = profile.manifest_file
+        if not manifest_file.is_file():
+            continue
+        try:
+            manifest = json.loads(manifest_file.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"技能清单不是有效 JSON：{manifest_file}\n{exc}") from exc
+        if not isinstance(manifest, dict):
+            raise ValueError(f"技能清单必须是对象：{manifest_file}")
+
+        raw = manifest.get("categories", {})
+        if not isinstance(raw, dict):
+            raise ValueError(f"{manifest_file} 的 categories 必须是对象")
+
+        prefix = "" if profile.name == "default" else f"{profile.name}/"
+        for path, desc in raw.items():
+            if not isinstance(desc, str) or not desc.strip():
+                raise ValueError(f"{manifest_file} 的 categories 必须是「目录路径 → 一句话」")
+            key = prefix + category_key(path, str(manifest_file))
+            descriptions[key] = " ".join(desc.split())
+    return descriptions
+
+
+def stamp_category_descriptions(node_dict: dict, descriptions: dict[str, str]) -> None:
+    for node in node_dict.values():
+        if node["is_skill"]:
+            continue
+        desc = descriptions.get(node["rel_path"].as_posix())
+        if desc:
+            node["desc"] = desc
+        stamp_category_descriptions(node["children"], descriptions)
 
 
 def scan_registry(base_dir: Path, logical_prefix: Path = Path()) -> dict:
@@ -143,6 +193,7 @@ def collect_tree(profiles: list[Profile]) -> dict:
                     }
                 },
             )
+    stamp_category_descriptions(tree, load_category_descriptions(profiles))
     return tree
 
 
@@ -187,10 +238,12 @@ def render_tree(node_dict: dict, prefix: str = "") -> list[str]:
         if not children:
             lines.append(f"{prefix}{connector}📂 {key}/ （空）")
         elif len(children) > FOLD_THRESHOLD:
-            lines.append(
-                f"{prefix}{connector}📂 {key}/ （{len(children)} 项已折叠 → "
-                f"请单独展开查阅 {node['rel_path']}）"
+            folded = (
+                f"（{len(children)} 项已折叠 → 请单独展开查阅 {node['rel_path']}）"
             )
+            desc = node.get("desc")
+            label = f"📂 {key}/ - {shorten(desc)}" if desc else f"📂 {key}/"
+            lines.append(f"{prefix}{connector}{label} {folded}")
         else:
             lines.append(f"{prefix}{connector}📂 {key}/")
             lines.extend(render_tree(children, child_prefix))

@@ -187,6 +187,15 @@ boss python -m unittest discover -s tests -v
 
 `scripts/`、`references/`、`assets/` 这些是目录内部的约定，属于技能自己的私事。`list_skills.py` 据此工作——见到 `SKILL.md` 就认定这是一个完整技能，不再往里看，所以技能内部的文件名不会泄露到技能树上。
 
+一个分类里的技能超过 10 个时，技能树会把这一支折起来。折叠后要仍能看出这一类是干什么的，把那一句话写在对应 Profile 的 `sources.json` 里，字段是 `categories`。键和 `install` 的 `to` 用同一套逻辑目录，不要带 Profile 名。值只写一句话。同步下来的目录会被覆盖，所以这句话不放进那些目录。
+
+```json
+"categories": {
+  "dev/frontend": "前端技能：Vue、Vite、样式和测试的写法参考，以及对应的避坑规约。",
+  "office/lark": "飞书开放能力，按审批、文档、日历、消息等产品拆开。"
+}
+```
+
 Agent 的技能发现只认**仓库根目录下的第一层**。`bin/` 里没有 `SKILL.md`，`registry/` 也不是技能（它只是技能的上级分类），所以两者都不会被自动发现——这正是整个结构成立的原因。
 
 手写技能和下载产物共享同一套逻辑分类。例如 `registry/dev/frontend/my-skill/` 与 `registry/.synced/dev/frontend/vue/` 会合并显示在 `dev/frontend/` 下；`.synced/` 只是存储细节，不会成为逻辑分类。同一逻辑技能路径出现冲突时，路由会直接报错。每个技能条目都会输出可直接读取的真实绝对路径，因此 router 主技能不需要理解这些存储映射。
@@ -277,6 +286,7 @@ Git 来源支持「单品挑选」与「整套镜像」两种引入方式：
 | 本地新建原创技能 | 在 `registry/` 对应分类下新建即可，受 Git 自动跟踪保护 |
 | 调整路由规则 | `skills-router/SKILL.md` |
 | 调整技能树展示 | `skills-router/scripts/list_skills.py` |
+| 给分类目录写折叠说明 | 对应 Profile 的 `sources.json` 里的 `categories` |
 | 调整同步分派或 Git 下载 | `bin/sync_skills.py` |
 | 部署绿色运行时沙盒 | 跑 `boss setup-runtime` |
 | 启动项目任务看板 | 跑 `boss kanban [项目路径]` |

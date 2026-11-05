@@ -110,6 +110,71 @@ class RegistryTreeTests(unittest.TestCase):
             self.assertNotIn("📂 .synced/", output)
             self.assertNotIn("📂 skills/", output)
 
+    def test_folded_category_shows_manifest_description(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            default = Profile("default", root)
+            default.manifest_file.write_text(
+                json.dumps(
+                    {
+                        "categories": {
+                            "dev/frontend": "  前端写法参考\n第二句  ",
+                            "office/lark": "飞书能力",
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+            for index in range(11):
+                write_skill(default.synced_dir / "dev" / "frontend" / f"ui-{index}", f"ui-{index}")
+            for index in range(3):
+                write_skill(default.synced_dir / "office" / "lark" / f"doc-{index}", f"doc-{index}")
+
+            company = Profile("company", root / "profiles" / "company")
+            company.root_dir.mkdir(parents=True)
+            company.manifest_file.write_text(
+                json.dumps({"categories": {"artwork": "做图和动画"}}),
+                encoding="utf-8",
+            )
+            for index in range(11):
+                write_skill(company.synced_dir / "artwork" / f"art-{index}", f"art-{index}")
+
+            output = "\n".join(list_skills.render_tree(list_skills.collect_tree([default, company])))
+
+            self.assertIn(
+                "📂 frontend/ - 前端写法参考 第二句 （11 项已折叠 → 请单独展开查阅 dev/frontend）",
+                output,
+            )
+            self.assertIn(
+                "📂 artwork/ - 做图和动画 （11 项已折叠 → 请单独展开查阅 company/artwork）",
+                output,
+            )
+            self.assertIn("🎯 doc-0", output)
+            self.assertNotIn("飞书能力", output)
+            self.assertNotIn("🎯 ui-0", output)
+            self.assertNotIn("🎯 art-0", output)
+
+    def test_folded_category_without_description_keeps_count_only(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            profile = Profile("default", Path(tmp))
+            for index in range(11):
+                write_skill(profile.synced_dir / "dev" / "plain" / f"item-{index}", f"item-{index}")
+
+            output = "\n".join(list_skills.render_tree(list_skills.collect_tree([profile])))
+
+            self.assertIn("📂 plain/ （11 项已折叠 → 请单独展开查阅 dev/plain）", output)
+            self.assertNotIn("📂 plain/ -", output)
+
+    def test_rejects_invalid_category_description(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            profile = Profile("default", Path(tmp))
+            profile.manifest_file.write_text(
+                json.dumps({"categories": {"../outside": "越界"}}),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(ValueError, "分类路径无效"):
+                list_skills.collect_tree([profile])
+
     def test_rejects_duplicate_logical_skill_paths(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             profile = Profile("default", Path(tmp))
