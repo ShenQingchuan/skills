@@ -17,7 +17,7 @@
       "skill": "create-adaptable-composable"
     },
     "dev/frontend/impeccable": {
-      "digest": "240d761239572795f8f210792779686a56d48d85fc1e42550304d59006dde989",
+      "digest": "310dc97c4a00480dafd9e681354a2b12125ae635ea72d438a0568371497598bc",
       "from": "pbakaus",
       "skill": "impeccable"
     },
@@ -93,7 +93,7 @@
       "suite": "office/lark"
     },
     "office/lark/lark-apps": {
-      "digest": "a40860c863c3acc8c54f26121d02dcf77aa1dc8a28f44ec08bd3c6f1f3667593",
+      "digest": "b00d76125233862ce7e146d862962c298ae59cee9c2e58122098cc370d9e8baf",
       "from": "larksuite",
       "skill": "lark-apps",
       "suite": "office/lark"
@@ -279,7 +279,7 @@
       "resolvedRef": "refs/heads/main"
     },
     "larksuite": {
-      "commit": "8d8357d39dd15ac5e9aa815d4ab2639d56bd3239",
+      "commit": "05ac58ffa089fe7a171205ac1d1e97ee50196ec8",
       "ref": "main",
       "repo": "https://github.com/larksuite/cli",
       "resolvedRef": "refs/heads/main"
@@ -297,13 +297,13 @@
       "resolvedRef": "refs/heads/main"
     },
     "pbakaus": {
-      "commit": "c8891a9ae865d6ee311836ae5199bfce0fe115b1",
+      "commit": "c3bb418ee38ee49a6b999b7752c1368f3123a2bd",
       "ref": "main",
       "repo": "https://github.com/pbakaus/impeccable",
       "resolvedRef": "refs/heads/main"
     },
     "vercel-labs": {
-      "commit": "794de3c037c15c2cd475fc282314953e298fd072",
+      "commit": "71850a021c5cb694513d720d61c156dd317d63cf",
       "ref": "main",
       "repo": "https://github.com/vercel-labs/agent-browser",
       "resolvedRef": "refs/heads/main"
