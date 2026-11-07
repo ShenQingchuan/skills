@@ -297,13 +297,13 @@
       "resolvedRef": "refs/heads/main"
     },
     "pbakaus": {
-      "commit": "c3bb418ee38ee49a6b999b7752c1368f3123a2bd",
+      "commit": "687bc381bc9091bf252c0a05303640561014a425",
       "ref": "main",
       "repo": "https://github.com/pbakaus/impeccable",
       "resolvedRef": "refs/heads/main"
     },
     "vercel-labs": {
-      "commit": "71850a021c5cb694513d720d61c156dd317d63cf",
+      "commit": "d44f6989bf5e9a9a1c6dd6d97175f8c33b138eca",
       "ref": "main",
       "repo": "https://github.com/vercel-labs/agent-browser",
       "resolvedRef": "refs/heads/main"
