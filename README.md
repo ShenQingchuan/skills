@@ -256,6 +256,16 @@ Git 来源支持「单品挑选」与「整套镜像」两种引入方式：
    ```
 3. 跑一次 `boss sync-skills`，上游全部技能会自动同步到 `registry/.synced/office/lark/` 下。未来上游无论新增、更名还是废弃子技能，同步脚本都会自动对齐，零人工维护成本。
 
+#### 方式三：仓库根目录即技能（Whole-repo 模式）
+有些上游把整个仓库当成**一个**技能，`SKILL.md` 就放在根目录（如 `video-shotcraft`）。这种仓库没有 `skills/` 分层，`skillsDir` 和 `skill` 都写 `"."`：
+
+```json
+"video-shotcraft": { "repo": "https://github.com/Vincentwei1021/video-shotcraft", "ref": "main", "skillsDir": "." },
+"install": [{ "skill": ".", "from": "video-shotcraft", "to": "artwork/video-shotcraft" }]
+```
+
+同步时会整仓克隆（`sparse-checkout` 只能勾选子目录，勾根目录会漏掉 `references/`、`assets/` 等），`.git`、`node_modules` 仍然会被排除。
+
 ### 移除一个技能或套件
 
 把 `install` 里对应的那一行删掉，再跑一次同步脚本。脚本会连目录一起清理，让对应 Profile 的 `registry/.synced/` 始终等于清单。
@@ -348,6 +358,7 @@ chore(registry): 同步上游技能
 - [mattpocock/skills](https://github.com/mattpocock/skills) —— Matt Pocock
 - [larksuite/cli](https://github.com/larksuite/cli) —— Lark / Feishu
 - [vercel-labs/agent-browser](https://github.com/vercel-labs/agent-browser) —— Vercel Labs
+- [Vincentwei1021/video-shotcraft](https://github.com/Vincentwei1021/video-shotcraft) —— Wei Yihao
 
 ## 许可
 

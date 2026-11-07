@@ -14,7 +14,7 @@ import re
 import shutil
 import sys
 import tempfile
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 from skill_boss_profiles import Profile, load_profiles
 from sync_common import (
@@ -49,12 +49,33 @@ def resolve_ref(repo: str, ref: str) -> tuple[str, str]:
     raise RuntimeError(f"{repo} 上找不到 ref：{ref}")
 
 
+def sparse_targets(subdirs: list[str]) -> list[str] | None:
+    """把清单里的仓库内路径换算成 sparse-checkout 参数。
+
+    返回 None 表示技能就是整个仓库：sparse-checkout 只能勾选子目录，
+    勾选根目录会丢掉全部子目录，所以这种情况必须整仓克隆。
+    """
+    cleaned = set()
+    for subdir in subdirs:
+        parts = [part for part in PurePosixPath(subdir).parts if part not in ("", ".")]
+        if not parts:
+            return None
+        cleaned.add("/".join(parts))
+    return sorted(cleaned)
+
+
 def clone_sparse(repo: str, ref: str, subdirs: list[str], dest: Path) -> None:
     """只下载需要的子目录；服务端不支持 blob 过滤时退回普通浅克隆。"""
-    base = ["git", "clone", "--quiet", "--depth", "1", "--branch", ref, "--sparse"]
-    for extra in (["--filter=blob:none"], []):
+    targets = sparse_targets(subdirs)
+    base = ["git", "clone", "--quiet", "--depth", "1", "--branch", ref]
+    if targets is not None:
+        base.append("--sparse")
+
+    filters = ["--filter=blob:none", ""] if targets is not None else [""]
+    for blob_filter in filters:
         if dest.exists():
             shutil.rmtree(dest)
+        extra = [blob_filter] if blob_filter else []
         try:
             run(base + extra + [repo, str(dest)])
             break
@@ -62,7 +83,9 @@ def clone_sparse(repo: str, ref: str, subdirs: list[str], dest: Path) -> None:
             continue
     else:
         raise RuntimeError(f"无法克隆 {repo}")
-    run(["git", "-C", str(dest), "sparse-checkout", "set", *subdirs])
+
+    if targets is not None:
+        run(["git", "-C", str(dest), "sparse-checkout", "set", *targets])
 
 
 def load_lock(lock_file: Path) -> dict:

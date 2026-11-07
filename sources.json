@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "$comment": "skill = 上游 skills/ 下的相对路径，可含子目录；to = registry/.synced/ 下的逻辑分类目录。categories 的键用同一套逻辑目录，值是该目录在技能树里被折叠时展示的一句话。",
+  "$comment": "skill = 上游 skillsDir 下的相对路径（填 『.』 表示技能就是整个仓库根目录），可含子目录；to = registry/.synced/ 下的逻辑分类目录。categories 的键用同一套逻辑目录，值是该目录在技能树里被折叠时展示的一句话。",
   "sources": {
     "antfu": {
       "repo": "https://github.com/antfu/skills",
@@ -41,6 +41,11 @@
       "repo": "https://github.com/chunkithwang/design-playful-app-icons",
       "ref": "main",
       "skillsDir": "skills"
+    },
+    "video-shotcraft": {
+      "repo": "https://github.com/Vincentwei1021/video-shotcraft",
+      "ref": "main",
+      "skillsDir": "."
     }
   },
   "categories": {
@@ -68,6 +73,7 @@
     { "skill": "productivity/grilling", "from": "mattpocock", "to": "workflow/grilling" },    
     { "skill": "productivity/writing-for-agents", "from": "mattpocock", "to": "writing/writing-for-agents" },
     { "skill": "design-playful-app-icons", "from": "chunkithwang", "to": "artwork/design-playful-app-icons" },
+    { "skill": ".", "from": "video-shotcraft", "to": "artwork/video-shotcraft" },
     { "skill": "*", "from": "larksuite", "to": "office/lark" }
   ]
 }

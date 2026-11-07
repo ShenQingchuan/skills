@@ -6,6 +6,11 @@
       "from": "chunkithwang",
       "skill": "design-playful-app-icons"
     },
+    "artwork/video-shotcraft": {
+      "digest": "c9a6a711690594869adac098bddc8cefd6133fa27f43a741d4ac071252259e22",
+      "from": "video-shotcraft",
+      "skill": "."
+    },
     "dev/agent-browser": {
       "digest": "6c6b0d33259db0427408443cf0cc2e5674538e628ad3fde51e6ae252cf647215",
       "from": "vercel-labs",
@@ -306,6 +311,12 @@
       "commit": "d44f6989bf5e9a9a1c6dd6d97175f8c33b138eca",
       "ref": "main",
       "repo": "https://github.com/vercel-labs/agent-browser",
+      "resolvedRef": "refs/heads/main"
+    },
+    "video-shotcraft": {
+      "commit": "1266a3ec4831289c4d893d42dd5102723658039a",
+      "ref": "main",
+      "repo": "https://github.com/Vincentwei1021/video-shotcraft",
       "resolvedRef": "refs/heads/main"
     },
     "vuejs-ai": {

@@ -252,6 +252,46 @@ class SyncProfileTests(unittest.TestCase):
             self.assertIn("需要更新（上游版本", update_output.getvalue())
 
 
+class WholeRepoSkillTests(unittest.TestCase):
+    """技能就是整个仓库（skillsDir 为 『.』）时，子目录也必须一起下载。"""
+
+    def test_syncs_repo_root_skill_with_its_subdirectories(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            upstream = root / "upstream"
+            write_skill(upstream, "whole-repo")
+            (upstream / "references" / "shots").mkdir(parents=True)
+            (upstream / "references" / "shots" / "demo.md").write_text("shot card", encoding="utf-8")
+            subprocess.run(["git", "init", "--quiet", "--initial-branch=main", str(upstream)], check=True)
+            subprocess.run(["git", "-C", str(upstream), "config", "user.name", "Test"], check=True)
+            subprocess.run(["git", "-C", str(upstream), "config", "user.email", "test@example.com"], check=True)
+            subprocess.run(["git", "-C", str(upstream), "add", "."], check=True)
+            subprocess.run(["git", "-C", str(upstream), "commit", "--quiet", "-m", "test"], check=True)
+
+            profile = Profile("company", root / "profiles" / "company")
+            profile.root_dir.mkdir(parents=True)
+            profile.manifest_file.write_text(
+                json.dumps(
+                    {
+                        "sources": {"local": {"repo": str(upstream), "ref": "main", "skillsDir": "."}},
+                        "install": [{"skill": ".", "from": "local", "to": "artwork/whole-repo"}],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            with contextlib.redirect_stdout(io.StringIO()):
+                sync_profile(profile)
+
+            installed = profile.synced_dir / "artwork" / "whole-repo"
+            self.assertTrue((installed / "SKILL.md").is_file())
+            self.assertTrue((installed / "references" / "shots" / "demo.md").is_file())
+            self.assertFalse((installed / ".git").exists())
+
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertFalse(sync_profile(profile, check=True))
+
+
 class FskillhubSyncTests(unittest.TestCase):
     def make_profile(self, root: Path, version: str | None = None) -> Profile:
         profile = Profile("company", root / "profiles" / "company")
