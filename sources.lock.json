@@ -22,7 +22,7 @@
       "skill": "create-adaptable-composable"
     },
     "dev/frontend/impeccable": {
-      "digest": "310dc97c4a00480dafd9e681354a2b12125ae635ea72d438a0568371497598bc",
+      "digest": "435012911d9d28f7a53699ebb6ec126f26c4f2e1c811f8a6f465f40c1146f722",
       "from": "pbakaus",
       "skill": "impeccable"
     },
@@ -302,13 +302,13 @@
       "resolvedRef": "refs/heads/main"
     },
     "pbakaus": {
-      "commit": "687bc381bc9091bf252c0a05303640561014a425",
+      "commit": "924bbd194d02e5e15a227e75b5901fb0d7a4ecad",
       "ref": "main",
       "repo": "https://github.com/pbakaus/impeccable",
       "resolvedRef": "refs/heads/main"
     },
     "vercel-labs": {
-      "commit": "d44f6989bf5e9a9a1c6dd6d97175f8c33b138eca",
+      "commit": "4b0e9f01fa8d214d39bbfe5391257640634fb9a0",
       "ref": "main",
       "repo": "https://github.com/vercel-labs/agent-browser",
       "resolvedRef": "refs/heads/main"
