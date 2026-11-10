@@ -37,7 +37,7 @@
       "skill": "pnpm"
     },
     "dev/frontend/react-doctor": {
-      "digest": "d86f9e22b97e99f409e5371b3634f52c17830daf7d7599d5cc41a167beb5d93a",
+      "digest": "4b4b85c65a894ffca4dcc041057b7f52398f9c5fce2dc11edbd05b235806d002",
       "from": "millionco",
       "skill": "react-doctor"
     },
@@ -254,7 +254,7 @@
   },
   "sources": {
     "antfu": {
-      "commit": "f63e9ec7bc85f67364b6596c2d29da87e83ce445",
+      "commit": "2b26163650610e2bd32261bef68b4093312cc6ff",
       "ref": "main",
       "repo": "https://github.com/antfu/skills",
       "resolvedRef": "refs/heads/main"
@@ -278,7 +278,7 @@
       "resolvedRef": "refs/heads/main"
     },
     "millionco": {
-      "commit": "9791c32f61fb1477a4f8dd596ff80184ad26b2e3",
+      "commit": "ec45ff9928ef97bf66c23ac2458ab91545b91de6",
       "ref": "main",
       "repo": "https://github.com/millionco/react-doctor",
       "resolvedRef": "refs/heads/main"
