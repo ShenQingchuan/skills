@@ -7,7 +7,7 @@
       "skill": "design-playful-app-icons"
     },
     "artwork/video-shotcraft": {
-      "digest": "c9a6a711690594869adac098bddc8cefd6133fa27f43a741d4ac071252259e22",
+      "digest": "72c5e9012538379c2f4a9a3517b8ac1e8c16229baa15f3bc8173cc07983605cd",
       "from": "video-shotcraft",
       "skill": "."
     },
@@ -22,7 +22,7 @@
       "skill": "create-adaptable-composable"
     },
     "dev/frontend/impeccable": {
-      "digest": "435012911d9d28f7a53699ebb6ec126f26c4f2e1c811f8a6f465f40c1146f722",
+      "digest": "d554022212492c5e80d31069921f89b4c18e906628463f8d13f81acbaa434882",
       "from": "pbakaus",
       "skill": "impeccable"
     },
@@ -98,7 +98,7 @@
       "suite": "office/lark"
     },
     "office/lark/lark-apps": {
-      "digest": "b00d76125233862ce7e146d862962c298ae59cee9c2e58122098cc370d9e8baf",
+      "digest": "28a589a0bce9f52ca1751f9e868a7dfb3bc167fcba72f4107c9d7454bc0be01a",
       "from": "larksuite",
       "skill": "lark-apps",
       "suite": "office/lark"
@@ -169,12 +169,6 @@
       "skill": "lark-meeting",
       "suite": "office/lark"
     },
-    "office/lark/lark-minutes": {
-      "digest": "811a26032539233b6a38d1673a8fe720112cf107dbbaeeac7ef7aa2eaec52d23",
-      "from": "larksuite",
-      "skill": "lark-minutes",
-      "suite": "office/lark"
-    },
     "office/lark/lark-note": {
       "digest": "ee0a75a1b65be2770e0f5266a3c3f7b2cf42b572a632af88492d0c3466577521",
       "from": "larksuite",
@@ -221,18 +215,6 @@
       "digest": "06b5e826cd78e7173132161caef1522c313527fab8700b8ec0a8aa748cb62cac",
       "from": "larksuite",
       "skill": "lark-task",
-      "suite": "office/lark"
-    },
-    "office/lark/lark-vc": {
-      "digest": "579e01d6cb8a5c2f98677f794f05e0fa7f8be1b792505913446c900eabf29408",
-      "from": "larksuite",
-      "skill": "lark-vc",
-      "suite": "office/lark"
-    },
-    "office/lark/lark-vc-agent": {
-      "digest": "519d621fa5e7c9f7d80af14a9e9c76faf9380e58a3580acdc174fdadbdc3c8c9",
-      "from": "larksuite",
-      "skill": "lark-vc-agent",
       "suite": "office/lark"
     },
     "office/lark/lark-whiteboard": {
@@ -284,7 +266,7 @@
       "resolvedRef": "refs/heads/main"
     },
     "larksuite": {
-      "commit": "05ac58ffa089fe7a171205ac1d1e97ee50196ec8",
+      "commit": "1bfdcc2c1a0ed0296ddb6349d251bdd75145bc5a",
       "ref": "main",
       "repo": "https://github.com/larksuite/cli",
       "resolvedRef": "refs/heads/main"
@@ -302,19 +284,19 @@
       "resolvedRef": "refs/heads/main"
     },
     "pbakaus": {
-      "commit": "4b6b80f9c21cac9376deadaa2ef4924f341b8b4d",
+      "commit": "ec229b48547f24685ffb22aa51c462c5ae27908c",
       "ref": "main",
       "repo": "https://github.com/pbakaus/impeccable",
       "resolvedRef": "refs/heads/main"
     },
     "vercel-labs": {
-      "commit": "4b0e9f01fa8d214d39bbfe5391257640634fb9a0",
+      "commit": "e7519957b9067c541825afa21a792fbe1f483047",
       "ref": "main",
       "repo": "https://github.com/vercel-labs/agent-browser",
       "resolvedRef": "refs/heads/main"
     },
     "video-shotcraft": {
-      "commit": "1266a3ec4831289c4d893d42dd5102723658039a",
+      "commit": "3ac67b75dd0b3bc2fd807c17f6b7ce35373eef3d",
       "ref": "main",
       "repo": "https://github.com/Vincentwei1021/video-shotcraft",
       "resolvedRef": "refs/heads/main"
