@@ -30,6 +30,7 @@ description: 创建、更新、审查与精简项目根目录的 AGENTS.md 文�
    - 提取**本地服务启动方式**，并确认 Agent 能否作为使用者发起调用（如 healthcheck 接口、`curl` 样例）并读取日志。
 3. **设置指路牌**：明确指引 Agent 渐进式索取信息：
    - 稳定需求与系统规约 👉 查阅 `.agents/specs/`
+   - 背景说明与参考资料 👉 查阅 `.agents/docs/`
    - 代码风格与规矩 👉 查阅 `.agents/rules/`
    - 工程实施过程 👉 查阅 `.agents/engineering/`
    - 产品成果交付状态 👉 查阅 `.agents/kanban/`
@@ -79,6 +80,7 @@ description: 创建、更新、审查与精简项目根目录的 AGENTS.md 文�
 ## 3. 上下文指引（Context Routing）
 深入了解本项目资产，请按需查阅对应抽屉（需要时再读，不要提前全量加载）：
 - 稳定需求与系统规约：查阅 \`.agents/specs/\`
+- 背景说明与参考资料：查阅 \`.agents/docs/\`
 - 项目规则与约束：查阅 \`.agents/rules/\`
 - 工程实施过程：查阅 \`.agents/engineering/\`
 - 产品成果交付状态：查阅 \`.agents/kanban/\`
