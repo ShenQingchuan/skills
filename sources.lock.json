@@ -22,7 +22,7 @@
       "skill": "create-adaptable-composable"
     },
     "dev/frontend/impeccable": {
-      "digest": "d554022212492c5e80d31069921f89b4c18e906628463f8d13f81acbaa434882",
+      "digest": "4bb26d69a42ab0a27027146c4d11735ee786975b228009dd2f06734d36806083",
       "from": "pbakaus",
       "skill": "impeccable"
     },
@@ -266,7 +266,7 @@
       "resolvedRef": "refs/heads/main"
     },
     "larksuite": {
-      "commit": "1bfdcc2c1a0ed0296ddb6349d251bdd75145bc5a",
+      "commit": "ac22a60a23d66c37d43a7ec6d9e99b99a4320356",
       "ref": "main",
       "repo": "https://github.com/larksuite/cli",
       "resolvedRef": "refs/heads/main"
@@ -278,19 +278,19 @@
       "resolvedRef": "refs/heads/main"
     },
     "millionco": {
-      "commit": "ec45ff9928ef97bf66c23ac2458ab91545b91de6",
+      "commit": "94a349b8a38c4e80f7600a74766b00ef3a76fa39",
       "ref": "main",
       "repo": "https://github.com/millionco/react-doctor",
       "resolvedRef": "refs/heads/main"
     },
     "pbakaus": {
-      "commit": "ec229b48547f24685ffb22aa51c462c5ae27908c",
+      "commit": "fead7938331bb92129e3c5ce14f600611067bd06",
       "ref": "main",
       "repo": "https://github.com/pbakaus/impeccable",
       "resolvedRef": "refs/heads/main"
     },
     "vercel-labs": {
-      "commit": "e7519957b9067c541825afa21a792fbe1f483047",
+      "commit": "d129226078e0fc8ee5dec48fbc96a46df5d0aafd",
       "ref": "main",
       "repo": "https://github.com/vercel-labs/agent-browser",
       "resolvedRef": "refs/heads/main"
