@@ -7,9 +7,10 @@ Thumbs.db
 .env.*
 !.env.example
 
-# 本机配置与私有 Profile
+# 本机配置、私有 Profile 与后台服务运行记录
 /config.json
 /profiles/
+/.local/
 
 # 同步下载产物；手写技能直接放在 registry/ 的分类目录中
 /registry/.synced/

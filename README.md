@@ -116,10 +116,10 @@ sh install.sh
 
 | 命令 | 职责说明 |
 | :--- | :--- |
-| `boss kanban [路径] [--port 5173]` | 启动当前项目的 `.agents/kanban/` 网页看板（Vite 驱动 HMR，无缓存残留，未安装时自动初始化） |
-| `boss kanban stop [--port 5173]` | 停止看板服务（按端口释放进程，不留任何临时文件） |
+| `boss kanban [路径] [--port 5173]` | 启动当前项目的 `.agents/kanban/` 网页看板；同一目录重复调用直接复用原地址，不换端口、不新开进程 |
+| `boss kanban stop [路径] [--port 5173]` | 停止当前项目记录的看板；显式传 `--port` 时也可按端口停止 |
 | `boss code [路径] [--port 6063]` | 启动网页版 VS Code（coderaft），自动打开浏览器并预装常用插件；同一目录重复调用只重新激活，不换端口；闲置 2 小时自动关闭 |
-| `boss code stop [--port 6063]` | 停止网页编辑器服务 |
+| `boss code stop [路径] [--port 6063]` | 停止当前项目记录的网页编辑器；显式传 `--port` 时也可按端口停止 |
 | `boss list-skills [分类路径]` | 无参数时只显示顶层分类、递归技能数与分类说明；指定路径时完整展开该子树，展示技能描述与绝对入口路径 |
 | `boss search-skills "<关键词>" [--limit 5]` | 搜索全部技能；一个带引号的字符串可包含多个空白分隔的关键词，命中越多、字段越重要则排名越前 |
 | `boss sync-skills` | 同步默认 Profile 及 `config.json` 中启用的私有 Profile，对齐指纹锁定（支持 `--check` 纯只读检查） |
@@ -129,6 +129,8 @@ sh install.sh
 | `boss python [参数...]` | 使用沙盒 Python，后续参数原样交给 Python |
 | `boss node [参数...]` | 使用沙盒 Node.js，后续参数原样交给 Node.js |
 | `boss npm [参数...]` | 使用沙盒 npm，后续参数原样交给 npm |
+
+看板和编辑器的本机运行记录保存在 `.local/services.json`，该目录已被 Git 忽略。后台进程不接管终端键盘输入，不会影响当前 Shell。
 
 Skill 调用工具时统一使用以上命令，不需要关心 `.runtime` 的跨平台路径。例如：
 
