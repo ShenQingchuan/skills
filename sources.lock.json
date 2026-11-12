@@ -7,7 +7,7 @@
       "skill": "design-playful-app-icons"
     },
     "artwork/video-shotcraft": {
-      "digest": "72c5e9012538379c2f4a9a3517b8ac1e8c16229baa15f3bc8173cc07983605cd",
+      "digest": "fea7859bc6afeab7c0eb8ddb298cd69cfb664dde11497baaef1c9d75209ae431",
       "from": "video-shotcraft",
       "skill": "."
     },
@@ -254,7 +254,7 @@
   },
   "sources": {
     "antfu": {
-      "commit": "2b26163650610e2bd32261bef68b4093312cc6ff",
+      "commit": "d524ed287eef22757297827ce42e3cad88abd20c",
       "ref": "main",
       "repo": "https://github.com/antfu/skills",
       "resolvedRef": "refs/heads/main"
@@ -284,19 +284,19 @@
       "resolvedRef": "refs/heads/main"
     },
     "pbakaus": {
-      "commit": "fead7938331bb92129e3c5ce14f600611067bd06",
+      "commit": "b4bff1626c344067788c2679f048a20057c7cc5a",
       "ref": "main",
       "repo": "https://github.com/pbakaus/impeccable",
       "resolvedRef": "refs/heads/main"
     },
     "vercel-labs": {
-      "commit": "d129226078e0fc8ee5dec48fbc96a46df5d0aafd",
+      "commit": "51b6f8a40c6f1b330f4f2021b1af154ebc6be464",
       "ref": "main",
       "repo": "https://github.com/vercel-labs/agent-browser",
       "resolvedRef": "refs/heads/main"
     },
     "video-shotcraft": {
-      "commit": "3ac67b75dd0b3bc2fd807c17f6b7ce35373eef3d",
+      "commit": "6700db2ba80572ebc777b99d72049679fed9840c",
       "ref": "main",
       "repo": "https://github.com/Vincentwei1021/video-shotcraft",
       "resolvedRef": "refs/heads/main"
