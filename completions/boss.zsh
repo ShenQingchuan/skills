@@ -16,7 +16,8 @@ _boss_completion() {
       commands=(
         'kanban:启动或停止项目任务看板'
         'code:启动或停止网页代码编辑器'
-        'list-skills:查看技能树'
+        'list-skills:查看技能概览或完整子树'
+        'search-skills:按多个关键词搜索技能'
         'sync-skills:同步第三方技能'
         'setup-runtime:安装或检查独立运行环境'
         'bun:使用沙盒 Bun'
@@ -47,6 +48,13 @@ _boss_completion() {
     list-skills)
       skill_dirs=("${(@f)$(command boss _complete skill-dirs "$cur" 2>/dev/null)}")
       (( ${#skill_dirs} )) && _describe 'skill directory' skill_dirs
+      ;;
+    search-skills)
+      if [[ "$prev" == "--limit" ]]; then
+        return
+      fi
+      options=('--limit:最多显示几条结果' '-h:查看帮助' '--help:查看帮助')
+      _describe 'command option' options
       ;;
     sync-skills)
       options=('--check:仅检查更新，不写入文件' '-h:查看帮助' '--help:查看帮助')

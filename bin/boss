@@ -54,9 +54,15 @@ def cmd_complete(args: list[str]) -> int:
 
 
 def cmd_list(args: list[str]) -> int:
-    """查看技能树（供 Agent 与人类查阅）"""
+    """查看技能概览或完整展开指定分类。"""
     list_script = ROUTER_SCRIPTS_DIR / "list_skills.py"
     return run_python_script(list_script, args)
+
+
+def cmd_search(args: list[str]) -> int:
+    """按多个关键词搜索全部技能。"""
+    search_script = ROUTER_SCRIPTS_DIR / "search_skills.py"
+    return run_python_script(search_script, args)
 
 
 def cmd_sync(args: list[str]) -> int:
@@ -103,8 +109,10 @@ boss - 个人 Agent 技能治理框架 CLI
                              启动并自动打开浏览器: boss code [路径] [--port 6063]
                              停止: boss code stop [--port 6063]
                              特性: 自动打开浏览器，闲置 2 小时无操作自动关闭守护
-  list-skills                查看层级技能树（展示描述与绝对入口路径）
-                             支持传参单独探查子分类，如: boss list-skills dev/
+  list-skills [分类路径]      无参数时查看顶层概览；指定路径时完整展开该子树
+                             例如: boss list-skills dev/frontend
+  search-skills "<关键词>"    搜索全部技能，支持空白分隔的多个关键词
+                             支持传参: --limit 5（默认显示前 5 条）
   sync-skills                同步默认 Profile 及 config.json 中启用的私有 Profile
                              支持传参: --check（仅检查是否有更新）
   setup-runtime              为本框架安装/检查独立沙盒运行引擎（Node/Bun/uv/Python/rg）
@@ -136,6 +144,7 @@ def main() -> int:
         "kanban": cmd_kanban,
         "code": cmd_code,
         "list-skills": cmd_list,
+        "search-skills": cmd_search,
         "sync-skills": cmd_sync,
         "setup-runtime": cmd_setup_runtime,
         "_complete": cmd_complete,

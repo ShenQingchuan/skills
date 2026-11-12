@@ -18,7 +18,6 @@ if str(BIN_DIR) not in sys.path:
 from skill_boss_profiles import Profile, load_profiles
 
 MAX_DESC = 110
-FOLD_THRESHOLD = 10
 
 
 def shorten(text: str, limit: int = MAX_DESC) -> str:
@@ -218,7 +217,45 @@ def select_category(tree: dict, raw_path: str) -> tuple[dict, Path]:
     return current, Path(*parts)
 
 
+def count_skills(node_dict: dict) -> int:
+    """统计整棵子树的技能数，供概览展示分类体量。"""
+    return sum(
+        1 if node["is_skill"] else count_skills(node["children"])
+        for node in node_dict.values()
+    )
+
+
+def render_skill(node: dict, prefix: str, connector: str) -> str:
+    meta = node["meta"]
+    skill_file = node["path"] / "SKILL.md"
+    line = f"{prefix}{connector}🎯 {meta['name']} - {shorten(meta['desc'])}"
+    return f"{line} (入口: {skill_file})"
+
+
+def render_overview(node_dict: dict, prefix: str = "") -> list[str]:
+    """根视图只披露第一层；分类显示递归技能数，不泄露后代细节。"""
+    lines = []
+    keys = sorted(node_dict)
+    for index, key in enumerate(keys):
+        connector = "└── " if index == len(keys) - 1 else "├── "
+        node = node_dict[key]
+        if node["is_skill"]:
+            lines.append(render_skill(node, prefix, connector))
+            continue
+
+        children = node["children"]
+        count = count_skills(children)
+        label = f"{prefix}{connector}📂 {key}/"
+        label += "（空）" if not children else f"（{count} 个技能）"
+        desc = node.get("desc")
+        if desc:
+            label += f" - {shorten(desc)}"
+        lines.append(label)
+    return lines
+
+
 def render_tree(node_dict: dict, prefix: str = "") -> list[str]:
+    """完整展开指定分类下的所有技能，不按数量折叠。"""
     lines = []
     keys = sorted(node_dict)
     for index, key in enumerate(keys):
@@ -228,25 +265,18 @@ def render_tree(node_dict: dict, prefix: str = "") -> list[str]:
         node = node_dict[key]
 
         if node["is_skill"]:
-            meta = node["meta"]
-            skill_file = node["path"] / "SKILL.md"
-            line = f"{prefix}{connector}🎯 {meta['name']} - {shorten(meta['desc'])}"
-            lines.append(f"{line} (入口: {skill_file})")
+            lines.append(render_skill(node, prefix, connector))
             continue
 
         children = node["children"]
+        label = f"{prefix}{connector}📂 {key}/"
+        desc = node.get("desc")
+        if desc:
+            label += f" - {shorten(desc)}"
         if not children:
-            lines.append(f"{prefix}{connector}📂 {key}/ （空）")
-        elif len(children) > FOLD_THRESHOLD:
-            folded = (
-                f"（{len(children)} 项已折叠 → 请单独展开查阅 {node['rel_path']}）"
-            )
-            desc = node.get("desc")
-            label = f"📂 {key}/ - {shorten(desc)}" if desc else f"📂 {key}/"
-            lines.append(f"{prefix}{connector}{label} {folded}")
-        else:
-            lines.append(f"{prefix}{connector}📂 {key}/")
-            lines.extend(render_tree(children, child_prefix))
+            label += "（空）"
+        lines.append(label)
+        lines.extend(render_tree(children, child_prefix))
     return lines
 
 
@@ -272,18 +302,26 @@ def main() -> int:
         print(f"❌ {exc}", file=sys.stderr)
         return 1
 
-    active_names = [profile.name for profile in profiles if profile.name != "default"]
-    active_text = f"；已启用 Profile: {', '.join(active_names)}" if active_names else ""
-    sub_title = f" [子目录视图: {selected_path}]" if selected_path.parts else ""
-    registry_dir = REPO_ROOT / "registry"
-    print(f"📦 skills-router（技能路由中心根目录: {registry_dir}{active_text}）{sub_title}")
+    if selected_path.parts:
+        print(f"📦 skills-router [子目录视图: {selected_path}]")
+    else:
+        active_names = [profile.name for profile in profiles if profile.name != "default"]
+        active_text = f"；已启用 Profile: {', '.join(active_names)}" if active_names else ""
+        print(f"📦 skills-router（共 {count_skills(tree)} 个技能{active_text}）")
 
     if not tree:
         print("  └── （当前未安装任何技能）")
         return 0
 
-    for line in render_tree(tree, prefix="  "):
+    lines = (
+        render_tree(tree, prefix="  ")
+        if selected_path.parts
+        else render_overview(tree, prefix="  ")
+    )
+    for line in lines:
         print(line)
+    if not selected_path.parts:
+        print('搜索：boss search-skills "<关键词>"；展开分类：boss list-skills <路径>')
     return 0
 
 

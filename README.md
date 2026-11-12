@@ -36,20 +36,19 @@
 三层，层层收窄，每一层只为下一层付一次代价。
 
 - **① 常驻** —— Agent 默认只认识一个技能：`skills-router`。它自己只说一句话：「有技能树，先查再读」。成本恒定，约 40 tokens。
-- **② 查阅** —— 它跑 `list_skills.py`，拿到一棵带分类和一句话描述的技能树。
-- **③ 装载** —— 它按技能树输出的真实绝对路径读取 `SKILL.md`；文件里指向 `references/` 时再往下钻。
+- **② 查阅** —— 任务明确时运行 `search_skills.py`，直接取得少量候选；任务不明确时运行 `list_skills.py`，先看顶层分类，再完整展开选定的子树。
+- **③ 装载** —— 它按搜索结果或技能树输出的真实绝对路径读取 `SKILL.md`；文件里指向 `references/` 时再往下钻。
 
-一次典型的查阅输出：
+一次典型的根目录查阅输出：
 
 ```text
-📦 skills-router（技能路由中心根目录: /Users/admin/.agents/skills/registry）
-  ├── 📂 dev/
-  │   └── 📂 frontend/
-  │       ├── 🎯 vue - Vue 3 Composition API, script setup macros… (入口: /Users/admin/.agents/skills/registry/.synced/dev/frontend/vue/SKILL.md)
-  │       └── …
-  └── 📂 workflow/
-      ├── 🎯 grilling - Grill the user relentlessly about a plan, decision… (入口: /Users/admin/.agents/skills/registry/.synced/workflow/grilling/SKILL.md)
-      └── …
+📦 skills-router（共 59 个技能）
+  ├── 📂 artwork/（2 个技能） - 视觉创作与设计技能……
+  ├── 📂 dev/（23 个技能） - 开发工具、项目规约、前端开发与测试。
+  ├── 📂 office/（28 个技能） - 办公软件与协作平台能力。
+  ├── 📂 workflow/（3 个技能） - 需求、任务、方案评审与交付管理。
+  └── 📂 writing/（3 个技能） - 文档撰写、图表绘制与变更说明。
+搜索：boss search-skills "<关键词>"；展开分类：boss list-skills <路径>
 ```
 
 **关键点**：`registry/` 里的技能不会自动进入上下文。它们只有被路由器点名、并被显式读取时才会出现。
@@ -121,7 +120,8 @@ sh install.sh
 | `boss kanban stop [--port 5173]` | 停止看板服务（按端口释放进程，不留任何临时文件） |
 | `boss code [路径] [--port 6063]` | 启动网页版 VS Code（coderaft），自动打开浏览器并预装常用插件；同一目录重复调用只重新激活，不换端口；闲置 2 小时自动关闭 |
 | `boss code stop [--port 6063]` | 停止网页编辑器服务 |
-| `boss list-skills` | 查看当前技能树，输出包含分类、一句话描述与入口路径（支持子路径过滤，如 `boss list-skills dev/`） |
+| `boss list-skills [分类路径]` | 无参数时只显示顶层分类、递归技能数与分类说明；指定路径时完整展开该子树，展示技能描述与绝对入口路径 |
+| `boss search-skills "<关键词>" [--limit 5]` | 搜索全部技能；一个带引号的字符串可包含多个空白分隔的关键词，命中越多、字段越重要则排名越前 |
 | `boss sync-skills` | 同步默认 Profile 及 `config.json` 中启用的私有 Profile，对齐指纹锁定（支持 `--check` 纯只读检查） |
 | `boss setup-runtime` | 一键部署/检查独立绿色沙盒引擎 (Node/Bun/uv/Python/rg，支持 `-s` 查看状态) |
 | `boss bun [参数...]` | 使用沙盒 Bun，后续参数原样交给 Bun |
@@ -178,7 +178,8 @@ boss python -m unittest discover -s tests -v
 ├── skills-router/                 ← 唯一被 Agent 默认感知的入口技能
 │   ├── SKILL.md                   ← 路由规则（刻意写得极短）
 │   └── scripts/
-│       └── list_skills.py         ← 合并默认与已启用 Profile 的技能树
+│       ├── list_skills.py         ← 合并默认与已启用 Profile，展示概览或完整子树
+│       └── search_skills.py       ← 按多关键词搜索全部技能并输出少量候选
 └── .github/workflows/
     └── sync-skills.yml            ← 每日自动同步默认 Profile
 ```
@@ -187,7 +188,7 @@ boss python -m unittest discover -s tests -v
 
 `scripts/`、`references/`、`assets/` 这些是目录内部的约定，属于技能自己的私事。`list_skills.py` 据此工作——见到 `SKILL.md` 就认定这是一个完整技能，不再往里看，所以技能内部的文件名不会泄露到技能树上。
 
-一个分类里的技能超过 10 个时，技能树会把这一支折起来。折叠后要仍能看出这一类是干什么的，把那一句话写在对应 Profile 的 `sources.json` 里，字段是 `categories`。键和 `install` 的 `to` 用同一套逻辑目录，不要带 Profile 名。值只写一句话。同步下来的目录会被覆盖，所以这句话不放进那些目录。
+`boss list-skills` 的根视图只显示第一层分类及递归技能数；指定分类路径后会完整展开整棵子树，不再按技能数量折叠。为了让概览和搜索都能说明分类用途，把分类的一句话写在对应 Profile 的 `sources.json` 里，字段是 `categories`。键和 `install` 的 `to` 用同一套逻辑目录，不要带 Profile 名。值只写一句话。同步下来的目录会被覆盖，所以这句话不放进那些目录。
 
 ```json
 "categories": {
@@ -276,7 +277,7 @@ Git 来源支持「单品挑选」与「整套镜像」两种引入方式：
 
 ### 运行时：需要技能时
 
-1. 跑 `boss list-skills`（或 `python3 skills-router/scripts/list_skills.py`）。
+1. 任务明确时跑 `boss search-skills "<能力关键词>"`，例如 `boss search-skills "vue testing"`；默认只看前 5 个候选，可用 `--limit` 调整。任务不明确时先跑 `boss list-skills` 查看顶层分类，再用 `boss list-skills <分类路径>` 完整展开。
 2. 按描述挑最匹配的 **1 个**；确有互补需要时最多再加 1 个（例如「架构规约」配「API 参考」）。
 3. **只**读选中技能目录下的 `SKILL.md`；其中若指向 `references/`、`reference/` 或 `scripts/`，再按需下钻。
 
@@ -295,8 +296,9 @@ Git 来源支持「单品挑选」与「整套镜像」两种引入方式：
 | 升级上游技能 | 跑 `boss sync-skills` |
 | 本地新建原创技能 | 在 `registry/` 对应分类下新建即可，受 Git 自动跟踪保护 |
 | 调整路由规则 | `skills-router/SKILL.md` |
-| 调整技能树展示 | `skills-router/scripts/list_skills.py` |
-| 给分类目录写折叠说明 | 对应 Profile 的 `sources.json` 里的 `categories` |
+| 调整技能概览或子树展示 | `skills-router/scripts/list_skills.py` |
+| 调整技能搜索与排序 | `skills-router/scripts/search_skills.py` |
+| 给分类目录写概览与搜索说明 | 对应 Profile 的 `sources.json` 里的 `categories` |
 | 调整同步分派或 Git 下载 | `bin/sync_skills.py` |
 | 部署绿色运行时沙盒 | 跑 `boss setup-runtime` |
 | 启动项目任务看板 | 跑 `boss kanban [项目路径]` |

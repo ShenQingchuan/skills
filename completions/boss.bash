@@ -1,7 +1,7 @@
 # boss CLI 的 Bash 补全：子命令、选项和技能分类目录。
 _boss_completion() {
   local cur prev command line
-  local commands="kanban code list-skills sync-skills setup-runtime bun uv python node npm"
+  local commands="kanban code list-skills search-skills sync-skills setup-runtime bun uv python node npm"
   COMPREPLY=()
   cur="${COMP_WORDS[COMP_CWORD]}"
   prev="${COMP_WORDS[COMP_CWORD - 1]}"
@@ -34,6 +34,12 @@ _boss_completion() {
       while IFS= read -r line; do
         COMPREPLY+=("$line")
       done < <(command boss _complete skill-dirs "$cur" 2>/dev/null)
+      ;;
+    search-skills)
+      if [[ "$prev" == "--limit" ]]; then
+        return
+      fi
+      COMPREPLY=( $(compgen -W "--limit -h --help" -- "$cur") )
       ;;
     sync-skills)
       COMPREPLY=( $(compgen -W "--check -h --help" -- "$cur") )

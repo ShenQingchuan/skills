@@ -11,7 +11,7 @@ $BossArgumentCompleter = {
         if ($wordToComplete.StartsWith("-")) {
             $candidates = @("-h", "--help")
         } else {
-            $candidates = @("kanban", "code", "list-skills", "sync-skills", "setup-runtime", "bun", "uv", "python", "node", "npm")
+            $candidates = @("kanban", "code", "list-skills", "search-skills", "sync-skills", "setup-runtime", "bun", "uv", "python", "node", "npm")
         }
     } else {
         switch ($command) {
@@ -20,6 +20,9 @@ $BossArgumentCompleter = {
             }
             "list-skills" {
                 $candidates = @(& boss _complete skill-dirs $wordToComplete 2>$null)
+            }
+            "search-skills" {
+                $candidates = @("--limit", "-h", "--help")
             }
             "sync-skills" {
                 $candidates = @("--check", "-h", "--help")

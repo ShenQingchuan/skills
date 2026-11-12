@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "$comment": "skill = 上游 skillsDir 下的相对路径（填 『.』 表示技能就是整个仓库根目录），可含子目录；to = registry/.synced/ 下的逻辑分类目录。categories 的键用同一套逻辑目录，值是该目录在技能树里被折叠时展示的一句话。",
+  "$comment": "skill = 上游 skillsDir 下的相对路径（填 『.』 表示技能就是整个仓库根目录），可含子目录；to = registry/.synced/ 下的逻辑分类目录。categories 的键用同一套逻辑目录，值是技能概览与搜索使用的一句话分类说明。",
   "sources": {
     "antfu": {
       "repo": "https://github.com/antfu/skills",
@@ -50,8 +50,12 @@
   },
   "categories": {
     "artwork": "视觉创作与设计技能，覆盖图标、插画、图表、界面和动态视觉。",
+    "dev": "开发工具、项目规约、前端开发与测试。",
     "dev/frontend": "前端技能：Vue、Vite、样式和测试的写法参考，以及对应的避坑规约。",
-    "office/lark": "飞书开放能力，按审批、文档、日历、消息等产品拆开。"
+    "office": "办公软件与协作平台能力。",
+    "office/lark": "飞书开放能力，按审批、文档、日历、消息等产品拆开。",
+    "workflow": "需求、任务、方案评审与交付管理。",
+    "writing": "文档撰写、图表绘制与变更说明。"
   },
   "install": [
     { "skill": "vue", "from": "antfu", "to": "dev/frontend/vue" },
