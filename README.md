@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="./assets/logo-256.png" alt="Boss logo" width="200" />
+
 # Skills
 
 **让 Agent 更有条理地调度技能。**
