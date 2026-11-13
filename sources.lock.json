@@ -12,7 +12,7 @@
       "skill": "."
     },
     "dev/agent-browser": {
-      "digest": "6c6b0d33259db0427408443cf0cc2e5674538e628ad3fde51e6ae252cf647215",
+      "digest": "1369f96acbedfa4bfc3fe3be8a51ddd852449b2a6399159c81bf4b7e2112434e",
       "from": "vercel-labs",
       "skill": "agent-browser"
     },
@@ -164,7 +164,7 @@
       "suite": "office/lark"
     },
     "office/lark/lark-meeting": {
-      "digest": "5d9d5afb01bec2c9be005fabeb90a824f11815eb0e7b5ac47c60fca3ee884b68",
+      "digest": "6f7e58a6e7305355f05a6782743fd86ab7e439b633c968abff85dc5bbe846234",
       "from": "larksuite",
       "skill": "lark-meeting",
       "suite": "office/lark"
@@ -266,19 +266,19 @@
       "resolvedRef": "refs/heads/main"
     },
     "larksuite": {
-      "commit": "ac22a60a23d66c37d43a7ec6d9e99b99a4320356",
+      "commit": "05e9c6ef74290f78601892ed9eb8a6389d8fc8ca",
       "ref": "main",
       "repo": "https://github.com/larksuite/cli",
       "resolvedRef": "refs/heads/main"
     },
     "mattpocock": {
-      "commit": "4ae2317ddb22b046e26455e4f9c9b3aaaf62212d",
+      "commit": "5863806dd4e15c63174bee4e7515a4256792ecfa",
       "ref": "main",
       "repo": "https://github.com/mattpocock/skills",
       "resolvedRef": "refs/heads/main"
     },
     "millionco": {
-      "commit": "94a349b8a38c4e80f7600a74766b00ef3a76fa39",
+      "commit": "b879251ed0a641a2703eb1852061ae81ea963798",
       "ref": "main",
       "repo": "https://github.com/millionco/react-doctor",
       "resolvedRef": "refs/heads/main"
@@ -290,7 +290,7 @@
       "resolvedRef": "refs/heads/main"
     },
     "vercel-labs": {
-      "commit": "51b6f8a40c6f1b330f4f2021b1af154ebc6be464",
+      "commit": "1cc19526f3641c8543d55aa6700e7c55b37ac356",
       "ref": "main",
       "repo": "https://github.com/vercel-labs/agent-browser",
       "resolvedRef": "refs/heads/main"
