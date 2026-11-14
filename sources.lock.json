@@ -12,7 +12,7 @@
       "skill": "."
     },
     "dev/agent-browser": {
-      "digest": "1369f96acbedfa4bfc3fe3be8a51ddd852449b2a6399159c81bf4b7e2112434e",
+      "digest": "bb10760ef4a133f773d663dcf6085af2e4b45846822e8f1794daefe01efa1821",
       "from": "vercel-labs",
       "skill": "agent-browser"
     },
@@ -22,7 +22,7 @@
       "skill": "create-adaptable-composable"
     },
     "dev/frontend/impeccable": {
-      "digest": "4bb26d69a42ab0a27027146c4d11735ee786975b228009dd2f06734d36806083",
+      "digest": "27fd8ae8c280563325918009099576337fdefd168b1721cabf63aebcc6ca0bce",
       "from": "pbakaus",
       "skill": "impeccable"
     },
@@ -176,7 +176,7 @@
       "suite": "office/lark"
     },
     "office/lark/lark-okr": {
-      "digest": "fb4a35df9694b83eb9a9f3cf3cd6be4745d760abac8e93fb3e98b938d34ea3dc",
+      "digest": "fb7b91d16af80aa8772c6b50e2e635572ddd991e2fbfc316f625a0c18424957d",
       "from": "larksuite",
       "skill": "lark-okr",
       "suite": "office/lark"
@@ -266,7 +266,7 @@
       "resolvedRef": "refs/heads/main"
     },
     "larksuite": {
-      "commit": "05e9c6ef74290f78601892ed9eb8a6389d8fc8ca",
+      "commit": "3d82c85419ad7560ad017db7a3972a596b5fbeb1",
       "ref": "main",
       "repo": "https://github.com/larksuite/cli",
       "resolvedRef": "refs/heads/main"
@@ -278,19 +278,19 @@
       "resolvedRef": "refs/heads/main"
     },
     "millionco": {
-      "commit": "b879251ed0a641a2703eb1852061ae81ea963798",
+      "commit": "dfffab3bd9f9da1977a7c23fa6bc5ed5abb4bdf6",
       "ref": "main",
       "repo": "https://github.com/millionco/react-doctor",
       "resolvedRef": "refs/heads/main"
     },
     "pbakaus": {
-      "commit": "b4bff1626c344067788c2679f048a20057c7cc5a",
+      "commit": "c5dd5fc267b486d991229c4d4647e67ba955f39d",
       "ref": "main",
       "repo": "https://github.com/pbakaus/impeccable",
       "resolvedRef": "refs/heads/main"
     },
     "vercel-labs": {
-      "commit": "1cc19526f3641c8543d55aa6700e7c55b37ac356",
+      "commit": "f18b8bb5275ea2be22fca5e6856886827468f41e",
       "ref": "main",
       "repo": "https://github.com/vercel-labs/agent-browser",
       "resolvedRef": "refs/heads/main"
