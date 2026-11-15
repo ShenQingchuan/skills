@@ -22,7 +22,7 @@
       "skill": "create-adaptable-composable"
     },
     "dev/frontend/impeccable": {
-      "digest": "27fd8ae8c280563325918009099576337fdefd168b1721cabf63aebcc6ca0bce",
+      "digest": "359ad25dc76fdf5b9f6c8e0cd42d6d07e62aa3137f88b61d95ee3ac0e67019bc",
       "from": "pbakaus",
       "skill": "impeccable"
     },
@@ -278,19 +278,19 @@
       "resolvedRef": "refs/heads/main"
     },
     "millionco": {
-      "commit": "dfffab3bd9f9da1977a7c23fa6bc5ed5abb4bdf6",
+      "commit": "661cb187fbfe4e992acc89f76933e4f51244639f",
       "ref": "main",
       "repo": "https://github.com/millionco/react-doctor",
       "resolvedRef": "refs/heads/main"
     },
     "pbakaus": {
-      "commit": "c5dd5fc267b486d991229c4d4647e67ba955f39d",
+      "commit": "2b86d9c07b97d4bed7de23583e1bd1e58dd2baae",
       "ref": "main",
       "repo": "https://github.com/pbakaus/impeccable",
       "resolvedRef": "refs/heads/main"
     },
     "vercel-labs": {
-      "commit": "f18b8bb5275ea2be22fca5e6856886827468f41e",
+      "commit": "e0c121a96d3a5412e2078e0c8eba3f4d2db2b616",
       "ref": "main",
       "repo": "https://github.com/vercel-labs/agent-browser",
       "resolvedRef": "refs/heads/main"
