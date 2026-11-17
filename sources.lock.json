@@ -7,7 +7,7 @@
       "skill": "design-playful-app-icons"
     },
     "artwork/video-shotcraft": {
-      "digest": "7929ffbc8e2c45a6f55714b1b40b4b5dfb8bbc3b411456de2a4f7bd7e5f8fcdb",
+      "digest": "7c874e4d4d1049267286459052232aba600d1f3db4df8ace06d1a8bf990c2aeb",
       "from": "video-shotcraft",
       "skill": "."
     },
@@ -254,7 +254,7 @@
   },
   "sources": {
     "antfu": {
-      "commit": "d524ed287eef22757297827ce42e3cad88abd20c",
+      "commit": "4a6bb39e7b45e26402eb215393c51ccf5df1ca4c",
       "ref": "main",
       "repo": "https://github.com/antfu/skills",
       "resolvedRef": "refs/heads/main"
@@ -290,13 +290,13 @@
       "resolvedRef": "refs/heads/main"
     },
     "vercel-labs": {
-      "commit": "53384771fbafc261ba67608ac806dd5aa70b84f0",
+      "commit": "b06e2533ba9b3823b8a96c859d455cb55f4d7893",
       "ref": "main",
       "repo": "https://github.com/vercel-labs/agent-browser",
       "resolvedRef": "refs/heads/main"
     },
     "video-shotcraft": {
-      "commit": "253ae59081cd8f85cee47074eec9ad1121f2e5ad",
+      "commit": "42f922fe076f6428814d10f6184caf22a8b2adc2",
       "ref": "main",
       "repo": "https://github.com/Vincentwei1021/video-shotcraft",
       "resolvedRef": "refs/heads/main"
