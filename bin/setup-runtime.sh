@@ -35,6 +35,8 @@ if [ "$1" = "--status" ] || [ "$1" = "-s" ]; then
     [ -x "$RUNTIME_BIN/uv" ]      && echo "✓ uv:       $("$RUNTIME_BIN/uv" --version | awk '{print $1,$2}')"  || echo "✗ uv:       未就绪"
     [ -x "$RUNTIME_BIN/python3" ] && echo "✓ Python:   $("$RUNTIME_BIN/python3" --version)" || echo "✗ Python:   未就绪"
     [ -x "$RUNTIME_BIN/rg" ]      && echo "✓ ripgrep:  $("$RUNTIME_BIN/rg" --version | head -n 1)" || echo "✗ ripgrep:  未就绪"
+    VITE_PKG="$RUNTIME_DIR/node_modules/vite/package.json"
+    [ -f "$VITE_PKG" ] && echo "✓ Vite:     $(sed -n 's/^ *"version": *"\([^"]*\)".*/\1/p' "$VITE_PKG" | head -n 1)（看板，首次运行 boss kanban 时安装）" || echo "- Vite:     未安装（首次运行 boss kanban 时自动安装）"
     echo "=========================================================="
     exit 0
 fi

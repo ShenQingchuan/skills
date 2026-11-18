@@ -100,6 +100,48 @@ export default {
 """
 
 
+# 看板使用框架自管的固定版本 Vite，不依赖 PATH 中的系统或全局安装。
+KANBAN_VITE_VERSION = "8.3.5"
+PUBLIC_NPM_REGISTRY = "https://registry.npmjs.org/"
+
+
+def kanban_vite_entry() -> Path:
+    return ROOT_DIR / ".runtime" / "node_modules" / "vite" / "bin" / "vite.js"
+
+
+def installed_kanban_vite_version() -> str | None:
+    package_json = ROOT_DIR / ".runtime" / "node_modules" / "vite" / "package.json"
+    try:
+        return json.loads(package_json.read_text(encoding="utf-8")).get("version")
+    except (OSError, ValueError):
+        return None
+
+
+def ensure_kanban_vite() -> Path:
+    """确认框架沙盒内已安装固定版本的 Vite；缺失或版本不符时用沙盒 npm 从公共源安装。"""
+    entry = kanban_vite_entry()
+    if entry.is_file() and installed_kanban_vite_version() == KANBAN_VITE_VERSION:
+        return entry
+
+    npm_bin = resolve_runtime_executable("npm", ROOT_DIR)
+    print(f"ℹ️  正在为看板安装框架自带的 Vite {KANBAN_VITE_VERSION}（仅首次需要）...")
+    result = subprocess.run(
+        [
+            str(npm_bin), "install", f"vite@{KANBAN_VITE_VERSION}",
+            "--save-exact", "--no-audit", "--no-fund",
+            f"--registry={PUBLIC_NPM_REGISTRY}",
+        ],
+        cwd=ROOT_DIR / ".runtime",
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0 or not entry.is_file():
+        tail = "\n".join((result.stderr or result.stdout).strip().splitlines()[-8:])
+        raise RuntimeError(f"安装看板 Vite 失败：\n{tail}")
+    print(f"✓ Vite {KANBAN_VITE_VERSION} 已安装到 {ROOT_DIR / '.runtime' / 'node_modules'}")
+    return entry
+
+
 def write_kanban_vite_config(project_root: Path) -> Path:
     """为每个项目写一份独立的 Vite 配置，避免多个项目的看板互相覆盖配置。"""
     digest = hashlib.sha1(str(project_root.resolve()).encode("utf-8")).hexdigest()[:12]
@@ -407,10 +449,11 @@ def cmd_kanban(args: list[str]) -> int:
                 print(f"ℹ️  端口 {port} 已被占用，已自动换用新端口: {next_port}")
                 port = next_port
 
-            bun_bin = get_bun_executable()
+            node_bin = resolve_runtime_executable("node", ROOT_DIR)
+            vite_entry = ensure_kanban_vite()
             tmp_config = write_kanban_vite_config(project_root)
             proc = create_detached_process(
-                [bun_bin, "x", "vite", "--config", str(tmp_config), "--port", str(port)],
+                [str(node_bin), str(vite_entry), "--config", str(tmp_config), "--port", str(port)],
                 cwd=kanban_dir,
             )
             if not wait_for_service(port, HEALTH_PATHS["kanban"], proc):

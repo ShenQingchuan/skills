@@ -53,6 +53,8 @@ if ($Status) {
     if (Test-Path $PyCmd) { Write-Host "✓ Python:   $(& $PyCmd --version)" } else { Write-Host "✗ Python:   未就绪" }
     $RgExe = Join-Path $RuntimeBin "rg.exe"
     if (Test-Path $RgExe) { Write-Host "✓ ripgrep:  $((& $RgExe --version)[0])" } else { Write-Host "✗ ripgrep:  未就绪" }
+    $VitePkg = Join-Path $RuntimeDir "node_modules\vite\package.json"
+    if (Test-Path $VitePkg) { Write-Host "✓ Vite:     $((Get-Content $VitePkg -Raw | ConvertFrom-Json).version)（看板，首次运行 boss kanban 时安装）" } else { Write-Host "- Vite:     未安装（首次运行 boss kanban 时自动安装）" }
     Write-Host "==========================================================" -ForegroundColor Cyan
     exit 0
 }
