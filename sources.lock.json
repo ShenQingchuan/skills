@@ -7,7 +7,7 @@
       "skill": "design-playful-app-icons"
     },
     "artwork/video-shotcraft": {
-      "digest": "7c874e4d4d1049267286459052232aba600d1f3db4df8ace06d1a8bf990c2aeb",
+      "digest": "2f84546757904c6ba3abf95906f6972b25ee733da201eee25caa0aae626f01be",
       "from": "video-shotcraft",
       "skill": "."
     },
@@ -37,7 +37,7 @@
       "skill": "pnpm"
     },
     "dev/frontend/react-doctor": {
-      "digest": "4b4b85c65a894ffca4dcc041057b7f52398f9c5fce2dc11edbd05b235806d002",
+      "digest": "ed48c6c5dc3c330fcbc113813fba4bc127b64e5f4c5491cf01fb32bf7bd9570d",
       "from": "millionco",
       "skill": "react-doctor"
     },
@@ -278,7 +278,7 @@
       "resolvedRef": "refs/heads/main"
     },
     "millionco": {
-      "commit": "661cb187fbfe4e992acc89f76933e4f51244639f",
+      "commit": "b6ba66ef427bf81995555e380eeba679f8b5d305",
       "ref": "main",
       "repo": "https://github.com/millionco/react-doctor",
       "resolvedRef": "refs/heads/main"
@@ -290,13 +290,13 @@
       "resolvedRef": "refs/heads/main"
     },
     "vercel-labs": {
-      "commit": "b06e2533ba9b3823b8a96c859d455cb55f4d7893",
+      "commit": "f85ed4d620c53ace7733a3b7eeef51e5f2532c83",
       "ref": "main",
       "repo": "https://github.com/vercel-labs/agent-browser",
       "resolvedRef": "refs/heads/main"
     },
     "video-shotcraft": {
-      "commit": "42f922fe076f6428814d10f6184caf22a8b2adc2",
+      "commit": "87107512ba09df1555a92ffa76495f115675d62f",
       "ref": "main",
       "repo": "https://github.com/Vincentwei1021/video-shotcraft",
       "resolvedRef": "refs/heads/main"
