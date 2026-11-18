@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import http.client
 import json
 import os
@@ -37,6 +38,82 @@ DEFAULT_CODE_EXTENSIONS = [
     "ms-python.python",
 ]
 HEALTH_PATHS = {"kanban": "/kanban.html", "code": "/healthz"}
+
+# 看板的 Vite 配置：除缓存目录外，挂载一个只读中间件，
+# 让看板抽屉能读取项目 .agents/specs 与 .agents/engineering 下的 Markdown。
+KANBAN_VITE_CONFIG_TEMPLATE = """import fs from 'node:fs';
+import path from 'node:path';
+
+const AGENTS_DIR = __AGENTS_DIR__;
+
+function send(res, status, type, body) {
+  res.statusCode = status;
+  res.setHeader('Content-Type', type);
+  res.setHeader('Cache-Control', 'no-store');
+  res.end(body);
+}
+
+function listEngineeringUnits() {
+  const dir = path.join(AGENTS_DIR, 'engineering');
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir, { withFileTypes: true })
+    .filter(entry => entry.isDirectory())
+    .map(entry => ({ unit: entry.name, file: path.join(dir, entry.name, 'README.md') }))
+    .filter(item => fs.existsSync(item.file))
+    .map(item => ({
+      unit: item.unit,
+      path: `engineering/${item.unit}/README.md`,
+      content: fs.readFileSync(item.file, 'utf8'),
+    }));
+}
+
+function agentsContextPlugin() {
+  return {
+    name: 'boss-agents-context',
+    configureServer(server) {
+      server.middlewares.use('/__agents', (req, res) => {
+        let url = '';
+        try {
+          url = decodeURIComponent((req.url || '').split('?')[0]);
+        } catch {
+          return send(res, 400, 'text/plain; charset=utf-8', 'Bad request');
+        }
+        if (req.method !== 'GET' && req.method !== 'HEAD')
+          return send(res, 405, 'text/plain; charset=utf-8', 'Method not allowed');
+        if (url === '/engineering/units.json')
+          return send(res, 200, 'application/json; charset=utf-8', JSON.stringify(listEngineeringUnits()));
+        if (!/^\\/(?:specs|engineering)\\/[a-z0-9][a-z0-9-]*\\/[\\w.-]+\\.md$/i.test(url))
+          return send(res, 404, 'text/plain; charset=utf-8', 'Not found');
+        const file = path.resolve(AGENTS_DIR, `.${url}`);
+        if (!file.startsWith(AGENTS_DIR + path.sep) || !fs.existsSync(file))
+          return send(res, 404, 'text/plain; charset=utf-8', 'Not found');
+        return send(res, 200, 'text/plain; charset=utf-8', fs.readFileSync(file, 'utf8'));
+      });
+    },
+  };
+}
+
+export default {
+  cacheDir: __CACHE_DIR__,
+  plugins: [agentsContextPlugin()],
+};
+"""
+
+
+def write_kanban_vite_config(project_root: Path) -> Path:
+    """为每个项目写一份独立的 Vite 配置，避免多个项目的看板互相覆盖配置。"""
+    digest = hashlib.sha1(str(project_root.resolve()).encode("utf-8")).hexdigest()[:12]
+    tmp_dir = Path(tempfile.gettempdir())
+    config_path = tmp_dir / f"vite-kanban-{digest}.config.mjs"
+    cache_dir = tmp_dir / f"vite-kanban-cache-{digest}"
+    agents_dir = (project_root / ".agents").resolve()
+    config_path.write_text(
+        KANBAN_VITE_CONFIG_TEMPLATE
+        .replace("__AGENTS_DIR__", json.dumps(str(agents_dir)))
+        .replace("__CACHE_DIR__", json.dumps(str(cache_dir))),
+        encoding="utf-8",
+    )
+    return config_path
 
 
 def get_bun_executable() -> str:
@@ -331,12 +408,7 @@ def cmd_kanban(args: list[str]) -> int:
                 port = next_port
 
             bun_bin = get_bun_executable()
-            tmp_config = Path(tempfile.gettempdir()) / "vite-kanban.config.mjs"
-            tmp_cache = Path(tempfile.gettempdir()) / "vite-kanban-cache"
-            tmp_config.write_text(
-                f"export default {{\n  cacheDir: {json.dumps(str(tmp_cache))}\n}};\n",
-                encoding="utf-8",
-            )
+            tmp_config = write_kanban_vite_config(project_root)
             proc = create_detached_process(
                 [bun_bin, "x", "vite", "--config", str(tmp_config), "--port", str(port)],
                 cwd=kanban_dir,

@@ -38,6 +38,14 @@ export const I18N_LOCALES = {
       high: '高',
       medium: '中',
       low: '低',
+      spec_title: '产品规格',
+      open_spec: '打开原文',
+      acceptance_title: '验收路径',
+      engineering_title: '关联工程单元',
+      no_engineering: '暂无关联工程单元',
+      no_acceptance: '规格中未找到验收路径',
+      loading: '读取中…',
+      spec_unavailable: '无法读取规格内容，请通过 boss kanban 启动看板后查看。',
     },
   },
   en: {
@@ -70,6 +78,14 @@ export const I18N_LOCALES = {
       high: 'High',
       medium: 'Medium',
       low: 'Low',
+      spec_title: 'Product spec',
+      open_spec: 'Open source',
+      acceptance_title: 'Acceptance path',
+      engineering_title: 'Linked engineering units',
+      no_engineering: 'No linked engineering units',
+      no_acceptance: 'No acceptance path found in the spec',
+      loading: 'Loading…',
+      spec_unavailable: 'Spec content is unavailable. Start the board with boss kanban to view it.',
     },
   },
 };
@@ -334,8 +350,10 @@ function openTaskDrawer(cardId, cardTitle, rawMermaid, lang) {
 
   const cardRegex = new RegExp(`${cardId}\\[[^\\]]+\\](?:@\\{([^\\}]+)\\})?`, 'i');
   const match = rawMermaid.match(cardRegex);
+  let specPath = '';
   if (match && match[1]) {
     const attrs = match[1];
+    specPath = attrs.match(/(?:^|,)\s*spec:\s*"([^"]+)"/)?.[1] || '';
     if (attrs.includes('priority: "High"')) priorityText = t.drawer.high;
     else if (attrs.includes('priority: "Medium"')) priorityText = t.drawer.medium;
     else if (attrs.includes('priority: "Low"')) priorityText = t.drawer.low;
@@ -398,7 +416,163 @@ function openTaskDrawer(cardId, cardTitle, rawMermaid, lang) {
     </div>` : ''}
   `;
 
+  renderProductContext(cardId, specPath, t);
   backdrop.classList.add('active');
+}
+
+/* ------------------------------------------------------------------------------
+ * 抽屉中的产品规格与关联工程单元
+ * 数据由 boss kanban 的只读中间件 /__agents/ 提供；读取失败时只显示路径与提示。
+ * ------------------------------------------------------------------------------ */
+
+const AGENTS_ENDPOINT = '/__agents';
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/** 只处理行内代码与加粗，其余 Markdown 按纯文本显示。 */
+function inlineMarkdown(value) {
+  return escapeHtml(value)
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+}
+
+/** 把 Markdown 按二级标题切成小节，代码块内的井号不视为标题。 */
+export function splitMarkdownSections(markdown) {
+  const lines = markdown.split(/\r?\n/);
+  const sections = [];
+  let title = '';
+  let current = { heading: '', lines: [] };
+  let inFence = false;
+  for (const line of lines) {
+    if (/^\s*```/.test(line)) inFence = !inFence;
+    if (!inFence && /^#\s+/.test(line) && !title) {
+      title = line.replace(/^#\s+/, '').trim();
+      continue;
+    }
+    if (!inFence && /^##\s+/.test(line)) {
+      sections.push(current);
+      current = { heading: line.replace(/^##\s+/, '').trim(), lines: [] };
+      continue;
+    }
+    current.lines.push(inFence && !/^\s*```/.test(line) ? '' : line);
+  }
+  sections.push(current);
+  return { title, sections };
+}
+
+function firstParagraph(lines) {
+  const paragraph = [];
+  for (const line of lines) {
+    if (!line.trim()) {
+      if (paragraph.length) break;
+      continue;
+    }
+    if (/^\s*(?:[-*]|\d+\.|```|>|\|)/.test(line) || /^#{3,}\s/.test(line)) {
+      if (paragraph.length) break;
+      continue;
+    }
+    paragraph.push(line.trim());
+  }
+  return paragraph.join(' ');
+}
+
+function listItems(lines) {
+  const items = [];
+  for (const line of lines) {
+    const item = line.match(/^\s*(?:\d+\.|[-*])\s+(.*)$/);
+    if (item) items.push(item[1].trim());
+    else if (items.length && /^\s{2,}\S/.test(line)) items[items.length - 1] += ` ${line.trim()}`;
+  }
+  return items;
+}
+
+export function summarizeSpec(markdown) {
+  const { title, sections } = splitMarkdownSections(markdown);
+  const background = sections.find(s => /背景|目标|background|goal/i.test(s.heading));
+  const summary = firstParagraph((background || sections[0] || { lines: [] }).lines);
+  const acceptance = sections.find(s => /验收|acceptance/i.test(s.heading));
+  return { title, summary, acceptance: acceptance ? listItems(acceptance.lines) : [] };
+}
+
+export function findEngineeringUnits(units, cardId) {
+  const idPattern = new RegExp(`(^|[^a-z0-9])${cardId}([^a-z0-9]|$)`, 'i');
+  return units.flatMap((unit) => {
+    const cardLine = unit.content.match(/^[-*]\s*(?:关联产品卡片|related (?:product )?cards?)\s*[:：]\s*(.*)$/im);
+    if (!cardLine || !idPattern.test(cardLine[1])) return [];
+    const title = unit.content.match(/^#\s+(.+)$/m)?.[1]?.trim() || unit.unit;
+    const status = unit.content.match(/^[-*]\s*(?:状态|status)\s*[:：]\s*(\S+)/im)?.[1] || '';
+    return [{ title, status, path: unit.path }];
+  });
+}
+
+async function fetchText(url) {
+  const response = await fetch(url, { cache: 'no-store' });
+  if (!response.ok) throw new Error(`${response.status}`);
+  return response.text();
+}
+
+async function renderProductContext(cardId, specPath, t) {
+  const container = document.getElementById('drawer-product-context');
+  if (!container) return;
+  const isCurrent = () => activeDrawerCard && activeDrawerCard.id === cardId;
+  const relative = specPath.replace(/^\.agents\//, '');
+  const specUrl = `${AGENTS_ENDPOINT}/${relative}`;
+
+  container.innerHTML = `
+    <div class="context-section-title">${t.drawer.spec_title}</div>
+    <div class="context-muted">${t.drawer.loading}</div>`;
+
+  const [spec, units] = await Promise.allSettled([
+    specPath ? fetchText(specUrl) : Promise.reject(new Error('no spec')),
+    fetchText(`${AGENTS_ENDPOINT}/engineering/units.json`).then(JSON.parse),
+  ]);
+  if (!isCurrent()) return;
+
+  let specHtml = '';
+  if (spec.status === 'fulfilled') {
+    const info = summarizeSpec(spec.value);
+    const acceptanceHtml = info.acceptance.length
+      ? `<ol class="context-acceptance">${info.acceptance.map(item => `<li>${inlineMarkdown(item)}</li>`).join('')}</ol>`
+      : `<div class="context-muted">${t.drawer.no_acceptance}</div>`;
+    specHtml = `
+      <div class="context-spec-header">
+        <span class="context-spec-name">${escapeHtml(info.title || specPath)}</span>
+        <a class="context-link" href="${escapeHtml(specUrl)}" target="_blank" rel="noopener">${t.drawer.open_spec}</a>
+      </div>
+      <div class="context-path">${escapeHtml(specPath)}</div>
+      ${info.summary ? `<p class="context-summary">${inlineMarkdown(info.summary)}</p>` : ''}
+      <div class="context-subtitle">${t.drawer.acceptance_title}</div>
+      ${acceptanceHtml}`;
+  } else {
+    specHtml = `
+      <div class="context-path">${escapeHtml(specPath)}</div>
+      <div class="context-muted">${t.drawer.spec_unavailable}</div>`;
+  }
+
+  let engineeringHtml = '';
+  if (units.status === 'fulfilled') {
+    const linked = findEngineeringUnits(units.value, cardId);
+    engineeringHtml = linked.length
+      ? `<ul class="context-units">${linked.map(unit => `
+          <li>
+            <a class="context-link" href="${escapeHtml(`${AGENTS_ENDPOINT}/${unit.path}`)}" target="_blank" rel="noopener">${escapeHtml(unit.title)}</a>
+            ${unit.status ? `<span class="context-status">${escapeHtml(unit.status)}</span>` : ''}
+          </li>`).join('')}</ul>`
+      : `<div class="context-muted">${t.drawer.no_engineering}</div>`;
+  }
+
+  container.innerHTML = `
+    <div class="context-section-title">${t.drawer.spec_title}</div>
+    ${specHtml}
+    ${units.status === 'fulfilled' ? `
+      <div class="context-section-title context-section-gap">${t.drawer.engineering_title}</div>
+      ${engineeringHtml}` : ''}`;
 }
 
 export function closeTaskDrawer() {
