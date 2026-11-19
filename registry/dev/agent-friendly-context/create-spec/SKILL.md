@@ -1,6 +1,6 @@
 ---
 name: create-spec
-description: 将讨论好的业务需求、产品方案或系统稳定规约落盘为 Spec 目录。整理需求、编写 PRD、记录长期架构契约时使用；工程实施过程使用 manage-engineering。
+description: 将讨论好的业务需求、产品方案或系统稳定规约落盘为 Spec 目录。整理需求、编写 PRD、记录长期架构契约、定义库或插件的 API 与对外契约时使用；工程实施过程使用 manage-engineering。
 ---
 
 # Create Spec
@@ -49,6 +49,8 @@ description: 将讨论好的业务需求、产品方案或系统稳定规约落�
   - 关键数据结构、表字段或接口契约；
   - 架构决策记录（若有多种实现方式，明确写下“选了什么、放弃了什么、为什么这么选”）。
 - **自测与验收路径**：如何验证这个需求已经保质保量做成了。
+
+**库与插件项目**（库、SDK、框架插件、CLI）的使用者是开发者，黄金路径和用户操作不适用。「如何做事」改按 API 形态、选项、兼容性、对外契约、边界与验收来写，模板见 [references/library-and-plugin.md](references/library-and-plugin.md)。
 
 Spec 记录稳定事实和验收依据，不写临时任务清单、实施进度或迁移过程。需要记录这些工程实施内容时，调用 `/manage-engineering` 写入 `.agents/engineering/`，并在两者之间建立链接。
 

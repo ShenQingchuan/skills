@@ -33,7 +33,7 @@ description: 创建、更新、审查与精简项目根目录的 AGENTS.md 文�
    - 背景说明与参考资料 👉 查阅 `.agents/docs/`
    - 代码风格与规矩 👉 查阅 `.agents/rules/`
    - 工程实施过程 👉 查阅 `.agents/engineering/`
-   - 产品成果交付状态 👉 查阅 `.agents/kanban/`
+   - 产品成果交付状态 👉 查阅 `.agents/kanban/`；Kanban 并行模式写明进行中上限；外部追踪的项目改为指向 GitHub Project、Jira 等外部系统
    - 专属技能与工作流 👉 查阅 `.agents/skills/`
    - 内部工程工作不得创建 Kanban 卡片；产品需求下的技术子任务也只进入 engineering
 4. **制定 2~3 条绝对物理红线**：只列破坏性高压电线（如禁止强推分支、禁止未确认删除数据），不把日常规范当死线，为后续排查留出“逃逸窗口”。
@@ -41,6 +41,7 @@ description: 创建、更新、审查与精简项目根目录的 AGENTS.md 文�
    - ❌ 不写基础命令科普（如 `npm install`、`git clone` 等常识）；
    - ❌ 不写长篇 API 接口文档（放进 `.agents/specs/`）；
    - ❌ 不写琐碎的代码格式偏好（放进 `.agents/rules/`）。
+6. **Claude Code 项目**：在根目录建一个只有一行 `@AGENTS.md` 的 `CLAUDE.md`，不用软链接，也不复制 AGENTS.md 的内容。
 
 ---
 

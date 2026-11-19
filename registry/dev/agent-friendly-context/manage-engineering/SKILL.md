@@ -79,7 +79,7 @@ Agent 使用工程单元时先读 `README.md`，只有其中明确指向其他�
 
 - 状态：draft | in_progress | done | abandoned
 - 关联规格：`.agents/specs/...` 或无
-- 关联产品卡片：无或卡片编号
+- 关联产品卡片：无、卡片编号，或外部 issue 链接
 
 ## 目标与范围
 为什么做，解决什么工程问题，明确不做什么。

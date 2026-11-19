@@ -32,6 +32,8 @@ description: 管理可独立验收的产品需求、功能和用户可感知缺�
 
 **硬门槛：没有可独立验收的产品 spec，就不得进入 Kanban。** 不得使用不存在的产品 spec 路径绕过检查，看板也会拒绝缺少有效 `spec` 属性的卡片。
 
+**外部追踪的项目不使用本技能。** 如果 `AGENTS.md` 写明交付状态在 GitHub Project、Jira 等外部系统中维护，就不要初始化 `.agents/kanban/`，也不要建卡；在 spec 中链接到对应 issue 即可，见 `/setup-project-for-agents` 的「外部追踪」模式。
+
 ---
 
 ## 一、跨平台独立运行时调用规范
@@ -115,7 +117,7 @@ boss kanban stop [项目路径] [--port 5173]
 - **一张卡片是一项完整产品成果**：不要把技术分工或实施步骤拆成多张卡；
 - **每张卡必须关联产品 spec**：spec 必须真实存在，并包含可独立判断的验收标准；
 - **看板上只留未完成成果**：验收通过后就删除卡片并写入历史，不堆已完成卡片；
-- **一次只交付一项**：`in_progress` 同时只能有 1 个产品成果；
+- **控制在制数量**：串行模式下 `in_progress` 同时只能有 1 个产品成果；并行模式见下文；
 - **验收针对完整产品行为**：技术子任务完成不等于产品卡片可以进入待验收。
 
 ### 卡片抽屉展示的产品上下文
@@ -133,10 +135,33 @@ boss kanban stop [项目路径] [--port 5173]
 | :--- | :--- | :--- |
 | `backlog` | **待处理** | 已有关联合规 spec、尚未排期的产品成果。 |
 | `todo` | **待开发** | 已明确验收标准并排好优先级、准备交付的产品成果。 |
-| `in_progress` | **进行中** | 正在完整落地的产品成果，严格保证只有 1 个。 |
+| `in_progress` | **进行中** | 正在完整落地的产品成果；串行模式只有 1 个，并行模式不超过上限。 |
 | `ready_for_review` | **待验收** | 已按 spec 完成全部实施与验证，等待产品验收的成果。 |
 
-### 3. 标准操作步骤
+### 3. 交付模式：串行（默认）与并行
+
+**串行模式**是默认值，`in_progress` 同时只有 1 张卡，适合单一工作区。
+
+**并行模式**用于多个 git worktree 同时开发。启用时在 `AGENTS.md` 的上下文指引中写明模式和上限，例如：
+
+```markdown
+- 产品成果交付状态：查阅 `.agents/kanban/`（并行模式，进行中上限 3，每张卡对应一个 worktree）
+```
+
+没有这句声明时一律按串行模式处理。并行模式的规矩：
+
+- **一卡一 worktree**：进入 `in_progress` 的卡片必须带 `worktree` 属性，值为该 worktree 的分支名；一个 worktree 只承载一张卡，一张卡也只在一个 worktree 中开发；
+- **上限硬性生效**：移入前先数 `in_progress` 中的卡片，达到上限就不再移入，先推进已有卡片到 `ready_for_review`。上限建议 2～3，按能同时审阅的数量定；
+- **看板只在主工作区维护**：`.agents/kanban/` 只在主工作区（`git worktree list` 的第一项）修改。各 worktree 里的看板副本保持不动，避免分支合并时冲突；在 worktree 中工作的 Agent 要更新状态时，直接改主工作区的文件；
+- **释放绑定**：卡片归档或退回 `todo` 时删除 `worktree` 属性；worktree 由用户决定是否删除，Agent 不擅自清理。
+
+```text
+in_progress[进行中]
+  feat003[增加用户权限导出功能]@{ spec: ".agents/specs/permission-export/README.md", assigned: "AI", worktree: "feat/permission-export" }
+  fix007[移动端菜单点击闪退]@{ spec: ".agents/specs/mobile-menu/README.md", assigned: "AI", worktree: "fix/mobile-menu-crash" }
+```
+
+### 4. 标准操作步骤
 
 #### 步骤 A：记录产品成果
 
@@ -150,8 +175,8 @@ feat003[增加用户权限导出功能]@{ spec: ".agents/specs/permission-export
 
 #### 步骤 B：开始完整交付
 
-1. 确认 `in_progress` 为空；
-2. 把卡片从 `todo` 移到 `in_progress`，添加 `assigned: "AI"`；
+1. 串行模式确认 `in_progress` 为空；并行模式确认未达上限，且目标 worktree 没有绑定其他卡片；
+2. 把卡片从 `todo` 移到 `in_progress`，添加 `assigned: "AI"`；并行模式同时添加 `worktree`；
 3. 如果技术实施较复杂，调用 `/manage-engineering` 建立工程单元，并在其中记录本卡片编号；
 4. 技术步骤只在工程单元中维护，不新建 Kanban 卡片。
 
@@ -168,7 +193,7 @@ in_progress[进行中]
 
 用户确认产品成果通过后：
 
-1. 从 `kanban.html` 删除整张卡片；
+1. 从 `kanban.html` 删除整张卡片（并行模式下改主工作区的文件）；
 2. 将成果、关联 spec 和主要改动追加到 `.agents/kanban/history.md`：
 
 ```markdown
@@ -190,4 +215,5 @@ cardId[产品成果标题]@{ spec: "产品 spec 路径", priority: "High", assig
 - `spec`：**必填**，格式为 `.agents/specs/<spec-name>/README.md` 或对应的真实 Markdown 文件；
 - `priority`：可选，`High` / `Medium` / `Low`；
 - `assigned`：可选，例如 `AI`；
+- `worktree`：并行模式下 `in_progress` 卡片必填，值为对应 worktree 的分支名；串行模式不写；
 - 标题描述用户或业务可验收的成果，不使用“重构某模块”“升级某依赖”等工程标题。
