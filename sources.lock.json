@@ -7,7 +7,7 @@
       "skill": "design-playful-app-icons"
     },
     "artwork/video-shotcraft": {
-      "digest": "2f84546757904c6ba3abf95906f6972b25ee733da201eee25caa0aae626f01be",
+      "digest": "06849a91b004d18b2decd9c689372d8d4ee83d97380f30f2d028fd454caf8716",
       "from": "video-shotcraft",
       "skill": "."
     },
@@ -22,7 +22,7 @@
       "skill": "create-adaptable-composable"
     },
     "dev/frontend/impeccable": {
-      "digest": "dd6921ffd08f327bfc44c7985105a0942b0715d5502d27006b44acc1f7a4e695",
+      "digest": "23a2e1c9baba8a746b328a1f4aac7e384c5483f7bf9ffb3821790c67c75ad7d1",
       "from": "pbakaus",
       "skill": "impeccable"
     },
@@ -98,7 +98,7 @@
       "suite": "office/lark"
     },
     "office/lark/lark-apps": {
-      "digest": "28a589a0bce9f52ca1751f9e868a7dfb3bc167fcba72f4107c9d7454bc0be01a",
+      "digest": "2a147ae3c4f3d188e683122976e46ed1e5eaf3e2419f6614acd01f4dda20bfc9",
       "from": "larksuite",
       "skill": "lark-apps",
       "suite": "office/lark"
@@ -266,7 +266,7 @@
       "resolvedRef": "refs/heads/main"
     },
     "larksuite": {
-      "commit": "3d82c85419ad7560ad017db7a3972a596b5fbeb1",
+      "commit": "c5fbf1a52df77d5cb9cac2b1501770b2fb9af7d2",
       "ref": "main",
       "repo": "https://github.com/larksuite/cli",
       "resolvedRef": "refs/heads/main"
@@ -284,19 +284,19 @@
       "resolvedRef": "refs/heads/main"
     },
     "pbakaus": {
-      "commit": "d41d9860b0094dcb68030657da63461212835aaa",
+      "commit": "b49177d32788f2dc585c42831d845dacf1ebed2c",
       "ref": "main",
       "repo": "https://github.com/pbakaus/impeccable",
       "resolvedRef": "refs/heads/main"
     },
     "vercel-labs": {
-      "commit": "f85ed4d620c53ace7733a3b7eeef51e5f2532c83",
+      "commit": "25b5d76f2843bce7be6c59a56d3461b162ad4ac9",
       "ref": "main",
       "repo": "https://github.com/vercel-labs/agent-browser",
       "resolvedRef": "refs/heads/main"
     },
     "video-shotcraft": {
-      "commit": "87107512ba09df1555a92ffa76495f115675d62f",
+      "commit": "55eb60d155d703b0267a46a0507f6e268a053ad1",
       "ref": "main",
       "repo": "https://github.com/Vincentwei1021/video-shotcraft",
       "resolvedRef": "refs/heads/main"
